@@ -1,9 +1,5 @@
 using WeightedData
 using Test
-using Coverage
-
-# Start coverage analysis
-Coverage.start()
 
 @testset "WeightedData.jl" begin
     @testset "WeightedPoint" begin
@@ -51,7 +47,3 @@ Coverage.start()
 
     end
 end
-
-# Stop coverage analysis and save results
-Coverage.stop()
-Coverage.report()
