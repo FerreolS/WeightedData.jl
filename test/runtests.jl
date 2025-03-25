@@ -10,7 +10,7 @@ using Test
         @test A.precision == 0.5
 
         @test real(A) == WeightedPoint(1.0, 0.5)
-        @test imag(A) == WeightedPoint(0.0, 0.0)
+        @test imag(A) == WeightedPoint(0.0, Int(0))
 
         @test A + B == WeightedPoint(3.0, 0.25)
         @test A + 1.0 == WeightedPoint(2.0, 0.5)
@@ -24,6 +24,9 @@ using Test
         @test A * 2.0 == WeightedPoint(2.0, 0.125)
 
         @test combine(A, B) == WeightedPoint(1.5, 1.0)
+        @test combine(A) == A
+        @test combine((A, B, A, B)) == WeightedPoint(1.5, 2.0)
+        @test combine([A, B, A, B]) == WeightedPoint(1.5, 2.0)
     end
     @testset "arrays.jl" begin
         A = [WeightedPoint(1.0, 0.5), WeightedPoint(2.0, 0.5)]
@@ -34,16 +37,6 @@ using Test
 
         @test flagbadpix(A, [true, false]) == [WeightedPoint(0.0, 0.0), WeightedPoint(2.0, 0.5)]
     end
-    @testset "likelihood.jl" begin
-        A = [WeightedPoint(1.0, 1.0), WeightedPoint(2.0, 0.5)]
-        B = [1.0, 1.0]
+    include("likelihood_test.jl")
 
-        @test gausslikelihood(A[1], B[1]) == 0.0
-        @test gausslikelihood(A[2], B[2]) == 0.25
-
-        @test robustlikelihood(3)(A[1], B[1]) == 0.0
-
-        @test likelihood(A, B) == 0.25
-
-    end
 end

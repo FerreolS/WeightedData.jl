@@ -39,7 +39,7 @@ Base.:(==)(x::WeightedPoint, y::WeightedPoint) = x.val == y.val && x.precision =
 
 Base.show(io::IO, x::WeightedPoint) = print(io, "WeightedPoint($(x.val), $(x.precision))")
 
-Base.convert(::Type{T}, (; val, precision)::WeightedPoint) where {T<:Real} = convert(T, val)
+Base.convert(::Type{T}, (; val, precision)::WeightedPoint) where {T<:Real} = WeightedPoint(convert(T, val), convert(T, precision))
 """ combine(A::WeightedPoint, B::WeightedPoint)
 
 Combines two WeightedPoint objects by calculating their weighted average based on precision. The result has a precision equal to the sum of the individual precisions.
