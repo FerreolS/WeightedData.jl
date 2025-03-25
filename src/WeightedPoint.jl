@@ -14,7 +14,7 @@ Base.imag(A::WeightedPoint) = WeightedPoint(imag.(A.val),imag.(A.precision))
 
 Base.:+(A::WeightedPoint, B::WeightedPoint)  = WeightedPoint(A.val .+ B.val, 1 ./ ( 1 ./ A.precision .+ 1 ./ B.precision))
 Base.:+(A::WeightedPoint, B::Number)  = WeightedPoint(A.val .+ B, A.precision )
-Base.:+(A::Number, B::WeightedPoint)  = A+B
+Base.:+(A::Number, B::WeightedPoint)  = B + A
 Base.:-(A::WeightedPoint, B::WeightedPoint)  = WeightedPoint(A.val .- B.val, 1 ./ ( 1 ./ A.precision .+ 1 ./ B.precision))
 Base.:-(A::WeightedPoint, B::Number)  = WeightedPoint(A.val .- B, A.precision )
 Base.:/(A::WeightedPoint, B::Number)  = WeightedPoint(A.val ./ B, B.^2 .* A.precision)
