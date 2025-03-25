@@ -32,8 +32,7 @@ using Test
         @test WeightedData.get_val(A) == [1.0, 2.0]
         @test WeightedData.get_precision(A) == [0.5, 0.5]
         
-        flagbadpix(A, [true, false])
-        @test A == [WeightedPoint(0.0, 0.0), WeightedPoint(2.0, 0.5)]
+        @test flagbadpix(A, [true, false])== [WeightedPoint(0.0, 0.0), WeightedPoint(2.0, 0.5)]
     end
     @testset "likelihood.jl" begin
         A = [WeightedPoint(1.0, 1.0), WeightedPoint(2.0, 0.5)]
