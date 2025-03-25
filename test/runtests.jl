@@ -23,10 +23,13 @@ using Test
         @test 2.0 * A == WeightedPoint(2.0, 0.125)
         @test A * 2.0 == WeightedPoint(2.0, 0.125)
 
+        @test convert(Float32, A) == WeightedPoint(1.0f0, 0.5f0)
+
         @test combine(A, B) == WeightedPoint(1.5, 1.0)
         @test combine(A) == A
         @test combine((A, B, A, B)) == WeightedPoint(1.5, 2.0)
         @test combine([A, B, A, B]) == WeightedPoint(1.5, 2.0)
+        @test combine(A, [B, A, B]) == WeightedPoint(1.5, 2.0)
     end
     @testset "arrays.jl" begin
         A = [WeightedPoint(1.0, 0.5), WeightedPoint(2.0, 0.5)]
