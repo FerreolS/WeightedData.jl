@@ -37,7 +37,7 @@ Base.:/(A::Number, (; val, precision)::WeightedPoint) = WeightedPoint(A / val, i
 Base.:*(B::Number, (; val, precision)::WeightedPoint) = WeightedPoint(val * B, precision / B^2)
 Base.:*(A::WeightedPoint, B::Number) = B * A
 Base.:*(::WeightedPoint, ::WeightedPoint) = error("Multiplication of WeightedPoint objects is not supported")
-Base.:/(::WeightedPoint, ::WeightedPoint) = error("Multiplication of WeightedPoint objects is not supported")
+Base.:/(::WeightedPoint, ::WeightedPoint) = error("Division of WeightedPoint objects is not supported")
 
 Base.one(::WeightedPoint{T}) where {T} = one(T)
 Base.zero(::WeightedPoint{T}) where {T} = WeightedPoint(zero(T), T(+Inf))
