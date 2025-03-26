@@ -9,6 +9,8 @@ using Test
         @test A.val == 1.0
         @test A.precision == 0.5
 
+        @test WeightedPoint{Float32}(2, 1) == WeightedPoint(2.0f0, 1.0f0)
+
         @test real(A) == WeightedPoint(1.0, 0.5)
         @test imag(A) == WeightedPoint(0.0, Int(0))
 
