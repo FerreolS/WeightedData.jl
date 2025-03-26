@@ -29,6 +29,12 @@ WeightedPoint{T}(val::Number, precision::Number) where {T} = WeightedPoint(T(val
 Base.real(A::WeightedPoint) = WeightedPoint(real(A.val), real(A.precision))
 Base.imag(A::WeightedPoint) = WeightedPoint(imag(A.val), imag(A.precision))
 
+"""
+    +(A::WeightedPoint, B::WeightedPoint)
+
+Add two weighted points. The result's value is the sum of values, and the precision
+is calculated according to error propagation rules.
+"""
 Base.:+(A::WeightedPoint, B::WeightedPoint) = WeightedPoint(A.val + B.val, inv(inv(A.precision) + inv(B.precision)))
 Base.:+((; val, precision)::WeightedPoint, B::Number) = WeightedPoint(val + B, precision)
 Base.:+(A::Number, B::WeightedPoint) = B + A
@@ -43,13 +49,15 @@ Base.:/(::WeightedPoint, ::WeightedPoint) = error("Division of WeightedPoint obj
 
 Base.one(::WeightedPoint{T}) where {T} = one(T)
 Base.zero(::WeightedPoint{T}) where {T} = WeightedPoint(zero(T), T(+Inf))
+WeightedPoint{T}(val::Number) where {T} = WeightedPoint(T(val), T(+Inf))
 
 Base.:(==)(x::WeightedPoint, y::WeightedPoint) = x.val == y.val && x.precision == y.precision
 
 #Base.show(io::IO, x::WeightedPoint) = print(io, "WeightedPoint($(x.val), $(x.precision))")
 
 Base.convert(::Type{T}, (; val, precision)::WeightedPoint) where {T<:Real} = WeightedPoint(convert(T, val), convert(T, precision))
-""" combine(A::WeightedPoint, B::WeightedPoint)
+""" 
+    combine(A::WeightedPoint, B::WeightedPoint)
 
 Combines two WeightedPoint objects by calculating their weighted average based on precision. The result has a precision equal to the sum of the individual precisions.
 
@@ -65,14 +73,10 @@ function combine(A::WeightedPoint, B::WeightedPoint)
     val = (A.precision * A.val + B.precision * B.val) / (precision)
     return WeightedPoint(val, precision)
 end
-""" combine(B::NTuple{N,WeightedPoint{T}}) where {N,T}
+""" 
+    combine(B::NTuple{N,WeightedPoint{T}}) where {N,T}
 
 Combines a tuple of WeightedPoint objects by calculating their weighted average. """
 combine(B::NTuple{N,WeightedPoint{T}}) where {N,T} = combine(first(B), last(B, N - 1)...)
 combine(A::WeightedPoint, B...) = combine(combine(A, first(B)), last(B, length(B) - 1)...)
-""" combine(B::AbstractArray{WeightedPoint{T}}) where {T}
-
-Combines an array of WeightedPoint objects by calculating their weighted average. """
-combine(B::AbstractArray{WeightedPoint{T}}) where {T} = combine(first(B), last(B, length(B) - 1)...)
-combine(A::WeightedPoint, B::AbstractArray{WeightedPoint{T}}) where {T} = combine(combine(A, first(B)), last(B, length(B) - 1)...)
 combine(A::WeightedPoint) = A

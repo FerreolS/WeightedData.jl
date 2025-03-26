@@ -20,3 +20,20 @@ function flagbadpix!(data::WeightedArray{T1,N,B,I}, badpix::Union{AbstractArray{
     size(data) == size(badpix) || error("flagbadpix! : size(data) != size(badpix)")
     return data[badpix] .= WeightedPoint{T1}(T1(0), T1(0))
 end
+
+function combine(A::AbstractArray{WeightedPoint{T}}; dims=Colon()) where {T}
+    if dims == Colon()
+        return reduce(combine, A)
+    end
+    return mapslices(combine, A; dims=dims)
+end
+
+function combine(A::AbstractArray{WeightedPoint{T1}}, B::AbstractArray{WeightedPoint{T2}}) where {T1,T2}
+    T = promote_type(T1, T2)
+    valA = get_val(A)
+    valB = get_val(B)
+    precisionA = get_precision(A)
+    precisionB = get_precision(B)
+    precision = T.(precisionA .+ precisionB)
+    return WeightedArray(T.(valA .* precisionA .+ valB .* precisionB) ./ precision, precision)
+end

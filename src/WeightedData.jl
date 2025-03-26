@@ -14,7 +14,7 @@ export WeightedPoint,
     get_precision
 
 include("WeightedPoint.jl")
-include("arrays.jl")
+include("WeightedArray.jl")
 include("likelihood.jl")
 
 end
