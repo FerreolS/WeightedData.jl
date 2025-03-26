@@ -53,5 +53,6 @@ using Test
         @test @inferred flagbadpix(A, [true, false]) == [WeightedPoint(0.0, 0.0), WeightedPoint(2.0, 0.5)]
     end
     include("likelihood_test.jl")
+    include("WeightedDataPlotsExt_test.jl")
 
 end

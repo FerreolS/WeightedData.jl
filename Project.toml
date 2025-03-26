@@ -19,6 +19,7 @@ julia = "1.6"
 [extras]
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 Zygote = "e88e6eb3-aa80-5325-afca-941959d7151f"
+Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
 
 [targets]
-test = ["Test","Zygote"]
+test = ["Test","Zygote","Plots"]
