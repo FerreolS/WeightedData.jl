@@ -55,6 +55,8 @@ function likelihood(likelihoodfunc::F, data::AbstractArray{WeightedPoint{T},N}, 
 end
 
 
+
+
 function ChainRulesCore.rrule(::typeof(WeightedData.likelihood), ::typeof(WeightedData.gausslikelihood), data::AbstractArray{WeightedPoint{T},N}, model::AbstractArray{T2,N}) where {T,T2,N}
     r = model .- get_val(data)
     rp = get_precision(data) .* r

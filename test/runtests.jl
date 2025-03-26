@@ -51,6 +51,24 @@ using Test
         @test WeightedData.get_precision(A) == [0.5, 0.5]
 
         @test @inferred flagbadpix(A, [true, false]) == [WeightedPoint(0.0, 0.0), WeightedPoint(2.0, 0.5)]
+
+        A = [1.0, 2.0, 3.0]
+        B = [0.1, 0.2, 0.3]
+        weighted_array = WeightedArray(A, B)
+
+        @test size(weighted_array) == (3,)
+        @test @inferred get_val(weighted_array) == A
+        @test @inferred get_precision(weighted_array) == B
+
+        badpix = [false, true, false]
+        flagged_array = flagbadpix(weighted_array, badpix)
+        @test get_val(flagged_array) == [1.0, 0.0, 3.0]
+        @test get_precision(flagged_array) == [0.1, 0.0, 0.3]
+
+        flagbadpix!(weighted_array, badpix)
+        @test get_val(weighted_array) == [1.0, 0.0, 3.0]
+        @test get_precision(weighted_array) == [0.1, 0.0, 0.3]
+
     end
     include("likelihood_test.jl")
     include("WeightedDataPlotsExt_test.jl")

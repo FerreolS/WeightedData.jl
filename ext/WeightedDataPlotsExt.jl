@@ -1,6 +1,6 @@
 module WeightedDataPlotsExt
 using Plots
-import WeightedData: WeightedPoint, get_val, get_precision
+import WeightedData: WeightedPoint, get_val, get_precision, WeightedArray
 
 @recipe function f(A::AbstractArray{WeightedPoint{T},N}) where {T,N}
     val = get_val(A)

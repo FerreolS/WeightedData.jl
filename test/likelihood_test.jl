@@ -25,4 +25,17 @@ using Zygote
     g(x) = scaledlikelihood(C, x)
     @test @inferred Zygote.withgradient(g, D) == (val=0.0, grad=([0.0 0.0; 0.0 0.0],))
 
+
+    C = WeightedArray(1.0 .+ ones(2, 2), ones(2, 2))
+    D = ones(2, 2)
+
+    @test @inferred scaledlikelihood(C, D) == 0.0
+    @test @inferred likelihood(C, D) == 2.0
+
+    f2(x) = likelihood(C, x)
+    @test @inferred Zygote.withgradient(f2, D) == (val=2.0, grad=([-1.0 -1.0; -1.0 -1.0],))
+
+    g2(x) = scaledlikelihood(C, x)
+    @test @inferred Zygote.withgradient(g2, D) == (val=0.0, grad=([0.0 0.0; 0.0 0.0],))
+
 end

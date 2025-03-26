@@ -1,16 +1,12 @@
 
 using Plots
 
-# Helper function to create WeightedPoint array
-function create_weighted_points(values, precisions)
-    return [WeightedPoint(val, prec) for (val, prec) in zip(values, precisions)]
-end
 
 # Test for the first recipe function
 @testset "WeightedDataPlotsExt recipe function 1" begin
     values = [1.0, 2.0, 3.0]
     precisions = [1.0, 0.5, 0.25]
-    A = create_weighted_points(values, precisions)
+    A = WeightedPoint(values, precisions)
 
     plot_result = plot(A)
 
@@ -24,7 +20,7 @@ end
     x = [1, 2, 3]
     values = [1.0, 2.0, 3.0]
     precisions = [1.0, 0.5, 0.25]
-    A = create_weighted_points(values, precisions)
+    A = WeightedPoint(values, precisions)
 
     plot_result = plot(x, A)
 
