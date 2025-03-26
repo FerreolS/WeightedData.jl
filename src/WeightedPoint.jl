@@ -20,9 +20,11 @@ struct WeightedPoint{T<:AbstractFloat} <: Number
         isfinite(val) || return new{T}(zero(T), zero(T))
         return new{T}(val, precision)
     end
+    WeightedPoint{T}(val::T, precision::T) where {T<:AbstractFloat} = new{T}(val, precision)
 end
 
 WeightedPoint(val::T, precision::Number) where {T<:AbstractFloat} = WeightedPoint(val, T(precision))
+WeightedPoint{T}(val::Number, precision::Number) where {T} = WeightedPoint(T(val), T(precision))
 
 Base.real(A::WeightedPoint) = WeightedPoint(real(A.val), real(A.precision))
 Base.imag(A::WeightedPoint) = WeightedPoint(imag(A.val), imag(A.precision))
