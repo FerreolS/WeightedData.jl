@@ -16,7 +16,8 @@ struct WeightedPoint{T<:AbstractFloat} <: Number
     val::T
     precision::T
     function WeightedPoint(val::T, precision::T) where {T<:AbstractFloat}
-        precision >= 0 || error("WeightedPoint : precision < 0 ")
+        precision >= 0 || error("WeightedPoint : precisionmust be positive")
+        isfinite(val) || return new{T}(zero(T), zero(T))
         return new{T}(val, precision)
     end
 end
@@ -26,18 +27,24 @@ WeightedPoint(val::T, precision::Number) where {T<:AbstractFloat} = WeightedPoin
 Base.real(A::WeightedPoint) = WeightedPoint(real(A.val), real(A.precision))
 Base.imag(A::WeightedPoint) = WeightedPoint(imag(A.val), imag(A.precision))
 
-Base.:+(A::WeightedPoint, B::WeightedPoint) = WeightedPoint(A.val + B.val, 1 / (1 / A.precision + 1 / B.precision))
+Base.:+(A::WeightedPoint, B::WeightedPoint) = WeightedPoint(A.val + B.val, inv(inv(A.precision) + inv(B.precision)))
 Base.:+((; val, precision)::WeightedPoint, B::Number) = WeightedPoint(val + B, precision)
 Base.:+(A::Number, B::WeightedPoint) = B + A
-Base.:-(A::WeightedPoint, B::WeightedPoint) = WeightedPoint(A.val - B.val, 1 / (1 / A.precision + 1 / B.precision))
+Base.:-(A::WeightedPoint, B::WeightedPoint) = WeightedPoint(A.val - B.val, inv(inv(A.precision) + inv(B.precision)))
 Base.:-((; val, precision)::WeightedPoint, B::Number) = WeightedPoint(val - B, precision)
 Base.:/((; val, precision)::WeightedPoint, B::Number) = WeightedPoint(val / B, B^2 * precision)
+Base.:/(A::Number, (; val, precision)::WeightedPoint) = WeightedPoint(A / val, inv(precision) / A^2)
 Base.:*(B::Number, (; val, precision)::WeightedPoint) = WeightedPoint(val * B, precision / B^2)
 Base.:*(A::WeightedPoint, B::Number) = B * A
+Base.:*(::WeightedPoint, ::WeightedPoint) = error("Multiplication of WeightedPoint objects is not supported")
+Base.:/(::WeightedPoint, ::WeightedPoint) = error("Multiplication of WeightedPoint objects is not supported")
+
+Base.one(::WeightedPoint{T}) where {T} = one(T)
+Base.zero(::WeightedPoint{T}) where {T} = WeightedPoint(zero(T), T(+Inf))
 
 Base.:(==)(x::WeightedPoint, y::WeightedPoint) = x.val == y.val && x.precision == y.precision
 
-Base.show(io::IO, x::WeightedPoint) = print(io, "WeightedPoint($(x.val), $(x.precision))")
+#Base.show(io::IO, x::WeightedPoint) = print(io, "WeightedPoint($(x.val), $(x.precision))")
 
 Base.convert(::Type{T}, (; val, precision)::WeightedPoint) where {T<:Real} = WeightedPoint(convert(T, val), convert(T, precision))
 """ combine(A::WeightedPoint, B::WeightedPoint)
