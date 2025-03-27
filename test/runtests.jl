@@ -35,13 +35,15 @@ using Test
 
         # Test for Base.zero
         @test zero(A) + A == A
-        @test combine() === nothing #WeightedPoint(0.0, Inf)
+        @test combine(()) === nothing #WeightedPoint(0.0, Inf)
 
         @test convert(Float32, A) == WeightedPoint(1.0f0, 0.5f0)
 
         @test @inferred combine(A, B) == WeightedPoint(1.5, 1.0)
         @test @inferred combine(A) == A
         @test @inferred combine((A, B, A, B)) == WeightedPoint(1.5, 2.0)
+        @test @inferred combine((A, B, A, B)...) == WeightedPoint(1.5, 2.0)
+
 
     end
     include("WeightedArray_test.jl")

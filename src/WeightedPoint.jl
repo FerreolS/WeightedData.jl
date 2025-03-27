@@ -48,7 +48,7 @@ Base.:*(::WeightedPoint, ::WeightedPoint) = error("Multiplication of WeightedPoi
 Base.:/(::WeightedPoint, ::WeightedPoint) = error("Division of WeightedPoint objects is not supported")
 
 Base.one(::WeightedPoint{T}) where {T} = one(T)
-Base.zero(::WeightedPoint{T}) where {T} = WeightedPoint(zero(T), T(+Inf))
+Base.zero(::WeightedPoint{T}) where {T} = zero(WeightedPoint{T})
 Base.zero(::Type{WeightedPoint{T}}) where {T} = WeightedPoint(zero(T), T(+Inf))
 
 Base.:(==)(x::WeightedPoint, y::WeightedPoint) = x.val == y.val && x.precision == y.precision
@@ -81,6 +81,6 @@ combine(A::NTuple{N,WeightedPoint}) where {N} = reduce(combine, A)
 combine(::NTuple{0}) = combine()
 combine() = nothing #zero(WeightedPoint{Float64})
 #combine(A::WeightedPoint, B...) = combine(combine(A, first(B)), last(B, length(B) - 1))
-combine(A::WeightedPoint, B::NTuple{N,WeightedPoint}) where {N} = combine(combine(A, first(B)), last(B, N - 1))
+#combine(A::WeightedPoint, B::NTuple{N,WeightedPoint}) where {N} = combine(combine(A, first(B)), last(B, N - 1))
 combine(A::WeightedPoint) = A
 combine(A::WeightedPoint...) = reduce(combine, A)
