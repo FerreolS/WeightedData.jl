@@ -77,9 +77,10 @@ end
     combine(B::NTuple{N,WeightedPoint{T}}) where {N,T}
 
 Combines a tuple of WeightedPoint objects by calculating their weighted average. """
-combine(B::NTuple{N,WeightedPoint}) where {N} = combine(first(B), last(B, N - 1)...)
+combine(A::NTuple{N,WeightedPoint}) where {N} = reduce(combine, A)
 combine(::NTuple{0}) = combine()
-combine() = zero(WeightedPoint{Float64})
-combine(A::WeightedPoint, B...) = combine(combine(A, first(B)), last(B, length(B) - 1)...)
+combine() = nothing #zero(WeightedPoint{Float64})
+#combine(A::WeightedPoint, B...) = combine(combine(A, first(B)), last(B, length(B) - 1))
+combine(A::WeightedPoint, B::NTuple{N,WeightedPoint}) where {N} = combine(combine(A, first(B)), last(B, N - 1))
 combine(A::WeightedPoint) = A
-combine(B::WeightedPoint...) = combine(first(B), last(B, N - 1)...)
+combine(A::WeightedPoint...) = reduce(combine, A)

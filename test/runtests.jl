@@ -35,7 +35,7 @@ using Test
 
         # Test for Base.zero
         @test zero(A) + A == A
-        @test combine() == WeightedPoint(0.0, Inf)
+        @test combine() === nothing #WeightedPoint(0.0, Inf)
 
         @test convert(Float32, A) == WeightedPoint(1.0f0, 0.5f0)
 
