@@ -1,6 +1,6 @@
 # WeightedData
 
-[![License][license-img]][license-url] [![Build Status][github-ci-img]][github-ci-url] [![Coverage][codecov-img]][codecov-url]
+[![License][license-img]][license-url] [![Build Status][github-ci-img]][github-ci-url] [![Coverage][codecov-img]][codecov-url] [![Aqua QA][aqua-img]][aqua-url]
 
 A Julia package to manipulate data weighted by their precision and compute likelihood functions.
 
@@ -39,3 +39,5 @@ l_robust = likelihood(data, model, likelihoodfunc=robustlikelihood(3))
 [github-ci-url]: https://github.com/FerreolS/WeightedData.jl/actions/workflows/CI.yml?query=branch%3Amaster
 [codecov-img]: http://codecov.io/github/FerreolS/WeightedData.jl/coverage.svg?branch=master
 [codecov-url]: http://codecov.io/github/FerreolS/WeightedData.jl?branch=master
+[aqua-img]: https://raw.githubusercontent.com/JuliaTesting/Aqua.jl/master/badge.svg
+[aqua-url]: https://github.com/JuliaTesting/Aqua.jl

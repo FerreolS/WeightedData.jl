@@ -49,7 +49,6 @@ Base.:/(::WeightedPoint, ::WeightedPoint) = error("Division of WeightedPoint obj
 
 Base.one(::WeightedPoint{T}) where {T} = one(T)
 Base.zero(::WeightedPoint{T}) where {T} = WeightedPoint(zero(T), T(+Inf))
-WeightedPoint{T}(val::Number) where {T} = WeightedPoint(T(val), T(+Inf))
 
 Base.:(==)(x::WeightedPoint, y::WeightedPoint) = x.val == y.val && x.precision == y.precision
 
