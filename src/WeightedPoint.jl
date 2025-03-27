@@ -49,6 +49,7 @@ Base.:/(::WeightedPoint, ::WeightedPoint) = error("Division of WeightedPoint obj
 
 Base.one(::WeightedPoint{T}) where {T} = one(T)
 Base.zero(::WeightedPoint{T}) where {T} = WeightedPoint(zero(T), T(+Inf))
+Base.zero(::Type{WeightedPoint{T}}) where {T} = WeightedPoint(zero(T), T(+Inf))
 
 Base.:(==)(x::WeightedPoint, y::WeightedPoint) = x.val == y.val && x.precision == y.precision
 
@@ -77,5 +78,6 @@ end
 
 Combines a tuple of WeightedPoint objects by calculating their weighted average. """
 combine(B::NTuple{N,WeightedPoint{T}}) where {N,T} = combine(first(B), last(B, N - 1)...)
+combine() = zero(WeightedPoint{Float64})
 combine(A::WeightedPoint, B...) = combine(combine(A, first(B)), last(B, length(B) - 1)...)
 combine(A::WeightedPoint) = A
