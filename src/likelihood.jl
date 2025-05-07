@@ -65,10 +65,10 @@ function ChainRulesCore.rrule(::typeof(WeightedData.likelihood), ::typeof(Weight
 end
 
 
-function scaledlikelihood(data::AbstractArray{WeightedPoint{T1},N}, model::AbstractArray{T2,N}) where {T1,T2,N}
-    size(data) == size(model) || error("scaledlikelihood : size(A) != size(model)")
-    data = get_data(data)
-    precision = get_precision(data)
+function scaledlikelihood(weighteddata::AbstractArray{WeightedPoint{T1},N}, model::AbstractArray{T2,N}) where {T1,T2,N}
+    size(weighteddata) == size(model) || error("scaledlikelihood : size(A) != size(model)")
+    data = get_data(weighteddata)
+    precision = get_precision(weighteddata)
 
     α = max.(0, sum(model .* precision .* data, dims=2) ./ sum(model .* precision .* model, dims=2))
     α[.!isfinite.(α)] .= T2(0)
@@ -76,10 +76,10 @@ function scaledlikelihood(data::AbstractArray{WeightedPoint{T1},N}, model::Abstr
     return sum(res .^ 2 .* precision) / 2
 end
 
-function ChainRulesCore.rrule(::typeof(scaledlikelihood), data::AbstractArray{WeightedPoint{T1},N}, model::AbstractArray{T2,N}) where {T1,T2,N}
-    size(data) == size(model) || error("scaledlikelihood : size(A) != size(model)")
-    data = get_data(data)
-    precision = get_precision(data)
+function ChainRulesCore.rrule(::typeof(scaledlikelihood), weighteddata::AbstractArray{WeightedPoint{T1},N}, model::AbstractArray{T2,N}) where {T1,T2,N}
+    size(weighteddata) == size(model) || error("scaledlikelihood : size(A) != size(model)")
+    data = get_data(weighteddata)
+    precision = get_precision(weighteddata)
 
     α = max.(0, sum(model .* precision .* data, dims=2) ./ sum(model .* precision .* model, dims=2))
 
