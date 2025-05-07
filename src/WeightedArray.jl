@@ -10,12 +10,12 @@ function flagbadpix(data::AbstractArray{WeightedPoint{T},N}, badpix::Union{Array
     return @inbounds map((d, flag) -> ifelse(flag, WeightedPoint(T(0), T(0)), d), data, badpix)
 end
 
-WeightedArray{T,N} = ZippedArray{WeightedPoint{T},N,2,I,Tuple{A,A}} where {A<:AbstractArray{T,N},I}
+WeightedArray{T,N} = ZippedArray{WeightedPoint{T},N,2,I,Tuple{A,B}} where {A<:AbstractArray{T,N},B<:AbstractArray{T,N},I}
+WeightedArray(A::AbstractArray{T,N}, B::AbstractArray{T,N}) where {T,N} = ZippedArray{WeightedPoint{T}}(A, B)
 WeightedArray(A::AbstractArray{T1,N}, B::AbstractArray{T2,N}) where {T1,T2,N} = ZippedArray{WeightedPoint{T1}}(A, T1.(B))
 
-function Base.view(A::WeightedArray, I...)
-    WeightedArray(view(get_data(A), I...), view(get_precision(A), I...))
-end
+Base.view(A::WeightedArray, I...) = WeightedArray(view(get_data(A), I...), view(get_precision(A), I...))
+
 get_data(x::WeightedArray) = x.args[1]
 get_precision(x::WeightedArray) = x.args[2]
 
