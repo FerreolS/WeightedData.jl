@@ -1,8 +1,8 @@
 ## Array of WeightedPoint
 using ZippedArrays
 
-get_data(x::AbstractArray{<:WeightedPoint}) where {T,N} = map(x -> x.data, x)
-get_precision(x::AbstractArray{<:WeightedPoint}) where {T,N} = map(x -> x.precision, x)
+get_data(x::AbstractArray{<:WeightedPoint}) = map(x -> x.data, x)
+get_precision(x::AbstractArray{<:WeightedPoint})  = map(x -> x.precision, x)
 WeightedPoint(A::AbstractArray{T1,N}, B::AbstractArray{T2,N}) where {T1,T2,N} = map((a, b) -> WeightedPoint(a, b), A, B)
 
 function flagbadpix(data::AbstractArray{WeightedPoint{T},N}, badpix::Union{Array{Bool,N},BitArray{N}}) where {T,N}
