@@ -2,7 +2,7 @@
 using ZippedArrays
 
 get_data(x::AbstractArray{<:WeightedPoint}) = map(x -> x.data, x)
-get_precision(x::AbstractArray{<:WeightedPoint})  = map(x -> x.precision, x)
+get_precision(x::AbstractArray{<:WeightedPoint}) = map(x -> x.precision, x)
 WeightedPoint(A::AbstractArray{T1,N}, B::AbstractArray{T2,N}) where {T1,T2,N} = map((a, b) -> WeightedPoint(a, b), A, B)
 
 function flagbadpix(data::AbstractArray{WeightedPoint{T},N}, badpix::Union{Array{Bool,N},BitArray{N}}) where {T,N}
@@ -14,7 +14,10 @@ WeightedArray{T,N} = ZippedArray{WeightedPoint{T},N,2,I,Tuple{A,A}} where {A<:Ab
 WeightedArray(A::AbstractArray{T1,N}, B::AbstractArray{T2,N}) where {T1,T2,N} = ZippedArray{WeightedPoint{T1}}(A, T1.(B))
 
 function Base.view(A::WeightedArray, I...)
-    WeightedArray(view(A.data, I...), view(A.precision, I...))
+    WeightedArray(view(get_data(A), I...), view(get_precision(A), I...))
+end
+function Base.view(A::WeightedArray, I::BoundingBox{<:Integer})
+    WeightedArray(view(get_data(A), I), view(get_precision(A), I))
 end
 
 get_data(x::WeightedArray) = x.args[1]
