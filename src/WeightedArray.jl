@@ -16,10 +16,6 @@ WeightedArray(A::AbstractArray{T1,N}, B::AbstractArray{T2,N}) where {T1,T2,N} = 
 function Base.view(A::WeightedArray, I...)
     WeightedArray(view(get_data(A), I...), view(get_precision(A), I...))
 end
-function Base.view(A::WeightedArray, I::BoundingBox{<:Integer})
-    WeightedArray(view(get_data(A), I), view(get_precision(A), I))
-end
-
 get_data(x::WeightedArray) = x.args[1]
 get_precision(x::WeightedArray) = x.args[2]
 
