@@ -4,7 +4,7 @@
 A structure representing a numerical value weighted by its precision.
 
 ## Fields
-- `val::T`: The value
+- `data::T`: The value
 - `precision::T`: The precision (or weight) associated with the value (must be positive)
 
 ## Examples
@@ -13,21 +13,24 @@ x = WeightedPoint(1.0, 0.5)  # value 1.0 with precision 0.5
 ```
 """
 struct WeightedPoint{T<:AbstractFloat} <: Number
-    val::T
+    data::T
     precision::T
-    function WeightedPoint(val::T, precision::T) where {T<:AbstractFloat}
+    function WeightedPoint(data::T, precision::T) where {T<:AbstractFloat}
         precision >= 0 || error("WeightedPoint : precisionmust be positive")
-        isfinite(val) || return new{T}(zero(T), zero(T))
-        return new{T}(val, precision)
+        isfinite(data) || return new{T}(zero(T), zero(T))
+        return new{T}(data, precision)
     end
-    WeightedPoint{T}(val::T, precision::T) where {T<:AbstractFloat} = new{T}(val, precision)
+    WeightedPoint{T}(data::T, precision::T) where {T<:AbstractFloat} = new{T}(data, precision)
 end
 
-WeightedPoint(val::T, precision::Number) where {T<:AbstractFloat} = WeightedPoint(val, T(precision))
-WeightedPoint{T}(val::Number, precision::Number) where {T} = WeightedPoint(T(val), T(precision))
+WeightedPoint(data::T, precision::Number) where {T<:AbstractFloat} = WeightedPoint(data, T(precision))
+WeightedPoint{T}(data::Number, precision::Number) where {T} = WeightedPoint(T(data), T(precision))
 
-Base.real(A::WeightedPoint) = WeightedPoint(real(A.val), real(A.precision))
-Base.imag(A::WeightedPoint) = WeightedPoint(imag(A.val), imag(A.precision))
+get_data(A::WeightedPoint) = A.data
+get_precision(A::WeightedPoint) = A.precision
+
+Base.real(A::WeightedPoint) = WeightedPoint(real(A.data), real(A.precision))
+Base.imag(A::WeightedPoint) = WeightedPoint(imag(A.data), imag(A.precision))
 
 """
     +(A::WeightedPoint, B::WeightedPoint)
@@ -35,14 +38,14 @@ Base.imag(A::WeightedPoint) = WeightedPoint(imag(A.val), imag(A.precision))
 Add two weighted points. The result's value is the sum of values, and the precision
 is calculated according to error propagation rules.
 """
-Base.:+(A::WeightedPoint, B::WeightedPoint) = WeightedPoint(A.val + B.val, inv(inv(A.precision) + inv(B.precision)))
-Base.:+((; val, precision)::WeightedPoint, B::Number) = WeightedPoint(val + B, precision)
+Base.:+(A::WeightedPoint, B::WeightedPoint) = WeightedPoint(A.data + B.data, inv(inv(A.precision) + inv(B.precision)))
+Base.:+((; data, precision)::WeightedPoint, B::Number) = WeightedPoint(data + B, precision)
 Base.:+(A::Number, B::WeightedPoint) = B + A
-Base.:-(A::WeightedPoint, B::WeightedPoint) = WeightedPoint(A.val - B.val, inv(inv(A.precision) + inv(B.precision)))
-Base.:-((; val, precision)::WeightedPoint, B::Number) = WeightedPoint(val - B, precision)
-Base.:/((; val, precision)::WeightedPoint, B::Number) = WeightedPoint(val / B, B^2 * precision)
-Base.:/(A::Number, (; val, precision)::WeightedPoint) = WeightedPoint(A / val, inv(precision) / A^2)
-Base.:*(B::Number, (; val, precision)::WeightedPoint) = WeightedPoint(val * B, precision / B^2)
+Base.:-(A::WeightedPoint, B::WeightedPoint) = WeightedPoint(A.data - B.data, inv(inv(A.precision) + inv(B.precision)))
+Base.:-((; data, precision)::WeightedPoint, B::Number) = WeightedPoint(data - B, precision)
+Base.:/((; data, precision)::WeightedPoint, B::Number) = WeightedPoint(data / B, B^2 * precision)
+Base.:/(A::Number, (; data, precision)::WeightedPoint) = WeightedPoint(A / data, inv(precision) / A^2)
+Base.:*(B::Number, (; data, precision)::WeightedPoint) = WeightedPoint(data * B, precision / B^2)
 Base.:*(A::WeightedPoint, B::Number) = B * A
 Base.:*(::WeightedPoint, ::WeightedPoint) = error("Multiplication of WeightedPoint objects is not supported")
 Base.:/(::WeightedPoint, ::WeightedPoint) = error("Division of WeightedPoint objects is not supported")
@@ -51,11 +54,11 @@ Base.one(::WeightedPoint{T}) where {T} = one(T)
 Base.zero(::WeightedPoint{T}) where {T} = zero(WeightedPoint{T})
 Base.zero(::Type{WeightedPoint{T}}) where {T} = WeightedPoint(zero(T), T(+Inf))
 
-Base.:(==)(x::WeightedPoint, y::WeightedPoint) = x.val == y.val && x.precision == y.precision
+Base.:(==)(x::WeightedPoint, y::WeightedPoint) = x.data == y.data && x.precision == y.precision
 
-#Base.show(io::IO, x::WeightedPoint) = print(io, "WeightedPoint($(x.val), $(x.precision))")
+#Base.show(io::IO, x::WeightedPoint) = print(io, "WeightedPoint($(x.data), $(x.precision))")
 
-Base.convert(::Type{T}, (; val, precision)::WeightedPoint) where {T<:Real} = WeightedPoint(convert(T, val), convert(T, precision))
+Base.convert(::Type{T}, (; data, precision)::WeightedPoint) where {T<:Real} = WeightedPoint(convert(T, data), convert(T, precision))
 """ 
     combine(A::WeightedPoint, B::WeightedPoint)
 
@@ -70,8 +73,8 @@ Example
 """
 function combine(A::WeightedPoint, B::WeightedPoint)
     precision = A.precision + B.precision
-    val = (A.precision * A.val + B.precision * B.val) / (precision)
-    return WeightedPoint(val, precision)
+    data = (A.precision * A.data + B.precision * B.data) / (precision)
+    return WeightedPoint(data, precision)
 end
 """ 
     combine(B::NTuple{N,WeightedPoint{T}}) where {N,T}

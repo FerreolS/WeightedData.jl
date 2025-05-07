@@ -1,7 +1,7 @@
 name = "WeightedData"
 uuid = "198d7fc6-4dbd-4d01-be45-be9677e11b0d"
 authors = ["Ferréol Soulez <ferreol.soulez@univ-lyon1.fr>"]
-version = "0.0.1"
+version = "0.1"
 
 [deps]
 ChainRulesCore = "d360d2e6-b24c-11e9-a2a3-2a2ae2dbcce4"

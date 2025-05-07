@@ -6,7 +6,7 @@ using Test
         A = WeightedPoint(1.0, 0.5)
         B = WeightedPoint(2.0, 0.5)
 
-        @test A.val == 1.0
+        @test A.data == 1.0
         @test A.precision == 0.5
 
         @test WeightedPoint{Float32}(2, 1) == WeightedPoint(2.0f0, 1.0f0)
