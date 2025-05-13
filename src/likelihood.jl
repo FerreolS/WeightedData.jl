@@ -36,20 +36,30 @@ The function calculates the robust likelihood using the formula:
 
 The scale parameter `s` is used to control the robustness of the likelihood calculation.
 """
-function robustlikelihood((; data, precision)::WeightedPoint{T1}, model::T2, s::Number) where {T1,T2}
-    T = promote_type(T1, T2)
-    γ = T(2.385)
-    r = T(s / γ) * sqrt(precision) * (model - data)
-    return log(T(1) + r^2)
+
+struct RobustLikelihood{T}
+    s::T
 end
 
-robustlikelihood(s::Number) = (D::WeightedPoint, model::Number) -> robustlikelihood(D, model, s)
+function (lkl::RobustLikelihood)(data::WeightedPoint{T1}, model::T2) where {T1,T2}
+    T = promote_type(T1, T2)
+    lkl(convert(T, data), convert(T, model))
+    return
+end
+
+function ((; s)::RobustLikelihood)((; data, precision)::WeightedPoint{T}, model::T) where {T}
+    r = T(s / 2.385) * (model - data)
+    return log(T(1) + precision * r^2)
+end
+
+robustlikelihood(s::Number) = RobustLikelihood(s)
 
 
-function likelihood(data::AbstractArray{WeightedPoint{T},N}, model::AbstractArray; likelihoodfunc::F=gausslikelihood) where {T,N,F<:Function}
+function likelihood(data::AbstractArray{WeightedPoint{T},N}, model::AbstractArray; likelihoodfunc::F=gausslikelihood) where {T,N,F}
     return likelihood(likelihoodfunc, data, model)
 end
-function likelihood(likelihoodfunc::F, data::AbstractArray{WeightedPoint{T},N}, model::AbstractArray{T2,N}) where {T,T2,N,F<:Function}
+
+function likelihood(likelihoodfunc::F, data::AbstractArray{WeightedPoint{T},N}, model::AbstractArray{T,N}) where {T,N,F}
     size(data) == size(model) || error("likelihood : size(A) != size(model)")
     return mapreduce(likelihoodfunc, +, data, model)
 end
@@ -57,13 +67,24 @@ end
 
 
 
-function ChainRulesCore.rrule(::typeof(WeightedData.likelihood), ::typeof(WeightedData.gausslikelihood), data::AbstractArray{WeightedPoint{T},N}, model::AbstractArray{T2,N}) where {T,T2,N}
+function ChainRulesCore.rrule(::typeof(likelihood), ::typeof(gausslikelihood), data::AbstractArray{WeightedPoint{T},N}, model::AbstractArray{T2,N}) where {T,T2,N}
     r = model .- get_data(data)
     rp = get_precision(data) .* r
     likelihood_pullback(Δy) = (NoTangent(), NoTangent(), NoTangent(), rp .* Δy)
     return sum(r .* rp) / 2, likelihood_pullback
 end
 
+
+function ChainRulesCore.rrule(::typeof(likelihood), (; s)::RobustLikelihood, data::AbstractArray{WeightedPoint{T},N}, model::AbstractArray{T2,N}) where {T,T2,N}
+    gamma = T(s / 2.385)^2
+    r = model .- get_data(data)
+    rp = get_precision(data) .* r
+
+    q = T(1) .+ gamma .* rp .* r
+
+    likelihood_pullback(Δy) = (NoTangent(), NoTangent(), NoTangent(), 2 .* gamma .* rp ./ q .* Δy)
+    return sum(log, q), likelihood_pullback
+end
 
 function scaledlikelihood(weighteddata::AbstractArray{WeightedPoint{T1},N}, model::AbstractArray{T2,N}) where {T1,T2,N}
     size(weighteddata) == size(model) || error("scaledlikelihood : size(A) != size(model)")
