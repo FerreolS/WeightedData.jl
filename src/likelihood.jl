@@ -48,8 +48,9 @@ function (lkl::RobustLikelihood)(data::WeightedPoint{T1}, model::T2) where {T1,T
 end
 
 function ((; s)::RobustLikelihood)((; data, precision)::WeightedPoint{T}, model::T) where {T}
-    r = T(s / 2.385) * (model - data)
-    return log(T(1) + precision * r^2)
+    C = T(s / 2.385)^2
+    r = (model - data)
+    return 1 / (2C) * log(T(1) + C * precision * r^2)
 end
 
 robustlikelihood(s::Number) = RobustLikelihood(s)
@@ -76,14 +77,14 @@ end
 
 
 function ChainRulesCore.rrule(::typeof(likelihood), (; s)::RobustLikelihood, data::AbstractArray{WeightedPoint{T},N}, model::AbstractArray{T2,N}) where {T,T2,N}
-    gamma = T(s / 2.385)^2
+    C = T(s / 2.385)^2
     r = model .- get_data(data)
     rp = get_precision(data) .* r
 
-    q = T(1) .+ gamma .* rp .* r
+    q = T(1) .+ C .* rp .* r
 
-    likelihood_pullback(Δy) = (NoTangent(), NoTangent(), NoTangent(), 2 .* gamma .* rp ./ q .* Δy)
-    return sum(log, q), likelihood_pullback
+    likelihood_pullback(Δy) = (NoTangent(), NoTangent(), NoTangent(), rp ./ q .* Δy)
+    return (1 / (2C)) .* sum(log, q), likelihood_pullback
 end
 
 function scaledlikelihood(weighteddata::AbstractArray{WeightedPoint{T1},N}, model::AbstractArray{T2,N}) where {T1,T2,N}
