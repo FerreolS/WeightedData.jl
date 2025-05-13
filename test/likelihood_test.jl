@@ -7,11 +7,11 @@ using Zygote
     @test @inferred gausslikelihood(A[2], B[2]) == 0.25
 
     @test @inferred robustlikelihood(3)(A[1], B[1]) == 0.0
-    @test @inferred robustlikelihood(3)(A[2], B[2]) ≈ (2.385 / 3)^2 * log(1 + ((3 / 2.385) * sqrt(0.5) * (1 - 2))^2)
+    @test @inferred robustlikelihood(3)(A[2], B[2]) ≈ (3 / 2.385)^(-2) / 2 * log(1 + ((3 / 2.385) * sqrt(0.5) * (1 - 2))^2)
 
     @test @inferred likelihood(A, B) == 0.25
 
-    @test @inferred likelihood(A, B, likelihoodfunc=robustlikelihood(3)) ≈ log(1 + ((3 / 2.385) * sqrt(0.5) * (1 - 2))^2)
+    @test @inferred likelihood(A, B, likelihoodfunc=robustlikelihood(3)) ≈ (3 / 2.385)^(-2) / 2 * log(1 + ((3 / 2.385) * sqrt(0.5) * (1 - 2))^2)
 
     C = WeightedPoint(1.0 .+ ones(2, 2), ones(2, 2))
     D = ones(2, 2)
