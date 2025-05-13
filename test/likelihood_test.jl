@@ -7,7 +7,7 @@ using Zygote
     @test @inferred gausslikelihood(A[2], B[2]) == 0.25
 
     @test @inferred robustlikelihood(3)(A[1], B[1]) == 0.0
-    @test @inferred robustlikelihood(3)(A[2], B[2]) ≈ log(1 + ((3 / 2.385) * sqrt(0.5) * (1 - 2))^2)
+    @test @inferred robustlikelihood(3)(A[2], B[2]) ≈ (2.385 / 3)^2 * log(1 + ((3 / 2.385) * sqrt(0.5) * (1 - 2))^2)
 
     @test @inferred likelihood(A, B) == 0.25
 
