@@ -21,9 +21,8 @@ function WeightedArray(x::AbstractArray{<:Union{T,Missing}}) where {T<:Real}
     return WeightedArray(ifelse.(m, x, T(0)), m)
 end
 
-function WeightedArray(x::AbstractArray{<:Missing})
-    return WeightedArray(zeros(size(x)), zeros(size(x)))
-end
+WeightedArray(x::AbstractArray{Missing}) = WeightedArray(zeros(size(x)), zeros(size(x)))
+WeightedArray(x::AbstractArray{T}) where {T<:Real} = x
 
 Base.view(A::WeightedArray, I...) = WeightedArray(view(get_data(A), I...), view(get_precision(A), I...))
 
