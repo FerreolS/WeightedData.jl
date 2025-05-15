@@ -7,6 +7,10 @@
     @test WeightedData.get_precision(A) == [0.5, 0.5]
 
     @test @inferred(flagbadpix(A, [true, false])) == [WeightedPoint(0.0, 0.0), WeightedPoint(2.0, 0.5)]
+    @test WeightedArray([1.0, missing]) == [WeightedPoint(1.0, 1.0), WeightedPoint(0.0, 0.)]
+    @test WeightedArray(ones(2, 3)) == WeightedArray(ones(2, 3), ones(2, 3))
+    @test WeightedArray([missing, missing]) == [WeightedPoint(0.0, 0.0), WeightedPoint(0.0, 0.)]
+
 
     A = [1.0, 2.0, 3.0]
     B = [0.1, 0.2, 0.3]
