@@ -14,6 +14,13 @@ WeightedArray{T,N} = ZippedArray{WeightedPoint{T},N,2,I,Tuple{A,B}} where {A<:Ab
 WeightedArray(A::AbstractArray{T,N}, B::AbstractArray{T,N}) where {T,N} = ZippedArray{WeightedPoint{T}}(A, B)
 WeightedArray(A::AbstractArray{T1,N}, B::AbstractArray{T2,N}) where {T1,T2,N} = ZippedArray{WeightedPoint{T1}}(A, T1.(B))
 
+
+
+function WeightedArray(x::AbstractArray{<:Union{T,Missing}}) where {T}
+    m = .!ismissing.(x) .&& .!isnan.(x)
+    return WeightedArray(ifelse.(m, x, T(0)), m)
+end
+
 Base.view(A::WeightedArray, I...) = WeightedArray(view(get_data(A), I...), view(get_precision(A), I...))
 
 get_data(x::WeightedArray) = x.args[1]
