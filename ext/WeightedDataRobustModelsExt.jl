@@ -1,6 +1,6 @@
 module WeightedDataRobustModelsExt
 
-import WeightedData: likelihood, WeightedPoint, get_data, get_precision,get_weight
+import WeightedData: likelihood, WeightedPoint, get_data, get_precision, get_weight
 
 import RobustModels: LossFunction,
     BoundedLossFunction,
@@ -52,3 +52,16 @@ function get_weight(loss::LossFunction, data::AbstractArray{<:WeightedPoint}, mo
 end
 
 end
+
+#= 
+
+function ChainRulesCore.rrule(::typeof(likelihood), (; s)::CauchyLoss, data::AbstractArray{WeightedPoint{T},N}, model::AbstractArray{T2,N}) where {T,T2,N}
+    C = T(s / 2.385)^2
+    r = model .- get_data(data)
+    rp = get_precision(data) .* r
+
+    q = T(1) .+ C .* rp .* r
+
+    likelihood_pullback(Δy) = (NoTangent(), NoTangent(), NoTangent(), rp ./ q .* Δy)
+    return (1 / (2C)) .* sum(log, q), likelihood_pullback
+end =#

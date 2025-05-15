@@ -19,45 +19,6 @@ end
 
 l2loss() = L2Loss()
 
-"""
-    robustlikelihood((; data, precision)::WeightedPoint{T1}, model::T2, s::Number) where {T1,T2}
-
-Compute the robust likelihood for a given weighted data point, model, and scale parameter.
-
-# Arguments
-- `(; data, precision)::WeightedPoint{T1}`: A weighted data point
-- `model::T2`: The model value to compare against the data point.
-- `s::Number`: The scale parameter.
-
-# Returns
-- the robust likelihood value.
-
-# Details
-The function calculates the robust likelihood using the formula:
-- `γ = 2.385`
-- `r = (s / γ) * sqrt(precision) * (model - data)`
-- `log(1 + r^2)`
-
-The scale parameter `s` is used to control the robustness of the likelihood calculation.
-"""
-
-struct CauchyLoss{T}
-    s::T
-end
-
-function (lkl::CauchyLoss)(data::WeightedPoint{T1}, model::T2) where {T1,T2}
-    T = promote_type(T1, T2)
-    lkl(convert(T, data), convert(T, model))
-    return
-end
-
-function ((; s)::CauchyLoss)((; data, precision)::WeightedPoint{T}, model::T) where {T}
-    C = T(s / 2.385)^2
-    r = (model - data)
-    return 1 / (2C) * log(T(1) + C * precision * r^2)
-end
-
-cauchyloss(s::Number) = CauchyLoss(s)
 
 
 function likelihood(data::WeightedPoint, model; loss=L2Loss())
@@ -115,17 +76,6 @@ function ChainRulesCore.rrule(::typeof(likelihood), ::L2Loss, data::AbstractArra
 end
 
 
-
-function ChainRulesCore.rrule(::typeof(likelihood), (; s)::CauchyLoss, data::AbstractArray{WeightedPoint{T},N}, model::AbstractArray{T2,N}) where {T,T2,N}
-    C = T(s / 2.385)^2
-    r = model .- get_data(data)
-    rp = get_precision(data) .* r
-
-    q = T(1) .+ C .* rp .* r
-
-    likelihood_pullback(Δy) = (NoTangent(), NoTangent(), NoTangent(), rp ./ q .* Δy)
-    return (1 / (2C)) .* sum(log, q), likelihood_pullback
-end
 
 function scaledL2loss(weighteddata::AbstractArray{WeightedPoint{T1},N}, model::AbstractArray{T2,N}) where {T1,T2,N}
     size(weighteddata) == size(model) || error("scaledL2loss : size(A) != size(model)")
