@@ -16,9 +16,13 @@ WeightedArray(A::AbstractArray{T1,N}, B::AbstractArray{T2,N}) where {T1,T2,N} = 
 
 
 
-function WeightedArray(x::AbstractArray{<:Union{T,Missing}}) where {T<:Number}
+function WeightedArray(x::AbstractArray{<:Union{T,Missing}}) where {T<:Real}
     m = .!ismissing.(x) .&& .!isnan.(x)
     return WeightedArray(ifelse.(m, x, T(0)), m)
+end
+
+function WeightedArray(x::AbstractArray{<:Missing})
+    return WeightedArray(zeros(size(x)), zeros(size(x)))
 end
 
 Base.view(A::WeightedArray, I...) = WeightedArray(view(get_data(A), I...), view(get_precision(A), I...))

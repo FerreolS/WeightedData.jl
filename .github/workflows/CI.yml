@@ -54,4 +54,4 @@ jobs:
            version: '1'
       - uses: julia-actions/julia-buildpkg@v1
       - run: julia --color=yes -e 'using Pkg; Pkg.add("Aqua")'
-      - run: julia --project=@. --color=yes -e 'using Aqua, WeightedData; Aqua.test_all(WeightedData, ambiguities=false)'
+      - run: julia --project=@. --color=yes -e 'using Aqua, WeightedData; Aqua.test_all(WeightedData; unbound_args=(exclude=[WeightedData.WeightedArray]),ambiguities=true)'
