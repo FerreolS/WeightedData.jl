@@ -16,7 +16,7 @@ WeightedArray(A::AbstractArray{T1,N}, B::AbstractArray{T2,N}) where {T1,T2,N} = 
 
 
 
-function WeightedArray(x::AbstractArray{<:Union{T,Missing}}) where {T}
+function WeightedArray(x::AbstractArray{<:Union{T,Missing}}) where {T<:Number}
     m = .!ismissing.(x) .&& .!isnan.(x)
     return WeightedArray(ifelse.(m, x, T(0)), m)
 end
