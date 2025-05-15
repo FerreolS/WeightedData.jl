@@ -11,7 +11,8 @@ export WeightedPoint,
     flagbadpix!,
     WeightedArray,
     get_data,
-    get_precision
+    get_precision,
+    get_weight
 
 include("WeightedPoint.jl")
 include("WeightedArray.jl")

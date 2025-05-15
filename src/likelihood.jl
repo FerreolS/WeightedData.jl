@@ -68,6 +68,13 @@ end
 likelihood(loss, data::WeightedPoint, model::Number) = loss(data, model)
 
 
+function get_weight(data::WeightedPoint, model; loss=L2Loss())
+    return get_weight(loss, data, model)
+end
+
+get_weight(_, data::WeightedPoint, _::Number) = get_precision(data)
+
+
 function likelihood(data::AbstractArray{<:WeightedPoint}, model::AbstractArray; loss=l2loss())
     return likelihood(loss, data, model)
 end
@@ -75,6 +82,17 @@ end
 function likelihood(loss, data::AbstractArray{WeightedPoint{T1},N}, model::AbstractArray{T2,N}) where {T1,T2,N}
     size(data) == size(model) || error("likelihood : size(A) != size(model)")
     return mapreduce(loss, +, data, model)
+end
+
+
+
+function get_weight(data::AbstractArray{<:WeightedPoint}, model::AbstractArray; loss=l2loss())
+    return get_weight(loss, data, model)
+end
+
+function get_weight(_, data::AbstractArray{WeightedPoint{T1},N}, model::AbstractArray{T2,N}) where {T1,T2,N}
+    size(data) == size(model) || error("likelihood : size(A) != size(model)")
+    return get_precision(data)
 end
 
 
