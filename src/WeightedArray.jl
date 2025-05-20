@@ -29,6 +29,17 @@ Base.view(A::WeightedArray, I...) = WeightedArray(view(get_data(A), I...), view(
 get_data(x::WeightedArray) = x.args[1]
 get_precision(x::WeightedArray) = x.args[2]
 
+Base.propertynames(::WeightedArray) = (:data, :precision)
+function Base.getproperty(A::WeightedArray, s::Symbol)
+    if s == :data
+        return get_data(A)
+    elseif s == :precision
+        return get_precision(A)
+    else
+        getfield(A, s)
+    end
+end
+
 function flagbadpix!(data::WeightedArray{T1,N,B,I}, badpix::Union{AbstractArray{Bool,N},BitArray{N}}) where {B,T1,N,I}
     size(data) == size(badpix) || error("flagbadpix! : size(data) != size(badpix)")
     return data[badpix] .= WeightedPoint{T1}(T1(0), T1(0))

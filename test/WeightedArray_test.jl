@@ -15,6 +15,12 @@
     A = [1.0, 2.0, 3.0]
     B = [0.1, 0.2, 0.3]
     weighted_array = WeightedArray(A, B)
+    @test get_data(weighted_array) == A
+    @test get_precision(weighted_array) == B
+    @test propertynames(weighted_array) == (:data, :precision)
+    @test weighted_array.data == A
+    @test weighted_array.precision == B
+
 
     @test size(weighted_array) == (3,)
     @test @inferred(get_data(weighted_array)) == A
