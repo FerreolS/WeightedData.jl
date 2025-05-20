@@ -1,26 +1,38 @@
+
+struct L2Loss end
+
 """
-    gausslikelihood((; data, precision)::WeightedPoint{T}, model::Number) where {T}
+    (loss::L2Loss)((; data, precision)::WeightedPoint, model::Number)
 
-Calculate the negative log-likelihood for a weighted data point under a Gaussian model.
+Calculate the loss (negloglikelihood) for a weighted data point under a Gaussian model.
 
-# Arguments
+## Arguments
 - `data`: The observed value in the weighted point.
 - `precision`: The precision (inverse variance) associated with the observation.
 - `model`: The predicted value from the model.
 
-# Returns
-The negative log-likelihood contribution: `(data - model)^2 * precision / 2`
+## Returns
+The loss contribution: `(data - model)^2 * precision / 2`
 """
-struct L2Loss end
-
 function (::L2Loss)((; data, precision)::WeightedPoint, model::Number)
     return (data - model)^2 * precision / 2
 end
 
-l2loss() = L2Loss()
 
 
+"""
+    likelihood(data::WeightedPoint, model; loss=L2Loss())
 
+Calculate the likelihood for a weighted data point.
+
+## Arguments
+- `data`: The observed value in the weighted point.
+- `model`: The predicted value from the model.
+- `loss`: The loss function to use (default: L2 loss).
+
+## Returns
+The neg log likelihood value.
+"""
 function likelihood(data::WeightedPoint, model; loss=L2Loss())
     return likelihood(loss, data, model)
 end
@@ -29,6 +41,19 @@ end
 likelihood(loss, data::WeightedPoint, model::Number) = loss(data, model)
 
 
+"""
+    get_weight(data::WeightedPoint, model; loss=L2Loss())
+
+Calculate the equivalent weight for a given the loss function for IRLS.
+
+## Arguments
+- `data`: The observed value in the weighted point.
+- `model`: The predicted value from the model.
+- `loss`: The loss function to use (default: L2 loss).
+
+## Returns
+The equivalent weight.
+"""
 function get_weight(data::WeightedPoint, model; loss=L2Loss())
     return get_weight(loss, data, model)
 end
@@ -36,6 +61,19 @@ end
 get_weight(_, data::WeightedPoint, _::Number) = get_precision(data)
 
 
+"""
+    likelihood(data::AbstractArray{<:WeightedPoint}, model::AbstractArray; loss=l2loss())
+
+Calculate the likelihood for an array of weighted data points.
+
+## Arguments
+- `data`: The observed values in the weighted points.
+- `model`: The predicted values from the model.
+- `loss`: The loss function to use (default: L2 loss).
+
+## Returns
+The neg log likelihood value.
+"""
 function likelihood(data::AbstractArray{<:WeightedPoint}, model::AbstractArray; loss=l2loss())
     return likelihood(loss, data, model)
 end
