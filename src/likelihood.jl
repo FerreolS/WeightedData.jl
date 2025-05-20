@@ -62,7 +62,7 @@ get_weight(_, data::WeightedPoint, _::Number) = get_precision(data)
 
 
 """
-    likelihood(data::AbstractArray{<:WeightedPoint}, model::AbstractArray; loss=l2loss())
+    likelihood(data::AbstractArray{<:WeightedPoint}, model::AbstractArray; loss=L2Loss())
 
 Calculate the likelihood for an array of weighted data points.
 
@@ -74,7 +74,7 @@ Calculate the likelihood for an array of weighted data points.
 ## Returns
 The neg log likelihood value.
 """
-function likelihood(data::AbstractArray{<:WeightedPoint}, model::AbstractArray; loss=l2loss())
+function likelihood(data::AbstractArray{<:WeightedPoint}, model::AbstractArray; loss=L2Loss())
     return likelihood(loss, data, model)
 end
 
@@ -85,7 +85,7 @@ end
 
 
 
-function get_weight(data::AbstractArray{<:WeightedPoint}, model::AbstractArray; loss=l2loss())
+function get_weight(data::AbstractArray{<:WeightedPoint}, model::AbstractArray; loss=L2Loss())
     return get_weight(loss, data, model)
 end
 
