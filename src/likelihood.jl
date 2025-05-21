@@ -113,28 +113,42 @@ function ChainRulesCore.rrule(::typeof(likelihood), ::L2Loss, data::AbstractArra
     return 1 / 2 * l, likelihood_pullback
 end
 
+struct ScaledL2Loss
+    dims::Int
+    nonnegative::Bool
+end
+ScaledL2Loss(; dims=1, nonnegative=false) = ScaledL2Loss(dims, nonnegative)
 
-
-function scaledL2loss(weighteddata::AbstractArray{WeightedPoint{T1},N}, model::AbstractArray{T2,N}) where {T1,T2,N}
+function likelihood((; dims, nonnegative)::ScaledL2Loss, weighteddata::AbstractArray{WeightedPoint{T1},N}, model::AbstractArray{T2,N}) where {T1,T2,N}
     size(weighteddata) == size(model) || error("scaledL2loss : size(A) != size(model)")
     data = get_data(weighteddata)
     precision = get_precision(weighteddata)
 
-    α = max.(0, sum(model .* precision .* data, dims=2) ./ sum(model .* precision .* model, dims=2))
+    α = sum(model .* precision .* data, dims=dims) ./ sum(model .* precision .* model, dims=dims)
+
+    if nonnegative
+        α = max.(0, α)
+    end
+
     α[.!isfinite.(α)] .= T2(0)
     res = (α .* model .- data)
     return sum(res .^ 2 .* precision) / 2
 end
 
-function ChainRulesCore.rrule(::typeof(scaledL2loss), weighteddata::AbstractArray{WeightedPoint{T1},N}, model::AbstractArray{T2,N}) where {T1,T2,N}
+function ChainRulesCore.rrule(::typeof(likelihood), (; dims, nonnegative)::ScaledL2Loss, weighteddata::AbstractArray{WeightedPoint{T1},N}, model::AbstractArray{T2,N}) where {T1,T2,N}
     size(weighteddata) == size(model) || error("scaledlikelihood : size(A) != size(model)")
     data = get_data(weighteddata)
     precision = get_precision(weighteddata)
 
-    α = max.(0, sum(model .* precision .* data, dims=2) ./ sum(model .* precision .* model, dims=2))
+    α = sum(model .* precision .* data, dims=dims) ./ sum(model .* precision .* model, dims=dims)
+
+    if nonnegative
+        α = max.(0, α)
+    end
+    α[.!isfinite.(α)] .= T2(0)
 
     r = (α .* model .- data)
     rp = r .* precision
-    likelihood_pullback(Δy) = (NoTangent(), ZeroTangent(), α .* rp .* Δy)
+    likelihood_pullback(Δy) = (NoTangent(), NoTangent(), ZeroTangent(), α .* rp .* Δy)
     return sum(r .* rp) / 2, likelihood_pullback
 end

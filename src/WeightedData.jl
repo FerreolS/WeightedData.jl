@@ -4,14 +4,13 @@ using ChainRulesCore
 export WeightedPoint,
     combine,
     likelihood,
-    scaledL2loss,
-    l2loss,
     flagbadpix,
     flagbadpix!,
     WeightedArray,
     get_data,
     get_precision,
-    get_weight
+    get_weight,
+    ScaledL2Loss
 
 include("WeightedPoint.jl")
 include("WeightedArray.jl")
