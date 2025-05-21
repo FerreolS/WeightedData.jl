@@ -38,7 +38,7 @@ using DifferentiationInterface, Zygote, ForwardDiff
     grad = similar(D)
     @test @inferred(DifferentiationInterface.value_and_gradient!(f, grad, AutoForwardDiff(), D)) == (2.0, [-1.0 -1.0; -1.0 -1.0])
 
-    g2(x) = likelihood(C, x, loss=ScaledL2Loss())
+    g2(x) = likelihood(C, x, loss=ScaledL2Loss(nonnegative=true))
     @test Zygote.withgradient(g2, D) == (val=0.0, grad=([0.0 0.0; 0.0 0.0],))
 
 end

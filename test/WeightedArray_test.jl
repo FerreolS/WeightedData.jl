@@ -1,10 +1,15 @@
 
 @testset "WeightedArray.jl" begin
     A = [WeightedPoint(1.0, 0.5), WeightedPoint(2.0, 0.5)]
-    B = [WeightedPoint(2.0, 0.5), WeightedPoint(3.0, 0.5)]
+
 
     @test WeightedData.get_data(A) == [1.0, 2.0]
     @test WeightedData.get_precision(A) == [0.5, 0.5]
+
+
+    B = deepcopy(A)
+    A = WeightedArray(A)
+    @test B == A
 
     @test @inferred(flagbadpix(A, [true, false])) == [WeightedPoint(0.0, 0.0), WeightedPoint(2.0, 0.5)]
     @test WeightedArray([1.0, missing]) == [WeightedPoint(1.0, 1.0), WeightedPoint(0.0, 0.)]
