@@ -30,7 +30,8 @@ lkl, grad = Zygote.withgradient(f, model)
 
 
 # Robust likelihood
-l_robust = likelihood(data, model, likelihoodfunc=robustlikelihood(3))
+using RobustModels
+l_robust = likelihood(data, model, loss=HuberLoss())
 ```
 
 [license-url]: ./LICENSE.md
