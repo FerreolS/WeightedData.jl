@@ -1,7 +1,7 @@
 using TwoDimensional
 @testset "WeightedDataTwoDimensionalExt" begin
     # Test Base.view method
-    @testset "Base.view" begin
+    @testitem "Base.view" begin
         A = WeightedArray(rand(10, 10), rand(10, 10))
         I = BoundingBox(1:5, 1:5)
         view_A = view(A, I)

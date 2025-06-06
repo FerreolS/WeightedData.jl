@@ -1,5 +1,5 @@
 
-@testset "WeightedArray.jl" begin
+@testitem "WeightedArray.jl" begin
     A = [WeightedPoint(1.0, 0.5), WeightedPoint(2.0, 0.5)]
 
 

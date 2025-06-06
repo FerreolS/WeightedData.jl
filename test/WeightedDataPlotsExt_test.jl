@@ -1,9 +1,11 @@
 
-using Plots
 
+@testsnippet Plots begin
+    using Plots
+end
 
 # Test for the first recipe function
-@testset "WeightedDataPlotsExt recipe function 1" begin
+@testitem "WeightedDataPlotsExt recipe function 1" setup = [Plots] begin
     values = [1.0, 2.0, 3.0]
     precisions = [1.0, 0.5, 0.25]
     A = WeightedPoint(values, precisions)
@@ -16,7 +18,7 @@ using Plots
 end
 
 # Test for the second recipe function
-@testset "WeightedDataPlotsExt recipe function 2" begin
+@testitem "WeightedDataPlotsExt recipe function 2" setup = [Plots] begin
     x = [1, 2, 3]
     values = [1.0, 2.0, 3.0]
     precisions = [1.0, 0.5, 0.25]

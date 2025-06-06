@@ -1,8 +1,9 @@
 using WeightedData
-using Test
+using Test, TestItems
+using TestItemRunner
 
 @testset "WeightedData.jl" begin
-    @testset "WeightedPoint" begin
+    @testitem "WeightedPoint" begin
         A = WeightedPoint(1.0, 0.5)
         B = WeightedPoint(2.0, 0.5)
 
@@ -53,3 +54,6 @@ using Test
     include("WeightedDataTwoDimensionalExt_test.jl")
 
 end
+
+
+@run_package_tests

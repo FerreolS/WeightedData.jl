@@ -1,5 +1,11 @@
-using DifferentiationInterface, Zygote, ForwardDiff
-@testset "likelihood.jl" begin
+
+
+@testsnippet likelihood begin
+    using DifferentiationInterface, Zygote, ForwardDiff
+end
+
+
+@testitem "likelihood.jl" setup = [likelihood] begin
     A = [WeightedPoint(1.0, 1.0), WeightedPoint(2.0, 0.5)]
     B = [1.0, 1.0]
 
