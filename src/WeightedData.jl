@@ -1,18 +1,19 @@
 module WeightedData
 using ChainRulesCore
+using Measurements
 
-export WeightedPoint,
-    combine,
-    likelihood,
+import Measurements: weightedmean
+
+export likelihood,
     flagbadpix,
     flagbadpix!,
     WeightedArray,
     get_data,
     get_precision,
     get_weight,
-    ScaledL2Loss
+    ScaledL2Loss,
+    weightedmean
 
-include("WeightedPoint.jl")
 include("WeightedArray.jl")
 include("likelihood.jl")
 

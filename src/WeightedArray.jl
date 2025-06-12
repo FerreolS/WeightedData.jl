@@ -1,22 +1,27 @@
-## Array of WeightedPoint
+## Array of Measurement
 using ZippedArrays
 
-get_data(x::AbstractArray{<:WeightedPoint}) = map(x -> x.data, x)
-get_precision(x::AbstractArray{<:WeightedPoint}) = map(x -> x.precision, x)
-WeightedPoint(A::AbstractArray{T1,N}, B::AbstractArray{T2,N}) where {T1,T2,N} = map((a, b) -> WeightedPoint(a, b), A, B)
+get_data(x::AbstractArray{<:Measurement}) = map(x -> x.val, x)
+get_precision(x::AbstractArray{<:Measurement}) = map(x -> inv(x.err)^2, x)
+
+get_data(x::Measurement) = x.val
+get_precision(x::Measurement) = inv(x.err)^2
+
+const WeightedArray{T,N} = ZippedArray{Measurement{T},N,2,I,Tuple{A,B}} where {A<:AbstractArray{T,N},B<:AbstractArray{T,N},I}
+
+ZippedArrays.build(::Type{Measurement{T}}, (val, weight)::Tuple) where {T} = measurement(val, sqrt(inv(weight)))
 
 
-WeightedArray{T,N} = ZippedArray{WeightedPoint{T},N,2,I,Tuple{A,B}} where {A<:AbstractArray{T,N},B<:AbstractArray{T,N},I}
-WeightedArray(A::AbstractArray{T,N}, B::AbstractArray{T,N}) where {T,N} = ZippedArray{WeightedPoint{T}}(A, B)
-WeightedArray(A::AbstractArray{T1,N}, B::AbstractArray{T2,N}) where {T1,T2,N} = ZippedArray{WeightedPoint{T1}}(A, T1.(B))
+WeightedArray(A::AbstractArray{T,N}, B::AbstractArray{T,N}) where {T,N} = ZippedArray{Measurement{T}}(A, B)
+WeightedArray(A::AbstractArray{T1,N}, B::AbstractArray{T2,N}) where {T1,T2,N} = ZippedArray{Measurement{T1}}(A, T1.(B))
 
 
-WeightedArray(x::AbstractArray{<:WeightedPoint}) = WeightedArray(get_data(x), get_precision(x))
+WeightedArray(x::AbstractArray{<:Measurement}) = WeightedArray(get_data(x), get_precision(x))
 WeightedArray(x::WeightedArray) = x
 
 function WeightedArray(x::AbstractArray{<:Union{T,Missing}}) where {T<:Real}
     m = .!ismissing.(x) .&& .!isnan.(x)
-    return WeightedArray(ifelse.(m, x, T(0)), m)
+    return WeightedArray(ifelse.(m, x, zero(T)), m)
 end
 WeightedArray(x::AbstractArray{Missing}) = WeightedArray(zeros(size(x)), zeros(size(x)))
 WeightedArray(x::AbstractArray{T}) where {T<:Real} = WeightedArray(x, ones(size(x)))
@@ -37,30 +42,28 @@ function Base.getproperty(A::WeightedArray, s::Symbol)
     end
 end
 
-function flagbadpix(data::AbstractArray{WeightedPoint{T},N}, badpix::Union{Array{Bool,N},BitArray{N}}) where {T,N}
+function flagbadpix(data::AbstractArray{Measurement{T},N}, badpix::Union{Array{Bool,N},BitArray{N}}) where {T,N}
     size(data) == size(badpix) || error("flagbadpix! : size(data) != size(badpix)")
-    return @inbounds map((d, flag) -> ifelse(flag, WeightedPoint(T(0), T(0)), d), data, badpix)
+    return @inbounds map((d, flag) -> ifelse(flag, measurement(zero(T), T(Inf)), d), data, badpix)
 end
 
 function flagbadpix!(data::WeightedArray{T1,N}, badpix::Union{AbstractArray{Bool,N},BitArray{N}}) where {T1,N}
     size(data) == size(badpix) || error("flagbadpix! : size(data) != size(badpix)")
-    return data[badpix] .= WeightedPoint{T1}(T1(0), T1(0))
+    get_data(data)[badpix] .= zero(T1)
+    get_precision(data)[badpix] .= T1(0.0)
 end
 
 
-function combine(A::AbstractArray{WeightedPoint{T}}; dims=Colon()) where {T}
-    if dims == Colon()
-        return reduce(combine, A)
-    end
-    return mapslices(combine, A; dims=dims)
+function Measurements.weightedmean(iterable::Union{Vector{<:WeightedArray},NTuple{N,<:WeightedArray}}) where {N}
+    length(iterable) == 1 && return iterable[1]
+    reduce(weightedmean, iterable)
 end
 
-function combine(A::AbstractArray{WeightedPoint{T1}}, B::AbstractArray{WeightedPoint{T2}}) where {T1,T2}
-    T = promote_type(T1, T2)
-    dataA = get_data(A)
-    dataB = get_data(B)
-    precisionA = get_precision(A)
-    precisionB = get_precision(B)
-    precision = T.(precisionA .+ precisionB)
-    return WeightedArray(T.(dataA .* precisionA .+ dataB .* precisionB) ./ precision, precision)
+function Measurements.weightedmean(A::WeightedArray{T,N}, B::WeightedArray{T,N}) where {N,T}
+    size(A) == size(B) || error("weightedmean : size(A) != size(B)")
+    ABprecision = get_precision(A) .+ get_precision(B)
+    WeightedArray(
+        (get_data(A) .* get_precision(A) .+ get_data(B) .* get_precision(B)) ./ ABprecision,
+        ABprecision
+    )
 end

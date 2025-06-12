@@ -5,6 +5,7 @@ version = "0.1.0"
 
 [deps]
 ChainRulesCore = "d360d2e6-b24c-11e9-a2a3-2a2ae2dbcce4"
+Measurements = "eff96d63-e80a-5855-80a2-b1b0885c5ab7"
 ZippedArrays = "8051824b-fc5e-4603-89c4-0e6ea551cb88"
 
 [weakdeps]
@@ -21,6 +22,7 @@ WeightedDataTwoDimensionalExt = ["TwoDimensional"]
 ChainRulesCore = "1.25"
 DifferentiationInterface = "0.7"
 ForwardDiff = "1"
+Measurements = "2.12"
 Plots = "1"
 RobustModels = "0.6"
 Test = "1"

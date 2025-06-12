@@ -2,19 +2,13 @@
 
 [![License][license-img]][license-url] [![Build Status][github-ci-img]][github-ci-url] [![Coverage][codecov-img]][codecov-url] [![Aqua QA][aqua-img]][aqua-url]
 
-A Julia package to manipulate data weighted by their precision and compute likelihood functions.
+A Julia package to manipulate built on top of [`Measurements.jl`][https://github.com/JuliaPhysics/Measurements.jl] to handle arrays of data weighted by their precision and compute likelihood functions.
 
 ## Usage
 
 ```julia
 using WeightedData
 
-# Create weighted points
-x = WeightedPoint(1.0, 0.5)  # value 1.0 with precision 0.5
-y = WeightedPoint(2.0, 0.2)  # value 2.0 with precision 0.2
-
-# Combine points (weighted average)
-z = combine(x, y)  
 
 # build an array of weighted points
 data = WeightedArray([1.0, 1.0], [2.0, 0.5])
