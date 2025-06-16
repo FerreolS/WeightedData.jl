@@ -60,30 +60,30 @@ Base.:(==)(x::WeightedPoint, y::WeightedPoint) = x.data == y.data && x.precision
 
 Base.convert(::Type{T}, (; data, precision)::WeightedPoint) where {T<:Real} = WeightedPoint(convert(T, data), convert(T, precision))
 """ 
-    combine(A::WeightedPoint, B::WeightedPoint)
+    weightedmean(A::WeightedPoint, B::WeightedPoint)
 
-Combines two WeightedPoint objects by calculating their weighted average based on precision. The result has a precision equal to the sum of the individual precisions.
+weightedmeans two WeightedPoint objects by calculating their weighted average based on precision. The result has a precision equal to the sum of the individual precisions.
 
 Example
 ```julia
     x = WeightedPoint(1.0, 0.5)
     y = WeightedPoint(2.0, 1.5)
-    z = combine(x, y)  # WeightedPoint(1.75, 2.0)
+    z = weightedmean(x, y)  # WeightedPoint(1.75, 2.0)
 ```
 """
-function combine(A::WeightedPoint, B::WeightedPoint)
+function weightedmean(A::WeightedPoint, B::WeightedPoint)
     precision = A.precision + B.precision
     data = (A.precision * A.data + B.precision * B.data) / (precision)
     return WeightedPoint(data, precision)
 end
 """ 
-    combine(B::NTuple{N,WeightedPoint{T}}) where {N,T}
+    weightedmean(B::NTuple{N,WeightedPoint{T}}) where {N,T}
 
-Combines a tuple of WeightedPoint objects by calculating their weighted average. """
-combine(A::NTuple{N,WeightedPoint}) where {N} = reduce(combine, A)
-combine(::NTuple{0}) = combine()
-combine() = nothing #zero(WeightedPoint{Float64})
-#combine(A::WeightedPoint, B...) = combine(combine(A, first(B)), last(B, length(B) - 1))
-#combine(A::WeightedPoint, B::NTuple{N,WeightedPoint}) where {N} = combine(combine(A, first(B)), last(B, N - 1))
-combine(A::WeightedPoint) = A
-combine(A::WeightedPoint...) = reduce(combine, A)
+weightedmeans a tuple of WeightedPoint objects by calculating their weighted average. """
+weightedmean(A::NTuple{N,WeightedPoint}) where {N} = reduce(weightedmean, A)
+weightedmean(::NTuple{0}) = weightedmean()
+weightedmean() = nothing #zero(WeightedPoint{Float64})
+#weightedmeandmean(A::WeightedPoint, B...) = weightedmean(weightedmean(A, first(B)), last(B, length(B) - 1))
+#weightedmean(A::WeightedPoint, B::NTuple{N,WeightedPoint}) where {N} = weightedmean(weightedmean(A, first(B)), last(B, N - 1))
+weightedmean(A::WeightedPoint) = A
+weightedmean(A::WeightedPoint...) = reduce(weightedmean, A)

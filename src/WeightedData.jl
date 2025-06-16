@@ -2,7 +2,7 @@ module WeightedData
 using ChainRulesCore
 
 export WeightedPoint,
-    combine,
+    weightedmean,
     likelihood,
     flagbadpix,
     flagbadpix!,

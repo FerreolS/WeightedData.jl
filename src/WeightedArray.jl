@@ -48,14 +48,14 @@ function flagbadpix!(data::WeightedArray{T1,N}, badpix::Union{AbstractArray{Bool
 end
 
 
-function combine(A::AbstractArray{WeightedPoint{T}}; dims=Colon()) where {T}
+function weightedmean(A::AbstractArray{WeightedPoint{T}}; dims=Colon()) where {T}
     if dims == Colon()
-        return reduce(combine, A)
+        return reduce(weightedmean, A)
     end
-    return mapslices(combine, A; dims=dims)
+    return mapslices(weightedmean, A; dims=dims)
 end
 
-function combine(A::AbstractArray{WeightedPoint{T1}}, B::AbstractArray{WeightedPoint{T2}}) where {T1,T2}
+function weightedmean(A::AbstractArray{WeightedPoint{T1}}, B::AbstractArray{WeightedPoint{T2}}) where {T1,T2}
     T = promote_type(T1, T2)
     dataA = get_data(A)
     dataB = get_data(B)

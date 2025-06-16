@@ -41,11 +41,11 @@
     @test get_precision(weighted_array) == [0.1, 0.0, 0.3]
 
     C = WeightedArray([1.0, 2.0, 3.0], [1, 1, 0.5])
-    @test @inferred(combine(C)) == WeightedPoint{Float64}(1.8, 2.5)
-    @test @inferred(combine(C, C)) == WeightedArray([1.0, 2.0, 3.0], [2, 2, 1])
+    @test @inferred(weightedmean(C)) == WeightedPoint{Float64}(1.8, 2.5)
+    @test @inferred(weightedmean(C, C)) == WeightedArray([1.0, 2.0, 3.0], [2, 2, 1])
 
     D = WeightedArray(ones(Float32, 2, 2), ones(2, 2))
-    @test @inferred(combine(D; dims=2)) == WeightedArray(ones(Float32, 2, 1), 2 * ones(2, 1))
+    @test @inferred(weightedmean(D; dims=2)) == WeightedArray(ones(Float32, 2, 1), 2 * ones(2, 1))
 
 
 end
