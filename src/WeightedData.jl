@@ -2,7 +2,7 @@ module WeightedData
 using ChainRulesCore
 using Measurements
 
-import Measurements: weightedmean
+#import Measurements: weightedmean
 
 export likelihood,
     flagbadpix,

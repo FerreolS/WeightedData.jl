@@ -26,7 +26,7 @@ using DifferentiationInterface, Zygote, ForwardDiff
     @test Zygote.withgradient(g, D) == (val=0.0, grad=([0.0 0.0; 0.0 0.0],))
 
 
-    C = WeightedArray(1.0 .+ ones(2, 2), ones(2, 2))
+    C = weightedarray(1.0 .+ ones(2, 2), ones(2, 2))
     D = ones(2, 2)
 
     @test @inferred(likelihood(C, D, loss=ScaledL2Loss())) == 0.0

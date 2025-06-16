@@ -12,21 +12,21 @@ const WeightedArray{T,N} = ZippedArray{Measurement{T},N,2,I,Tuple{A,B}} where {A
 ZippedArrays.build(::Type{Measurement{T}}, (val, weight)::Tuple) where {T} = measurement(val, sqrt(inv(weight)))
 
 
-WeightedArray(A::AbstractArray{T,N}, B::AbstractArray{T,N}) where {T,N} = ZippedArray{Measurement{T}}(A, B)
-WeightedArray(A::AbstractArray{T1,N}, B::AbstractArray{T2,N}) where {T1,T2,N} = ZippedArray{Measurement{T1}}(A, T1.(B))
+weightedarray(A::AbstractArray{T,N}, B::AbstractArray{T,N}) where {T,N} = ZippedArray{Measurement{T}}(A, B)
+weightedarray(A::AbstractArray{T1,N}, B::AbstractArray{T2,N}) where {T1,T2,N} = ZippedArray{Measurement{T1}}(A, T1.(B))
 
 
-WeightedArray(x::AbstractArray{<:Measurement}) = WeightedArray(get_data(x), get_precision(x))
-WeightedArray(x::WeightedArray) = x
+weightedarray(x::AbstractArray{<:Measurement}) = weightedarray(get_data(x), get_precision(x))
+weightedarray(x::WeightedArray) = x
 
-function WeightedArray(x::AbstractArray{<:Union{T,Missing}}) where {T<:Real}
+function weightedarray(x::AbstractArray{<:Union{T,Missing}}) where {T<:Real}
     m = .!ismissing.(x) .&& .!isnan.(x)
-    return WeightedArray(ifelse.(m, x, zero(T)), m)
+    return weightedarray(ifelse.(m, x, zero(T)), m)
 end
-WeightedArray(x::AbstractArray{Missing}) = WeightedArray(zeros(size(x)), zeros(size(x)))
-WeightedArray(x::AbstractArray{T}) where {T<:Real} = WeightedArray(x, ones(size(x)))
+weightedarray(x::AbstractArray{Missing}) = weightedarray(zeros(size(x)), zeros(size(x)))
+weightedarray(x::AbstractArray{T}) where {T<:Real} = weightedarray(x, ones(size(x)))
 
-Base.view(A::WeightedArray, I...) = WeightedArray(view(get_data(A), I...), view(get_precision(A), I...))
+Base.view(A::WeightedArray, I...) = weightedarray(view(get_data(A), I...), view(get_precision(A), I...))
 
 get_data(x::WeightedArray) = x.args[1]
 get_precision(x::WeightedArray) = x.args[2]
@@ -54,16 +54,27 @@ function flagbadpix!(data::WeightedArray{T1,N}, badpix::Union{AbstractArray{Bool
 end
 
 
-function Measurements.weightedmean(iterable::Union{Vector{<:WeightedArray},NTuple{N,<:WeightedArray}}) where {N}
+function weightedmean(iterable::Union{Vector{<:WeightedArray},NTuple{N,<:WeightedArray}}) where {N}
     length(iterable) == 1 && return iterable[1]
     reduce(weightedmean, iterable)
 end
 
-function Measurements.weightedmean(A::WeightedArray{T,N}, B::WeightedArray{T,N}) where {N,T}
+function weightedmean(A::WeightedArray{T,N}, B::WeightedArray{T,N}) where {N,T}
     size(A) == size(B) || error("weightedmean : size(A) != size(B)")
     ABprecision = get_precision(A) .+ get_precision(B)
-    WeightedArray(
+    weightedarray(
         (get_data(A) .* get_precision(A) .+ get_data(B) .* get_precision(B)) ./ ABprecision,
         ABprecision
     )
 end
+
+
+function weightedmean(A::WeightedArray)
+    precision = get_precision(A)
+    data = get_data(A)
+    Σprecision = sum(precision)
+
+    measurement(mapreduce(x -> x[1] * x[2] / Σprecision, +, zip(data, precision)), sqrt(1 / Σprecision))
+end
+
+weightedmean(A...) = Measurements.weightedmean(A)

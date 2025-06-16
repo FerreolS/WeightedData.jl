@@ -11,7 +11,7 @@ using WeightedData
 
 
 # build an array of weighted points
-data = WeightedArray([1.0, 1.0], [2.0, 0.5])
+data = weightedarray([1.0, 1.0], [2.0, 0.5])
 
 # Compute likelihood
 model = [1.0, 1.5]
