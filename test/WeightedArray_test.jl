@@ -22,7 +22,7 @@
     B = [0.1, 0.2, 0.3]
     weighted_array = weightedarray(A, B)
     @test get_data(weighted_array) == A
-    @test get_precision(weighted_array) == B
+    @test get_precision(weighted_array) ≈ B
     @test propertynames(weighted_array) == (:data, :precision)
     @test weighted_array.data == A
     @test weighted_array.precision == B
@@ -42,8 +42,8 @@
     @test get_precision(weighted_array) == [0.1, 0.0, 0.3]
 
     C = weightedarray([1.0, 2.0, 3.0], [1, 1, 0.5])
-    @test @inferred(weightedmean(C)) == 1.8 ± sqrt(inv(2.5))
-    @test @inferred(weightedmean((C, C))) == weightedarray([1.0, 2.0, 3.0], [2, 2, 1])
+    @test @inferred(WeightedData.weightedmean(C)) ≈ 1.8 ± sqrt(inv(2.5))
+    @test @inferred(WeightedData.weightedmean((C, C))) ≈ weightedarray([1.0, 2.0, 3.0], [2, 2, 1])
 
     D = weightedarray(ones(Float32, 2, 2), ones(2, 2))
     # @test @inferred(weightedmean(D; dims=2)) == weightedarray(ones(Float32, 2, 1), 2 * ones(2, 1))

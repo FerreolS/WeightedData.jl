@@ -1,5 +1,5 @@
 ## Array of Measurement
-using ZippedArrays
+using ZippedArrays, MethodForwarding
 
 get_data(x::AbstractArray{<:Measurement}) = map(x -> x.val, x)
 get_precision(x::AbstractArray{<:Measurement}) = map(x -> inv(x.err)^2, x)
@@ -7,13 +7,28 @@ get_precision(x::AbstractArray{<:Measurement}) = map(x -> inv(x.err)^2, x)
 get_data(x::Measurement) = x.val
 get_precision(x::Measurement) = inv(x.err)^2
 
-const WeightedArray{T,N} = ZippedArray{Measurement{T},N,2,I,Tuple{A,B}} where {A<:AbstractArray{T,N},B<:AbstractArray{T,N},I}
+#const WeightedArray{T,N} = ZippedArray{Measurement{T},N,2,I,Tuple{A,B}} where {A<:AbstractArray{T,N},B<:AbstractArray{T,N},I}
+
+struct WeightedArray{T,N,I,A,B} <: AbstractArray{Measurement{T},N}
+    arg::ZippedArray{Measurement{T},N,2,I,Tuple{A,B}}
+    function WeightedArray{T,N}(a::A, b::B) where {T,N,A<:AbstractArray{T,N},B<:AbstractArray{T,N}}
+        arg = ZippedArray{Measurement{T},N}(a, b)
+        I = ZippedArrays.get_index_style(a, b) === IndexLinear()
+        new{T,N,I,A,B}(arg)
+    end
+end
+
+#WeightedArray{T,N} = WeightedArray{T,N,I,A,B} where {A<:AbstractArray{T,N},B<:AbstractArray{T,N},I}
+
+
+@forward WeightedArray => {ZippedArray{Measurement{T},N,2,I,Tuple{A,B}} where {T,N,A<:AbstractArray{T,N},B<:AbstractArray{T,N},I}} [
+    ZippedArrays, Base]
 
 ZippedArrays.build(::Type{Measurement{T}}, (val, weight)::Tuple) where {T} = measurement(val, sqrt(inv(weight)))
 
 
-weightedarray(A::AbstractArray{T,N}, B::AbstractArray{T,N}) where {T,N} = ZippedArray{Measurement{T}}(A, B)
-weightedarray(A::AbstractArray{T1,N}, B::AbstractArray{T2,N}) where {T1,T2,N} = ZippedArray{Measurement{T1}}(A, T1.(B))
+weightedarray(A::AbstractArray{T,N}, B::AbstractArray{T,N}) where {T,N} = WeightedArray{T,N}(A, B)
+weightedarray(A::AbstractArray{T1,N}, B::AbstractArray{T2,N}) where {T1,T2,N} = WeightedArray{T1,N}(A, T1.(B))
 
 
 weightedarray(x::AbstractArray{<:Measurement}) = weightedarray(get_data(x), get_precision(x))
@@ -28,8 +43,8 @@ weightedarray(x::AbstractArray{T}) where {T<:Real} = weightedarray(x, ones(size(
 
 Base.view(A::WeightedArray, I...) = weightedarray(view(get_data(A), I...), view(get_precision(A), I...))
 
-get_data(x::WeightedArray) = x.args[1]
-get_precision(x::WeightedArray) = x.args[2]
+get_data(x::WeightedArray) = x.arg.args[1]
+get_precision(x::WeightedArray) = x.arg.args[2]
 
 Base.propertynames(::WeightedArray) = (:data, :precision)
 function Base.getproperty(A::WeightedArray, s::Symbol)
