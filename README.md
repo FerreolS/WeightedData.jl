@@ -10,8 +10,8 @@ A Julia package to manipulate data weighted by their precision and compute likel
 using WeightedData
 
 # Create weighted points
-x = WeightedPoint(1.0, 0.5)  # value 1.0 with precision 0.5
-y = WeightedPoint(2.0, 0.2)  # value 2.0 with precision 0.2
+x = WeightedValue(1.0, 0.5)  # value 1.0 with precision 0.5
+y = WeightedValue(2.0, 0.2)  # value 2.0 with precision 0.2
 
 # weightedmean points (weighted average)
 z = weightedmean(x, y)  

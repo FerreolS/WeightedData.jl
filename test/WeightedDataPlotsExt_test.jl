@@ -6,7 +6,7 @@ using Plots
 @testset "WeightedDataPlotsExt recipe function 1" begin
     values = [1.0, 2.0, 3.0]
     precisions = [1.0, 0.5, 0.25]
-    A = WeightedPoint(values, precisions)
+    A = WeightedValue(values, precisions)
 
     plot_result = plot(A)
 
@@ -20,7 +20,7 @@ end
     x = [1, 2, 3]
     values = [1.0, 2.0, 3.0]
     precisions = [1.0, 0.5, 0.25]
-    A = WeightedPoint(values, precisions)
+    A = WeightedValue(values, precisions)
 
     plot_result = plot(x, A)
 

@@ -6,7 +6,7 @@ using TwoDimensional
         I = BoundingBox(1:5, 1:5)
         view_A = view(A, I)
         @test size(view_A) == (5, 5)
-        @test get_data(view_A) == view(get_data(A), I)
+        @test get_value(view_A) == view(get_value(A), I)
         @test get_precision(view_A) == view(get_precision(A), I)
     end
 end

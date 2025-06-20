@@ -1,6 +1,6 @@
 using DifferentiationInterface, Zygote, ForwardDiff
 @testset "likelihood.jl" begin
-    A = [WeightedPoint(1.0, 1.0), WeightedPoint(2.0, 0.5)]
+    A = [WeightedValue(1.0, 1.0), WeightedValue(2.0, 0.5)]
     B = [1.0, 1.0]
 
     @test @inferred(likelihood(A[1], B[1])) == 0.0
@@ -13,7 +13,7 @@ using DifferentiationInterface, Zygote, ForwardDiff
 
     #@test @inferred likelihood(A, B, loss=cauchyloss(3)) ≈ (3 / 2.385)^(-2) / 2 * log(1 + ((3 / 2.385) * sqrt(0.5) * (1 - 2))^2)
 
-    C = WeightedPoint(1.0 .+ ones(2, 2), ones(2, 2))
+    C = WeightedValue(1.0 .+ ones(2, 2), ones(2, 2))
     D = ones(2, 2)
 
     @test @inferred(likelihood(C, D; loss=ScaledL2Loss())) == 0.0
