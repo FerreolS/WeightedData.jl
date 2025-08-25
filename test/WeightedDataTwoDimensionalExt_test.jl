@@ -7,6 +7,6 @@ using TwoDimensional
         view_A = view(A, I)
         @test size(view_A) == (5, 5)
         @test get_value(view_A) == view(get_value(A), I)
-        @test get_precision(view_A) == view(get_precision(A), I)
+        @test WeightedData.get_precision(view_A) == view(WeightedData.get_precision(A), I)
     end
 end
