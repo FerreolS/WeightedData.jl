@@ -8,8 +8,7 @@
 
 
     B = deepcopy(A)
-    A = WeightedArray(A)
-    @test B == A
+    @test B == WeightedArray(A)
 
     @test @inferred(flagbadpix(A, [true, false])) == [WeightedValue(0.0, 0.0), WeightedValue(2.0, 0.5)]
     @test WeightedArray([1.0, missing]) == [WeightedValue(1.0, 1.0), WeightedValue(0.0, 0.)]
@@ -120,7 +119,7 @@ end
     # Test WeightedArray * Number
     L = A * 3.0
     @test L isa WeightedArray
-    @test L == 3.0 .* A
+    @test L == A .* 3.0
     @test get_value(L) ≈ [3.0, 6.0]
     @test get_precision(L) ≈ [0.5 / 9.0, 0.2 / 9.0]
 
