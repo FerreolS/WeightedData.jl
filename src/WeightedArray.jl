@@ -21,6 +21,31 @@ end
 WeightedArray(x::AbstractArray{Missing}) = WeightedArray(zeros(size(x)), zeros(size(x)))
 WeightedArray(x::AbstractArray{T}) where {T<:Real} = WeightedArray(x, ones(size(x)))
 
+Base.:+(A::WeightedArray, B::WeightedArray) = WeightedArray(A.value .+ B.value, inv.(inv.(A.precision) .+ inv.(B.precision)))
+Broadcast.broadcasted(::typeof(+), A::WeightedArray, B::WeightedArray) = A + B
+Base.:-(A::WeightedArray, B::WeightedArray) = WeightedArray(A.value .- B.value, inv.(inv.(A.precision) .+ inv.(B.precision)))
+Broadcast.broadcasted(::typeof(-), A::WeightedArray, B::WeightedArray) = A - B
+
+Base.:+((; value, precision)::WeightedArray, B::Number) = WeightedArray(value .+ B, precision)
+Broadcast.broadcasted(::typeof(+), A::WeightedArray, B::Number) = A + B
+Base.:+(A::Number, B::WeightedArray) = B + A
+Broadcast.broadcasted(::typeof(+), A::Number, B::WeightedArray) = B + A
+Base.:-((; value, precision)::WeightedArray, B::Number) = WeightedArray(value .- B, precision)
+Broadcast.broadcasted(::typeof(-), A::WeightedArray, B::Number) = A - B
+Base.:-(A::Number, (; value, precision)::WeightedArray) = WeightedArray(A .- value, precision)
+Broadcast.broadcasted(::typeof(-), A::Number, B::WeightedArray) = A - B
+
+Base.:/((; value, precision)::WeightedArray, B::Number) = WeightedArray(value ./ B, B^2 .* precision)
+Broadcast.broadcasted(::typeof(/), A::WeightedArray, B::Number) = A / B
+Base.:/(A::Number, (; value, precision)::WeightedArray) = WeightedArray(A ./ value, inv.(precision) ./ A^2)
+Broadcast.broadcasted(::typeof(/), A::Number, B::WeightedArray) = A / B
+Base.:*(B::Number, (; value, precision)::WeightedArray) = WeightedArray(value .* B, precision ./ B^2)
+Broadcast.broadcasted(::typeof(*), B::Number, A::WeightedArray) = B * A
+Base.:*(A::WeightedArray, B::Number) = B * A
+Broadcast.broadcasted(::typeof(*), A::WeightedArray, B::Number) = B * A
+Base.:*(::WeightedArray, ::WeightedArray) = error("Multiplication of WeightedArray objects is not supported")
+Base.:/(::WeightedArray, ::WeightedArray) = error("Division of WeightedArray objects is not supported")
+
 Base.view(A::WeightedArray, I...) = WeightedArray(view(get_value(A), I...), view(get_precision(A), I...))
 
 get_value(x::WeightedArray) = x.args[1]

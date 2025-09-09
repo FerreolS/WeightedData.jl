@@ -49,3 +49,84 @@
 
 
 end
+
+@testset "WeightedArray arithmetic operations" begin
+    A = WeightedArray([1.0, 2.0], [0.5, 0.2])
+    B = WeightedArray([3.0, 4.0], [0.5, 0.8])
+
+    # Test addition
+    C = A + B
+    @test C isa WeightedArray
+    @test get_value(C) ≈ [4.0, 6.0]
+    @test get_precision(C) ≈ [0.25, 0.16] # inv(inv(0.5)+inv(0.5)) = 0.25, inv(inv(0.2)+inv(0.8)) = 0.16
+    @test C == A .+ B
+
+    # Test subtraction
+    D = A - B
+    @test D isa WeightedArray
+    @test D == A .- B
+    @test get_value(D) ≈ [-2.0, -2.0]
+    @test get_precision(D) ≈ [0.25, 0.16]
+
+    # Test WeightedArray + Number
+    E = A + 2.0
+    @test E isa WeightedArray
+    @test E == A .+ 2.0
+    @test get_value(E) ≈ [3.0, 4.0]
+    @test get_precision(E) == [0.5, 0.2]
+
+    # Test Number + WeightedArray
+    F = 2.0 + A
+    @test F isa WeightedArray
+    @test F == 2.0 .+ A
+    @test get_value(F) ≈ [3.0, 4.0]
+    @test get_precision(F) == [0.5, 0.2]
+
+    # Test WeightedArray - Number
+    G = A - 1.0
+    @test G isa WeightedArray
+    @test G == A .- 1.0
+    @test get_value(G) ≈ [0.0, 1.0]
+    @test get_precision(G) == [0.5, 0.2]
+
+    # Test Number - WeightedArray
+    H = 5.0 - A
+    @test H isa WeightedArray
+    @test H == 5.0 .- A
+    @test get_value(H) ≈ [4.0, 3.0]
+    @test get_precision(H) == [0.5, 0.2]
+
+    # Test WeightedArray / Number
+    I = A / 2.0
+    @test I isa WeightedArray
+    @test I == A ./ 2.0
+    @test get_value(I) ≈ [0.5, 1.0]
+    @test get_precision(I) ≈ [2.0, 0.8] # 2^2 * precision
+
+    # Test Number / WeightedArray
+    J = 2.0 / A
+    @test J isa WeightedArray
+    @test J == 2.0 ./ A
+    @test get_value(J) ≈ [2.0, 1.0]
+    @test get_precision(J) ≈ [1.0 / (0.5 * 4.0), 1.0 / (0.2 * 4.0)] # inv(precision) / 2^2
+
+    # Test Number * WeightedArray
+    K = 3.0 * A
+    @test K isa WeightedArray
+    @test K == 3.0 .* A
+    @test get_value(K) ≈ [3.0, 6.0]
+    @test get_precision(K) ≈ [0.5 / 9.0, 0.2 / 9.0] # precision / 3^2
+
+    # Test WeightedArray * Number
+    L = A * 3.0
+    @test L isa WeightedArray
+    @test L == 3.0 .* A
+    @test get_value(L) ≈ [3.0, 6.0]
+    @test get_precision(L) ≈ [0.5 / 9.0, 0.2 / 9.0]
+
+    # Test unsupported WeightedArray * WeightedArray
+    @test_throws ErrorException A * B
+
+    # Test unsupported WeightedArray / WeightedArray
+    @test_throws ErrorException A / B
+end
