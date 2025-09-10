@@ -9,6 +9,7 @@
 
     B = deepcopy(A)
     @test B == WeightedArray(A)
+    @test B == WeightedArray(WeightedArray(A))
 
     @test @inferred(flagbadpix(A, [true, false])) == [WeightedValue(0.0, 0.0), WeightedValue(2.0, 0.5)]
     @test WeightedArray([1.0, missing]) == [WeightedValue(1.0, 1.0), WeightedValue(0.0, 0.)]
