@@ -37,17 +37,17 @@ Broadcast.broadcasted(::typeof(-), A::Union{T,AbstractArray{T}}, B::WeightedArra
 
 Base.:/((; value, precision)::WeightedArray, B::Number) = WeightedArray(value ./ B, B^2 .* precision)
 Broadcast.broadcasted(::typeof(/), A::WeightedArray, B::Number) = A / B
-Broadcast.broadcasted(::typeof(/), (; value, precision)::WeightedArray, B::AbstractArray{<:Number}) = WeightedArray(value ./ B, B .^ 2 .* precision)
+Broadcast.broadcasted(::typeof(/), (; value, precision)::WeightedArray, B::AbstractArray{<:Real}) = WeightedArray(value ./ B, B .^ 2 .* precision)
 Base.:/(A::Number, (; value, precision)::WeightedArray) = WeightedArray(A ./ value, inv.(precision) ./ A .^ 2)
 Broadcast.broadcasted(::typeof(/), A::Number, B::WeightedArray) = A / B
-Broadcast.broadcasted(::typeof(/), A::AbstractArray{<:Number}, (; value, precision)::WeightedArray) = WeightedArray(A ./ value, inv.(precision) ./ A .^ 2)
+Broadcast.broadcasted(::typeof(/), A::AbstractArray{<:Real}, (; value, precision)::WeightedArray) = WeightedArray(A ./ value, inv.(precision) ./ A .^ 2)
 
 Base.:*(B::Number, (; value, precision)::WeightedArray) = WeightedArray(value .* B, precision ./ B .^ 2)
 Broadcast.broadcasted(::typeof(*), B::Number, A::WeightedArray) = B * A
-Broadcast.broadcasted(::typeof(*), B::AbstractArray{<:Number}, (; value, precision)::WeightedArray) = WeightedArray(value .* B, precision ./ B .^ 2)
+Broadcast.broadcasted(::typeof(*), B::AbstractArray{<:Real}, (; value, precision)::WeightedArray) = WeightedArray(value .* B, precision ./ B .^ 2)
 Base.:*(A::WeightedArray, B::Number) = B * A
 Broadcast.broadcasted(::typeof(*), A::WeightedArray, B::Number) = B * A
-Broadcast.broadcasted(::typeof(*), A::WeightedArray, B::AbstractArray{<:Number}) = B .* A
+Broadcast.broadcasted(::typeof(*), A::WeightedArray, B::AbstractArray{<:Real}) = B .* A
 
 Base.:*(::WeightedArray, ::WeightedArray) = error("Multiplication of WeightedArray objects is not supported")
 Base.:/(::WeightedArray, ::WeightedArray) = error("Division of WeightedArray objects is not supported")
