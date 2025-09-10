@@ -129,3 +129,54 @@ end
     # Test unsupported WeightedArray / WeightedArray
     @test_throws ErrorException A / B
 end
+
+@testset "WeightedArray arithmetic with   arrays" begin
+    A = WeightedArray([1.0, 2.0], [0.5, 0.2])
+
+
+    # WeightedArray + Array
+    arr = [2.0, 3.0]
+    res = A + arr
+    @test get_value(res) == [3.0, 5.0]
+    @test get_precision(res) == [0.5, 0.2]
+
+
+    # Array + WeightedArray
+    @test get_value(arr + A) == [3.0, 5.0]
+    @test get_precision(arr + A) == [0.5, 0.2]
+    @test (arr + A) == arr .+ A
+
+    # WeightedArray - Array
+    @test get_value(A - arr) == [-1.0, -1.0]
+    @test get_precision(A - arr) == [0.5, 0.2]
+    @test (A - arr) == A .- arr
+
+    # Array - WeightedArray
+    @test get_value(arr - A) == [1.0, 1.0]
+    @test get_precision(arr - A) == [0.5, 0.2]
+    @test (arr - A) == arr .- A
+
+    # WeightedArray / Array
+    arr2 = [2.0, 4.0]
+    res2 = A ./ arr2
+    @test get_value(res2) == [0.5, 0.5]
+    @test get_precision(res2) ≈ [2.0, 3.2]
+
+    # Array / WeightedArray
+    arr3 = [2.0, 4.0]
+    res3 = arr3 ./ A
+    @test get_value(res3) == [2.0, 2.0]
+    @test get_precision(res3) ≈ [0.5, 0.3125]
+
+    # Array * WeightedArray
+    arr4 = [2.0, 4.0]
+    res4 = arr4 .* A
+    @test get_value(res4) == [2.0, 8.0]
+    @test get_precision(res4) ≈ [0.125, 0.0125]
+
+    # WeightedArray * Array
+    arr5 = [2.0, 4.0]
+    res5 = A .* arr5
+    @test get_value(res5) == [2.0, 8.0]
+    @test get_precision(res5) ≈ [0.125, 0.0125]
+end
