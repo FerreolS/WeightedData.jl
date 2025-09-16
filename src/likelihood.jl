@@ -120,8 +120,8 @@ function likelihood((; dims, nonnegative)::ScaledL2Loss, weighteddata::AbstractA
     precision = get_precision(weighteddata)
 
 
-    a = similar(d)
-    b = similar(d)
+    a = similar(data)
+    b = similar(data)
     l = T(0)
     @inbounds @simd for i in eachindex(data, model)
         b[i] = model[i] .* precision[i] .* data[i]
@@ -145,8 +145,8 @@ function ChainRulesCore.rrule(::typeof(likelihood), (; dims, nonnegative)::Scale
     precision = get_precision(weighteddata)
 
 
-    a = similar(d)
-    b = similar(d)
+    a = similar(data)
+    b = similar(data)
     @inbounds @simd for i in eachindex(data, model)
         b[i] = model[i] .* precision[i] .* data[i]
         a[i] = model[i] .* precision[i] .* model[i]
