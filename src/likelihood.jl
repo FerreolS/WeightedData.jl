@@ -1,4 +1,3 @@
-
 struct L2Loss end
 
 """
@@ -19,7 +18,6 @@ function (::L2Loss)((; value, precision)::WeightedValue, model::Number)
 end
 
 
-
 """
     likelihood(data::WeightedValue, model; loss=L2Loss())
 
@@ -33,7 +31,7 @@ Calculate the likelihood for a weighted data point.
 ## Returns
 The neg log likelihood value.
 """
-function likelihood(data::WeightedValue, model; loss=L2Loss())
+function likelihood(data::WeightedValue, model; loss = L2Loss())
     return likelihood(loss, data, model)
 end
 
@@ -54,7 +52,7 @@ Calculate the equivalent weight for a given the loss function for IRLS.
 ## Returns
 The equivalent weight.
 """
-function get_weight(data::WeightedValue, model; loss=L2Loss())
+function get_weight(data::WeightedValue, model; loss = L2Loss())
     return get_weight(loss, data, model)
 end
 
@@ -74,30 +72,27 @@ Calculate the likelihood for an array of weighted data points.
 ## Returns
 The neg log likelihood value.
 """
-function likelihood(data::AbstractArray{<:WeightedValue}, model::AbstractArray; loss=L2Loss())
+function likelihood(data::AbstractArray{<:WeightedValue}, model::AbstractArray; loss = L2Loss())
     return likelihood(loss, data, model)
 end
 
-function likelihood(loss, data::AbstractArray{WeightedValue{T1},N}, model::AbstractArray{T2,N}) where {T1,T2,N}
+function likelihood(loss, data::AbstractArray{WeightedValue{T1}, N}, model::AbstractArray{T2, N}) where {T1, T2, N}
     size(data) == size(model) || error("likelihood : size(A) != size(model)")
     return mapreduce(loss, +, data, model)
 end
 
 
-
-function get_weight(data::AbstractArray{<:WeightedValue}, model::AbstractArray; loss=L2Loss())
+function get_weight(data::AbstractArray{<:WeightedValue}, model::AbstractArray; loss = L2Loss())
     return get_weight(loss, data, model)
 end
 
-function get_weight(_, data::AbstractArray{WeightedValue{T1},N}, model::AbstractArray{T2,N}) where {T1,T2,N}
+function get_weight(_, data::AbstractArray{WeightedValue{T1}, N}, model::AbstractArray{T2, N}) where {T1, T2, N}
     size(data) == size(model) || error("likelihood : size(A) != size(model)")
     return get_precision(data)
 end
 
 
-
-
-function ChainRulesCore.rrule(::typeof(likelihood), ::L2Loss, data::AbstractArray{WeightedValue{T},N}, model::AbstractArray{T,N}) where {T,N}
+function ChainRulesCore.rrule(::typeof(likelihood), ::L2Loss, data::AbstractArray{WeightedValue{T}, N}, model::AbstractArray{T, N}) where {T, N}
     size(data) == size(model) || error("likelihood : size(A) != size(model)")
 
     d = get_value(data)
@@ -117,30 +112,47 @@ struct ScaledL2Loss
     dims::Int
     nonnegative::Bool
 end
-ScaledL2Loss(; dims=1, nonnegative=false) = ScaledL2Loss(dims, nonnegative)
+ScaledL2Loss(; dims = 1, nonnegative = false) = ScaledL2Loss(dims, nonnegative)
 
-function likelihood((; dims, nonnegative)::ScaledL2Loss, weighteddata::AbstractArray{WeightedValue{T1},N}, model::AbstractArray{T2,N}) where {T1,T2,N}
+function likelihood((; dims, nonnegative)::ScaledL2Loss, weighteddata::AbstractArray{WeightedValue{T1}, N}, model::AbstractArray{T2, N}) where {T1, T2, N}
     size(weighteddata) == size(model) || error("scaledL2loss : size(A) != size(model)")
     data = get_value(weighteddata)
     precision = get_precision(weighteddata)
 
-    α = sum(model .* precision .* data, dims=dims) ./ sum(model .* precision .* model, dims=dims)
+
+    a = similar(d)
+    b = similar(d)
+    l = T(0)
+    @inbounds @simd for i in eachindex(data, model)
+        b[i] = model[i] .* precision[i] .* data[i]
+        a[i] = model[i] .* precision[i] .* model[i]
+    end
+
+    α = sum(b, dims = dims) ./ sum(a, dims = dims)
 
     if nonnegative
         α = max.(0, α)
     end
 
     α[.!isfinite.(α)] .= T2(0)
-    res = (α .* model .- data)
-    return sum(res .^ 2 .* precision) / 2
+    res = @. (α * model - data)^2 * precision
+    return sum(res) / 2
 end
 
-function ChainRulesCore.rrule(::typeof(likelihood), (; dims, nonnegative)::ScaledL2Loss, weighteddata::AbstractArray{WeightedValue{T1},N}, model::AbstractArray{T2,N}) where {T1,T2,N}
+function ChainRulesCore.rrule(::typeof(likelihood), (; dims, nonnegative)::ScaledL2Loss, weighteddata::AbstractArray{WeightedValue{T1}, N}, model::AbstractArray{T2, N}) where {T1, T2, N}
     size(weighteddata) == size(model) || error("scaledlikelihood : size(A) != size(model)")
     data = get_value(weighteddata)
     precision = get_precision(weighteddata)
 
-    α = sum(model .* precision .* data, dims=dims) ./ sum(model .* precision .* model, dims=dims)
+
+    a = similar(d)
+    b = similar(d)
+    @inbounds @simd for i in eachindex(data, model)
+        b[i] = model[i] .* precision[i] .* data[i]
+        a[i] = model[i] .* precision[i] .* model[i]
+    end
+
+    α = sum(b, dims = dims) ./ sum(a, dims = dims)
 
     if nonnegative
         α = max.(0, α)
