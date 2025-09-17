@@ -129,11 +129,11 @@ function likelihood((; dims, nonnegative)::ScaledL2Loss, weighteddata::AbstractA
 
     α = sum(b, dims = dims) ./ sum(a, dims = dims)
 
-    if nonnegative
-        α = max.(0, α)
+    @inbounds @simd for i in eachindex(α)
+        if (nonnegative && α[i] < 0) || !isfinite(α[i])
+            α[i] = T2(0)
+        end
     end
-
-    α[.!isfinite.(α)] .= T2(0)
     res = @. (α * model - data)^2 * precision
     return sum(res) / 2
 end
@@ -153,11 +153,11 @@ function ChainRulesCore.rrule(::typeof(likelihood), (; dims, nonnegative)::Scale
 
     α = sum(b, dims = dims) ./ sum(a, dims = dims)
 
-    if nonnegative
-        α = max.(0, α)
+    @inbounds @simd for i in eachindex(α)
+        if (nonnegative && α[i] < 0) || !isfinite(α[i])
+            α[i] = T2(0)
+        end
     end
-    α[.!isfinite.(α)] .= T2(0)
-
     r = (α .* model .- data)
     rp = r .* precision
     likelihood_pullback(Δy) = (NoTangent(), NoTangent(), ZeroTangent(), α .* rp .* Δy)

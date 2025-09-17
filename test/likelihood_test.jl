@@ -16,29 +16,29 @@ using DifferentiationInterface, Zygote, ForwardDiff
     C = WeightedValue(1.0 .+ ones(2, 2), ones(2, 2))
     D = ones(2, 2)
 
-    @test @inferred(likelihood(C, D; loss=ScaledL2Loss())) == 0.0
+    @test @inferred(likelihood(C, D; loss = ScaledL2Loss())) == 0.0
     @test @inferred(likelihood(C, D)) == 2.0
 
     f(x) = likelihood(C, x)
-    @test Zygote.withgradient(f, D) == (val=2.0, grad=([-1.0 -1.0; -1.0 -1.0],))
+    @test Zygote.withgradient(f, D) == (val = 2.0, grad = ([-1.0 -1.0; -1.0 -1.0],))
 
-    g(x) = likelihood(C, x, loss=ScaledL2Loss())
-    @test Zygote.withgradient(g, D) == (val=0.0, grad=([0.0 0.0; 0.0 0.0],))
+    g(x) = likelihood(C, x, loss = ScaledL2Loss())
+    @test Zygote.withgradient(g, D) == (val = 0.0, grad = ([0.0 0.0; 0.0 0.0],))
 
 
     C = WeightedArray(1.0 .+ ones(2, 2), ones(2, 2))
     D = ones(2, 2)
 
-    @test @inferred(likelihood(C, D, loss=ScaledL2Loss())) == 0.0
+    @test @inferred(likelihood(C, D, loss = ScaledL2Loss())) == 0.0
     @test @inferred(likelihood(C, D)) == 2.0
 
     f2(x) = likelihood(C, x)
-    @test Zygote.withgradient(f2, D) == (val=2.0, grad=([-1.0 -1.0; -1.0 -1.0],))
+    @test Zygote.withgradient(f2, D) == (val = 2.0, grad = ([-1.0 -1.0; -1.0 -1.0],))
 
     grad = similar(D)
     @test @inferred(DifferentiationInterface.value_and_gradient!(f, grad, AutoForwardDiff(), D)) == (2.0, [-1.0 -1.0; -1.0 -1.0])
 
-    g2(x) = likelihood(C, x, loss=ScaledL2Loss(nonnegative=true))
-    @test Zygote.withgradient(g2, D) == (val=0.0, grad=([0.0 0.0; 0.0 0.0],))
+    g2(x) = likelihood(C, x, loss = ScaledL2Loss(nonnegative = true))
+    @test Zygote.withgradient(g2, D) == (val = 0.0, grad = ([0.0 0.0; 0.0 0.0],))
 
 end
