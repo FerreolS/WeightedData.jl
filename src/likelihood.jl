@@ -122,7 +122,6 @@ function likelihood((; dims, nonnegative)::ScaledL2Loss, weighteddata::AbstractA
 
     a = similar(data)
     b = similar(data)
-    l = T(0)
     @inbounds @simd for i in eachindex(data, model)
         b[i] = model[i] .* precision[i] .* data[i]
         a[i] = model[i] .* precision[i] .* model[i]
