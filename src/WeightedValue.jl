@@ -12,18 +12,18 @@ A structure representing a numerical value weighted by its precision.
 x = WeightedValue(1.0, 0.5)  # value 1.0 with precision 0.5
 ```
 """
-struct WeightedValue{T<:AbstractFloat} <: Number
+struct WeightedValue{T <: AbstractFloat} <: Number
     value::T
     precision::T
-    function WeightedValue(value::T, precision::T) where {T<:AbstractFloat}
+    function WeightedValue(value::T, precision::T) where {T <: AbstractFloat}
         precision >= 0 || error("WeightedValue : precisionmust be positive")
         isfinite(value) || return new{T}(zero(T), zero(T))
         return new{T}(value, precision)
     end
-    WeightedValue{T}(value::T, precision::T) where {T<:AbstractFloat} = new{T}(value, precision)
+    WeightedValue{T}(value::T, precision::T) where {T <: AbstractFloat} = new{T}(value, precision)
 end
 
-WeightedValue(value::T, precision::Number) where {T<:AbstractFloat} = WeightedValue(value, T(precision))
+WeightedValue(value::T, precision::Number) where {T <: AbstractFloat} = WeightedValue(value, T(precision))
 WeightedValue{T}(value::Number, precision::Number) where {T} = WeightedValue(T(value), T(precision))
 
 get_value(A::WeightedValue) = A.value
@@ -58,7 +58,7 @@ Base.:(==)(x::WeightedValue, y::WeightedValue) = x.value == y.value && x.precisi
 
 #Base.show(io::IO, x::WeightedValue) = print(io, "WeightedValue($(x.value), $(x.precision))")
 
-Base.convert(::Type{T}, (; value, precision)::WeightedValue) where {T<:Real} = WeightedValue(convert(T, value), convert(T, precision))
+Base.convert(::Type{T}, (; value, precision)::WeightedValue) where {T <: Real} = WeightedValue(convert(T, value), convert(T, precision))
 """ 
     weightedmean(A::WeightedValue, B::WeightedValue)
 
@@ -80,7 +80,7 @@ end
     weightedmean(B::NTuple{N,WeightedValue{T}}) where {N,T}
 
 weightedmeans a tuple of WeightedValue objects by calculating their weighted average. """
-weightedmean(A::NTuple{N,WeightedValue}) where {N} = reduce(weightedmean, A)
+weightedmean(A::NTuple{N, WeightedValue}) where {N} = reduce(weightedmean, A)
 weightedmean(::NTuple{0}) = weightedmean()
 weightedmean() = nothing #zero(WeightedValue{Float64})
 #weightedmeandmean(A::WeightedValue, B...) = weightedmean(weightedmean(A, first(B)), last(B, length(B) - 1))

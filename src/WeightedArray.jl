@@ -3,37 +3,39 @@ using ZippedArrays
 
 get_value(x::AbstractArray{<:WeightedValue}) = map(x -> x.value, x)
 get_precision(x::AbstractArray{<:WeightedValue}) = map(x -> x.precision, x)
-WeightedValue(A::AbstractArray{T1,N}, B::AbstractArray{T2,N}) where {T1,T2,N} = map((a, b) -> WeightedValue(a, b), A, B)
+WeightedValue(A::AbstractArray{T1, N}, B::AbstractArray{T2, N}) where {T1, T2, N} = map((a, b) -> WeightedValue(a, b), A, B)
 
 
-WeightedArray{T,N} = ZippedArray{WeightedValue{T},N,2,I,Tuple{A,B}} where {A<:AbstractArray{T,N},B<:AbstractArray{T,N},I}
-WeightedArray(A::AbstractArray{T,N}, B::AbstractArray{T,N}) where {T,N} = ZippedArray{WeightedValue{T}}(A, B)
-WeightedArray(A::AbstractArray{T1,N}, B::AbstractArray{T2,N}) where {T1,T2,N} = ZippedArray{WeightedValue{T1}}(A, T1.(B))
+WeightedArray{T, N} = ZippedArray{WeightedValue{T}, N, 2, I, Tuple{A, B}} where {A <: AbstractArray{T, N}, B <: AbstractArray{T, N}, I}
+WeightedArray(A::AbstractArray{T, N}, B::AbstractArray{T, N}) where {T, N} = ZippedArray{WeightedValue{T}}(A, B)
+WeightedArray(A::AbstractArray{T1, N}, B::AbstractArray{T2, N}) where {T1, T2, N} = ZippedArray{WeightedValue{T1}}(A, T1.(B))
 
 
 WeightedArray(x::AbstractArray{<:WeightedValue}) = WeightedArray(get_value(x), get_precision(x))
 WeightedArray(x::WeightedArray) = x
 
-function WeightedArray(x::AbstractArray{<:Union{T,Missing}}) where {T<:Real}
+function WeightedArray(x::AbstractArray{<:Union{T, Missing}}) where {T <: Real}
     m = .!ismissing.(x) .&& .!isnan.(x)
     return WeightedArray(ifelse.(m, x, T(0)), m)
 end
 WeightedArray(x::AbstractArray{Missing}) = WeightedArray(zeros(size(x)), zeros(size(x)))
-WeightedArray(x::AbstractArray{T}) where {T<:Real} = WeightedArray(x, ones(size(x)))
+WeightedArray(x::AbstractArray{T}) where {T <: Real} = WeightedArray(x, ones(size(x)))
+
+Base.zeros(::Type{WeightedValue{T1}}, dims::Int...) where {T1 <: Real} = WeightedArray(zeros(T1, dims...), zeros(T1, dims...))
 
 Base.:+(A::WeightedArray, B::WeightedArray) = WeightedArray(A.value .+ B.value, inv.(inv.(A.precision) .+ inv.(B.precision)))
 Broadcast.broadcasted(::typeof(+), A::WeightedArray, B::WeightedArray) = A + B
 Base.:-(A::WeightedArray, B::WeightedArray) = WeightedArray(A.value .- B.value, inv.(inv.(A.precision) .+ inv.(B.precision)))
 Broadcast.broadcasted(::typeof(-), A::WeightedArray, B::WeightedArray) = A - B
 
-Base.:+((; value, precision)::WeightedArray, B::Union{T,AbstractArray{T}}) where {T<:Real} = WeightedArray(value .+ B, precision)
-Broadcast.broadcasted(::typeof(+), A::WeightedArray, B::Union{T,AbstractArray{T}}) where {T<:Real} = A + B
-Base.:+(A::Union{T,AbstractArray{T}}, B::WeightedArray) where {T<:Real} = B + A
-Broadcast.broadcasted(::typeof(+), A::Union{T,AbstractArray{T}}, B::WeightedArray) where {T<:Real} = B + A
-Base.:-((; value, precision)::WeightedArray, B::Union{T,AbstractArray{T}}) where {T<:Real} = WeightedArray(value .- B, precision)
-Broadcast.broadcasted(::typeof(-), A::WeightedArray, B::Union{T,AbstractArray{T}}) where {T<:Real} = A - B
-Base.:-(A::Union{T,AbstractArray{T}}, (; value, precision)::WeightedArray) where {T<:Real} = WeightedArray(A .- value, precision)
-Broadcast.broadcasted(::typeof(-), A::Union{T,AbstractArray{T}}, B::WeightedArray) where {T<:Real} = A - B
+Base.:+((; value, precision)::WeightedArray, B::Union{T, AbstractArray{T}}) where {T <: Real} = WeightedArray(value .+ B, precision)
+Broadcast.broadcasted(::typeof(+), A::WeightedArray, B::Union{T, AbstractArray{T}}) where {T <: Real} = A + B
+Base.:+(A::Union{T, AbstractArray{T}}, B::WeightedArray) where {T <: Real} = B + A
+Broadcast.broadcasted(::typeof(+), A::Union{T, AbstractArray{T}}, B::WeightedArray) where {T <: Real} = B + A
+Base.:-((; value, precision)::WeightedArray, B::Union{T, AbstractArray{T}}) where {T <: Real} = WeightedArray(value .- B, precision)
+Broadcast.broadcasted(::typeof(-), A::WeightedArray, B::Union{T, AbstractArray{T}}) where {T <: Real} = A - B
+Base.:-(A::Union{T, AbstractArray{T}}, (; value, precision)::WeightedArray) where {T <: Real} = WeightedArray(A .- value, precision)
+Broadcast.broadcasted(::typeof(-), A::Union{T, AbstractArray{T}}, B::WeightedArray) where {T <: Real} = A - B
 
 Base.:/((; value, precision)::WeightedArray, B::Number) = WeightedArray(value ./ B, B^2 .* precision)
 Broadcast.broadcasted(::typeof(/), A::WeightedArray, B::Number) = A / B
@@ -68,25 +70,25 @@ function Base.getproperty(A::WeightedArray, s::Symbol)
     end
 end
 
-function flagbadpix(data::AbstractArray{WeightedValue{T},N}, badpix::Union{Array{Bool,N},BitArray{N}}) where {T,N}
+function flagbadpix(data::AbstractArray{WeightedValue{T}, N}, badpix::Union{Array{Bool, N}, BitArray{N}}) where {T, N}
     size(data) == size(badpix) || error("flagbadpix! : size(data) != size(badpix)")
     return @inbounds map((d, flag) -> ifelse(flag, WeightedValue(T(0), T(0)), d), data, badpix)
 end
 
-function flagbadpix!(data::WeightedArray{T1,N}, badpix::Union{AbstractArray{Bool,N},BitArray{N}}) where {T1,N}
+function flagbadpix!(data::WeightedArray{T1, N}, badpix::Union{AbstractArray{Bool, N}, BitArray{N}}) where {T1, N}
     size(data) == size(badpix) || error("flagbadpix! : size(data) != size(badpix)")
     return data[badpix] .= WeightedValue{T1}(T1(0), T1(0))
 end
 
 
-function weightedmean(A::AbstractArray{WeightedValue{T}}; dims=Colon()) where {T}
+function weightedmean(A::AbstractArray{WeightedValue{T}}; dims = Colon()) where {T}
     if dims == Colon()
         return reduce(weightedmean, A)
     end
-    return mapslices(weightedmean, A; dims=dims)
+    return mapslices(weightedmean, A; dims = dims)
 end
 
-function weightedmean(A::AbstractArray{WeightedValue{T1}}, B::AbstractArray{WeightedValue{T2}}) where {T1,T2}
+function weightedmean(A::AbstractArray{WeightedValue{T1}}, B::AbstractArray{WeightedValue{T2}}) where {T1, T2}
     T = promote_type(T1, T2)
     dataA = get_value(A)
     dataB = get_value(B)
