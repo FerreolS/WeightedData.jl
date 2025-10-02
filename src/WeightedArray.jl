@@ -60,8 +60,9 @@ get_value(x::WeightedArray) = x.args[1]
 get_precision(x::WeightedArray) = x.args[2]
 
 Base.reshape(A::WeightedArray, dims::Union{Colon, Int64}...) = WeightedArray(reshape(get_value(A), dims...), reshape(get_precision(A), dims...))
+Base.reshape(A::WeightedArray, ::Colon) = WeightedArray(reshape(get_value(A), :), reshape(get_precision(A), :))
 
-Base.propertynames(::WeightedArray) = (:value, :precision)
+  Base.propertynames(::WeightedArray) = (:value, :precision)
 function Base.getproperty(A::WeightedArray, s::Symbol)
     if s == :value
         return get_value(A)

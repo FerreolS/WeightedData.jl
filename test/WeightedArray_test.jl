@@ -31,6 +31,7 @@
     @test @inferred(get_precision(weighted_array)) == B
 
     @test reshape(weighted_array, 3, 1) == WeightedArray(reshape(A, 3, 1), reshape(B, 3, 1))
+    @test reshape(weighted_array, :) == WeightedArray(reshape(A, :), reshape(B, :))
 
     badpix = [false, true, false]
     flagged_array = flagbadpix(weighted_array, badpix)
