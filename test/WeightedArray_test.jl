@@ -1,4 +1,3 @@
-
 @testset "WeightedArray.jl" begin
     A = [WeightedValue(1.0, 0.5), WeightedValue(2.0, 0.5)]
 
@@ -12,9 +11,9 @@
     @test B == WeightedArray(WeightedArray(A))
 
     @test @inferred(flagbadpix(A, [true, false])) == [WeightedValue(0.0, 0.0), WeightedValue(2.0, 0.5)]
-    @test WeightedArray([1.0, missing]) == [WeightedValue(1.0, 1.0), WeightedValue(0.0, 0.)]
+    @test WeightedArray([1.0, missing]) == [WeightedValue(1.0, 1.0), WeightedValue(0.0, 0.0)]
     @test WeightedArray(ones(2, 3)) == WeightedArray(ones(2, 3), ones(2, 3))
-    @test WeightedArray([missing, missing]) == [WeightedValue(0.0, 0.0), WeightedValue(0.0, 0.)]
+    @test WeightedArray([missing, missing]) == [WeightedValue(0.0, 0.0), WeightedValue(0.0, 0.0)]
 
 
     A = [1.0, 2.0, 3.0]
@@ -31,6 +30,8 @@
     @test @inferred(get_value(weighted_array)) == A
     @test @inferred(get_precision(weighted_array)) == B
 
+    @test reshape(weighted_array, 3, 1) == WeightedArray(reshape(A, 3, 1), reshape(B, 3, 1))
+
     badpix = [false, true, false]
     flagged_array = flagbadpix(weighted_array, badpix)
     @test get_value(flagged_array) == [1.0, 0.0, 3.0]
@@ -45,7 +46,7 @@
     @test @inferred(weightedmean(C, C)) == WeightedArray([1.0, 2.0, 3.0], [2, 2, 1])
 
     D = WeightedArray(ones(Float32, 2, 2), ones(2, 2))
-    @test @inferred(weightedmean(D; dims=2)) == WeightedArray(ones(Float32, 2, 1), 2 * ones(2, 1))
+    @test @inferred(weightedmean(D; dims = 2)) == WeightedArray(ones(Float32, 2, 1), 2 * ones(2, 1))
 
 
 end
