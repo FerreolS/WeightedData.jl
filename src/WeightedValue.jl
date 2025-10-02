@@ -87,3 +87,5 @@ weightedmean() = nothing #zero(WeightedValue{Float64})
 #weightedmean(A::WeightedValue, B::NTuple{N,WeightedValue}) where {N} = weightedmean(weightedmean(A, first(B)), last(B, N - 1))
 weightedmean(A::WeightedValue) = A
 weightedmean(A::WeightedValue...) = reduce(weightedmean, A)
+
+Base.show(io::IO, (; value, precision)::WeightedValue) = print(io, "$value ± $(1 / sqrt(precision))")

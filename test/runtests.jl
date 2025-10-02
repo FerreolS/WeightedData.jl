@@ -46,6 +46,30 @@ using Test
 
 
     end
+    @testset "show method for WeightedValue" begin
+        wv1 = WeightedValue(1.0, 4.0)
+        s1 = sprint(show, wv1)
+        @test s1 == "1.0 ± 0.5"
+
+        wv2 = WeightedValue(2.5, 0.25)
+        s2 = sprint(show, wv2)
+        @test s2 == "2.5 ± 2.0"
+
+        wv3 = WeightedValue(10.0, 100.0)
+        s3 = sprint(show, wv3)
+        @test s3 == "10.0 ± 0.1"
+
+        # Test with infinite precision
+        wv4 = WeightedValue(5.0, Inf)
+        s4 = sprint(show, wv4)
+        @test s4 == "5.0 ± 0.0"
+
+        # Test with zero precision
+        wv5 = WeightedValue(7.0, 0.0)
+        s5 = sprint(show, wv5)
+        @test s5 == "7.0 ± Inf"
+    end
+
     include("WeightedArray_test.jl")
     include("likelihood_test.jl")
     include("WeightedDataPlotsExt_test.jl")
