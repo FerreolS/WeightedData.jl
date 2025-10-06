@@ -53,10 +53,10 @@ Base.:/(::WeightedValue, ::WeightedValue) = error("Division of WeightedValue obj
 Base.one(::WeightedValue{T}) where {T} = one(T)
 Base.zero(::WeightedValue{T}) where {T} = zero(WeightedValue{T})
 Base.zero(::Type{WeightedValue{T}}) where {T} = WeightedValue(zero(T), T(+Inf))
+#WeightedValue(::Missing) = WeightedValue(0, 0)
 
 Base.:(==)(x::WeightedValue, y::WeightedValue) = x.value == y.value && x.precision == y.precision
 
-#Base.show(io::IO, x::WeightedValue) = print(io, "WeightedValue($(x.value), $(x.precision))")
 
 Base.convert(::Type{T}, (; value, precision)::WeightedValue) where {T <: Real} = WeightedValue(convert(T, value), convert(T, precision))
 """ 

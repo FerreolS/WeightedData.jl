@@ -19,9 +19,9 @@ function WeightedArray(x::AbstractArray{<:Union{T, Missing}}) where {T <: Real}
     return WeightedArray(ifelse.(m, x, T(0)), m)
 end
 WeightedArray(x::AbstractArray{Missing}) = WeightedArray(zeros(size(x)), zeros(size(x)))
-WeightedArray(x::AbstractArray{T}) where {T <: Real} = WeightedArray(x, ones(size(x)))
+#WeightedArray(x::AbstractArray{T}) where {T <: Real} = WeightedArray(x, ones(size(x)))
 
-Base.zeros(::Type{WeightedValue{T1}}, dims::Int...) where {T1 <: Real} = WeightedArray(zeros(T1, dims...), zeros(T1, dims...))
+Base.zeros(::Type{WeightedValue{T1}}, dims::Int...) where {T1 <: Real} = WeightedArray(zeros(T1, dims...), fill(T1(+Inf), dims...))
 
 Base.:+(A::WeightedArray, B::WeightedArray) = WeightedArray(A.value .+ B.value, inv.(inv.(A.precision) .+ inv.(B.precision)))
 Broadcast.broadcasted(::typeof(+), A::WeightedArray, B::WeightedArray) = A + B
@@ -62,7 +62,7 @@ get_precision(x::WeightedArray) = x.args[2]
 Base.reshape(A::WeightedArray, dims::Union{Colon, Int64}...) = WeightedArray(reshape(get_value(A), dims...), reshape(get_precision(A), dims...))
 Base.reshape(A::WeightedArray, ::Colon) = WeightedArray(reshape(get_value(A), :), reshape(get_precision(A), :))
 
-  Base.propertynames(::WeightedArray) = (:value, :precision)
+Base.propertynames(::WeightedArray) = (:value, :precision)
 function Base.getproperty(A::WeightedArray, s::Symbol)
     if s == :value
         return get_value(A)
