@@ -25,6 +25,7 @@ end
 
 WeightedValue(value::T, precision::Number) where {T <: Real} = WeightedValue(value, T(precision))
 WeightedValue{T}(value::Number, precision::Number) where {T} = WeightedValue(T(value), T(precision))
+WeightedValue(::Missing, x) = WeightedValue(0, 0)
 
 get_value(A::WeightedValue) = A.value
 get_precision(A::WeightedValue) = A.precision
@@ -53,7 +54,6 @@ Base.:/(::WeightedValue, ::WeightedValue) = error("Division of WeightedValue obj
 Base.one(::WeightedValue{T}) where {T} = one(T)
 Base.zero(::WeightedValue{T}) where {T} = zero(WeightedValue{T})
 Base.zero(::Type{WeightedValue{T}}) where {T} = WeightedValue(zero(T), T(+Inf))
-#WeightedValue(::Missing) = WeightedValue(0, 0)
 
 Base.:(==)(x::WeightedValue, y::WeightedValue) = x.value == y.value && x.precision == y.precision
 

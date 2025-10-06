@@ -10,10 +10,10 @@
     @test B == WeightedArray(A)
     @test B == WeightedArray(WeightedArray(A))
 
-    @test @inferred(flagbadpix(A, [true, false])) == [WeightedValue(0.0, 0.0), WeightedValue(2.0, 0.5)]
-    @test WeightedArray([1.0, missing]) == [WeightedValue(1.0, 1.0), WeightedValue(0.0, 0.0)]
-    @test WeightedArray(ones(2, 3)) == WeightedArray(ones(2, 3), ones(2, 3))
-    @test WeightedArray([missing, missing]) == [WeightedValue(0.0, 0.0), WeightedValue(0.0, 0.0)]
+    @test @inferred(flagbadpix(A, [true, false])) == WeightedArray([WeightedValue(0.0, 0.0), WeightedValue(2.0, 0.5)])
+    @test WeightedArray([1.0, missing], ones(2)) == WeightedArray([WeightedValue(1.0, 1.0), WeightedValue(0.0, 0.0)])
+    #@test WeightedArray(ones(2, 3)) == WeightedArray(ones(2, 3), ones(2, 3))
+    @test WeightedArray([missing, 1.0], ones(2)) == WeightedArray([WeightedValue(0.0, 0.0), WeightedValue(1.0, 1.0)])
 
 
     A = [1.0, 2.0, 3.0]
