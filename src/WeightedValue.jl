@@ -1,5 +1,5 @@
 """
-    WeightedValue{T<:AbstractFloat} <: Number
+    WeightedValue{T<:Real} <: Number
 
 A structure representing a numerical value weighted by its precision.
 
@@ -12,18 +12,18 @@ A structure representing a numerical value weighted by its precision.
 x = WeightedValue(1.0, 0.5)  # value 1.0 with precision 0.5
 ```
 """
-struct WeightedValue{T <: AbstractFloat} <: Number
+struct WeightedValue{T <: Real} <: Number
     value::T
     precision::T
-    function WeightedValue(value::T, precision::T) where {T <: AbstractFloat}
+    function WeightedValue(value::T, precision::T) where {T <: Real}
         precision >= 0 || error("WeightedValue : precisionmust be positive")
         isfinite(value) || return new{T}(zero(T), zero(T))
         return new{T}(value, precision)
     end
-    WeightedValue{T}(value::T, precision::T) where {T <: AbstractFloat} = new{T}(value, precision)
+    WeightedValue{T}(value::T, precision::T) where {T <: Real} = new{T}(value, precision)
 end
 
-WeightedValue(value::T, precision::Number) where {T <: AbstractFloat} = WeightedValue(value, T(precision))
+WeightedValue(value::T, precision::Number) where {T <: Real} = WeightedValue(value, T(precision))
 WeightedValue{T}(value::Number, precision::Number) where {T} = WeightedValue(T(value), T(precision))
 
 get_value(A::WeightedValue) = A.value
