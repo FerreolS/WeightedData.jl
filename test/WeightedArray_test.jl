@@ -14,6 +14,14 @@
     @test WeightedArray([1.0, missing], ones(2)) == WeightedArray([WeightedValue(1.0, 1.0), WeightedValue(0.0, 0.0)])
     #@test WeightedArray(ones(2, 3)) == WeightedArray(ones(2, 3), ones(2, 3))
     @test WeightedArray([missing, 1.0], ones(2)) == WeightedArray([WeightedValue(0.0, 0.0), WeightedValue(1.0, 1.0)])
+    @test WeightedArray([missing, missing]) == WeightedArray([WeightedValue(missing, 0.0), WeightedValue(0.0, 0.0)])
+
+
+    z = zeros(WeightedValue{Float64}, 2, 3)
+    @test z isa WeightedArray
+    @test eltype(z) == WeightedValue{Float64}
+    @test size(z) == (2, 3)
+    @test all(wv -> wv == WeightedValue(0.0, +Inf), z)
 
 
     A = [1.0, 2.0, 3.0]
