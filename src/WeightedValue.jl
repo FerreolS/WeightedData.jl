@@ -26,6 +26,7 @@ end
 WeightedValue(value::T, precision::Number) where {T <: Real} = WeightedValue(value, T(precision))
 WeightedValue{T}(value::Number, precision::Number) where {T} = WeightedValue(T(value), T(precision))
 WeightedValue(::Missing, x) = WeightedValue(0, 0)
+WeightedValue(::Missing) = WeightedValue(0, 0)
 
 get_value(A::WeightedValue) = A.value
 get_precision(A::WeightedValue) = A.precision
