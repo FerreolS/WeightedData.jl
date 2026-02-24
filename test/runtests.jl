@@ -20,6 +20,7 @@ using Test
 
         @test A - B == WeightedValue(-1.0, 0.25)
         @test A - 1.0 == WeightedValue(0.0, 0.5)
+        @test_throws ErrorException WeightedValue{Float64}(1.0, -1.0)
 
         @test 2.0 * A == WeightedValue(2.0, 0.125)
         @test A * 2.0 == WeightedValue(2.0, 0.125)
