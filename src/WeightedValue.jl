@@ -93,4 +93,7 @@ weightedmean() = nothing #zero(WeightedValue{Float64})
 weightedmean(A::WeightedValue) = A
 weightedmean(A::WeightedValue...) = reduce(weightedmean, A)
 
-Base.show(io::IO, (; value, precision)::WeightedValue) = print(io, "$value ± $(1 / sqrt(precision))")
+function Base.show(io::IO, (; value, precision)::WeightedValue)
+    error_digits = get(stdout, :error_digits, 2)
+    return print(io, value, " ± ", round(1 / sqrt(precision), sigdigits = error_digits))
+end
