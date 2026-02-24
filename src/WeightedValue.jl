@@ -20,7 +20,11 @@ struct WeightedValue{T <: Real} <: Number
         isfinite(value) || return new{T}(zero(T), zero(T))
         return new{T}(value, precision)
     end
-    WeightedValue{T}(value::T, precision::T) where {T <: Real} = new{T}(value, precision)
+    function WeightedValue{T}(value::T, precision::T) where {T <: Real}
+        precision >= 0 || error("WeightedValue : precisionmust be positive")
+        isfinite(value) || return new{T}(zero(T), zero(T))
+        return new{T}(value, precision)
+    end
 end
 
 WeightedValue(value::T, precision::Number) where {T <: Real} = WeightedValue(value, T(precision))
