@@ -76,5 +76,7 @@ using Test
     include("WeightedDataPlotsExt_test.jl")
     include("WeightedDataRobustModelsExt_test.jl")
     include("WeightedDataTwoDimensionalExt_test.jl")
+    include("WeightedDataMeasurementsExt_test.jl")
+    include("WeightedDataUncertainExt_test.jl")
 
 end
