@@ -71,11 +71,6 @@ jobs:
         with:
           version: "1"
       - uses: julia-actions/cache@v2
-      - name: Setup docs environment
-        shell: julia --project=docs --color=yes {0}
-        run: |
-          using Pkg
-          Pkg.instantiate()
       - uses: julia-actions/julia-docdeploy@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
