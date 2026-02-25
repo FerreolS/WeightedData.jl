@@ -7,9 +7,16 @@ import WeightedData: likelihood, L2Loss, get_value, get_precision, WeightedValue
 """
     ChainRulesCore.rrule(::typeof(likelihood), ::L2Loss, data, model)
 
-Custom reverse-mode rule for `likelihood(::L2Loss, data, model)` with weighted
-array data. Returns the scalar loss and a pullback that propagates gradients to
-`model`.
+Custom reverse-mode rule for
+`likelihood(::L2Loss, data::AbstractArray{<:WeightedValue}, model)`.
+
+# Arguments
+- `data`: weighted observations
+- `model`: model values with the same shape as `data`
+
+# Returns
+- scalar objective value
+- pullback that propagates gradients to `model`
 """
 function ChainRulesCore.rrule(::typeof(likelihood), ::L2Loss, data::AbstractArray{WeightedValue{T}, N}, model::AbstractArray{T, N}) where {T, N}
     size(data) == size(model) || error("likelihood : size(A) != size(model)")
@@ -30,10 +37,20 @@ end
 """
     ChainRulesCore.rrule(::typeof(likelihood), ::ScaledL2Loss, weighteddata, model)
 
-Custom reverse-mode rule for the scaled L2 likelihood. The pullback returns
-gradients with respect to `model` leveraging the fact the gradients of  the 
-scaling factor `α` with respect to the model is zero as `α` is optimal in the maximum 
-likelihood sens.
+Custom reverse-mode rule for
+`likelihood(::ScaledL2Loss, weighteddata::AbstractArray{<:WeightedValue}, model)`.
+
+The pullback returns gradients with respect to `model`. The derivative through
+the optimal scaling factor `α` is intentionally ignored (treated as stationary
+at optimum).
+
+# Arguments
+- `weighteddata`: weighted observations
+- `model`: model values with the same shape as `weighteddata`
+
+# Returns
+- scalar objective value
+- pullback that propagates gradients to `model`
 """
 function ChainRulesCore.rrule(::typeof(likelihood), (; dims, nonnegative)::ScaledL2Loss, weighteddata::AbstractArray{WeightedValue{T1}, N}, model::AbstractArray{T2, N}) where {T1, T2, N}
     size(weighteddata) == size(model) || error("scaledlikelihood : size(A) != size(model)")

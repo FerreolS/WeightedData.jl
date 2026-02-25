@@ -1,14 +1,44 @@
 ## Array of WeightedValue
 
+"""
+    get_value(x::AbstractArray{<:WeightedValue})
+
+Extract an array with the values of each `WeightedValue` element.
+"""
 get_value(x::AbstractArray{<:WeightedValue}) = map(x -> x.value, x)
+
+"""
+    get_precision(x::AbstractArray{<:WeightedValue})
+
+Extract an array with the precisions of each `WeightedValue` element.
+"""
 get_precision(x::AbstractArray{<:WeightedValue}) = map(x -> x.precision, x)
 WeightedValue(A::AbstractArray{T1, N}, B::AbstractArray{T2, N}) where {T1, T2, N} = map((a, b) -> WeightedValue(a, b), A, B)
 
 
+"""
+    WeightedArray{T,N}
+
+`N`-dimensional array of `WeightedValue{T}`.
+"""
 const WeightedArray{T, N} = ZippedArray{WeightedValue{T}, N, 2, I, Tuple{A, B}} where {A <: AbstractArray{T, N}, B <: AbstractArray{T, N}, I}
+
+"""
+    WeightedArray(values::AbstractArray{T,N}, precision::AbstractArray{T,N})
+
+Build a weighted array from value and precision arrays of the same shape.
+"""
 WeightedArray(A::AbstractArray{T, N}, B::AbstractArray{T, N}) where {T <: Real, N} = ZippedArray{WeightedValue{T}}(A, B)
 WeightedArray(A::AbstractArray{T1, N}, B::AbstractArray{T2, N}) where {T1 <: Real, T2 <: Real, N} = ZippedArray{WeightedValue{T1}}(A, T1.(B))
 
+"""
+    WeightedArray(values::AbstractArray{<:Union{Missing,Real},N}, precision::AbstractArray{<:Real,N})
+
+Build a `WeightedArray` while handling invalid entries.
+
+Any position where `values` is `missing`/`NaN` or `precision` is `NaN` is
+replaced by `(0, 0)` in the resulting weighted array.
+"""
 function WeightedArray(x::AbstractArray{<:Union{Missing, Real}, N}, y::AbstractArray{T2, N}) where {T2 <: Real, N}
     size(x) == size(y) || error("WeightedArray: size(value) != size(precision)")
     Tx = Base.nonmissingtype(eltype(x))
@@ -88,12 +118,25 @@ function flagbadpix(data::AbstractArray{WeightedValue{T}, N}, badpix::Union{Arra
     return @inbounds map((d, flag) -> ifelse(flag, WeightedValue(T(0), T(0)), d), data, badpix)
 end
 
+"""
+    flagbadpix!(data::WeightedArray, badpix)
+
+In-place version of `flagbadpix` for `WeightedArray`.
+
+All positions where `badpix` is `true` are set to `(0, 0)`.
+"""
 function flagbadpix!(data::WeightedArray{T1, N}, badpix::Union{AbstractArray{Bool, N}, BitArray{N}}) where {T1, N}
     size(data) == size(badpix) || error("flagbadpix! : size(data) != size(badpix)")
     return data[badpix] .= WeightedValue{T1}(T1(0), T1(0))
 end
 
 
+"""
+    weightedmean(A::AbstractArray{WeightedValue}; dims=:)
+
+Compute a precision-weighted mean over all elements (`dims=:`) or along the
+specified dimensions.
+"""
 function weightedmean(A::AbstractArray{WeightedValue{T}}; dims = Colon()) where {T}
     if dims == Colon()
         return reduce(weightedmean, A)
@@ -101,6 +144,12 @@ function weightedmean(A::AbstractArray{WeightedValue{T}}; dims = Colon()) where 
     return mapslices(weightedmean, A; dims = dims)
 end
 
+"""
+    weightedmean(A::AbstractArray{WeightedValue}, B::AbstractArray{WeightedValue})
+
+Element-wise precision-weighted mean of two weighted arrays with matching
+shape.
+"""
 function weightedmean(A::AbstractArray{WeightedValue{T1}}, B::AbstractArray{WeightedValue{T2}}) where {T1, T2}
     T = promote_type(T1, T2)
     dataA = get_value(A)

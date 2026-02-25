@@ -5,13 +5,18 @@ import WeightedData: WeightedValue, get_value, get_precision
 """
     WeightedValue(x::Uncertain.Value)
 
-Convert an Uncertain.Value to a WeightedValue, using the uncertainty to determine precision.
+Convert an `Uncertain.Value` to `WeightedValue`.
 
 # Arguments
-- `x::Uncertain.Value`: An Uncertain value with uncertainty
+- `x::Uncertain.Value`: value with uncertainty
 
 # Returns
-A WeightedValue with value and precision derived from the Uncertain value's value and uncertainty.
+A `WeightedValue` with:
+- value = `Uncertain.value(x)`
+- precision = `Uncertain.uncertainty(x)^(-2)`
+
+# Notes
+Precision is the inverse variance.
 
 # Example
 ```julia
@@ -25,13 +30,18 @@ WeightedValue(x::Uncertain.Value) = WeightedValue(Uncertain.value(x), Uncertain.
 """
     T(x::WeightedValue) where T <: Uncertain.Value
 
-Convert a WeightedValue to an Uncertain value type, using precision to determine uncertainty.
+Convert `WeightedValue` to an `Uncertain.Value` subtype.
 
 # Arguments
 - `x::WeightedValue`: A WeightedValue with value and precision
 
 # Returns
-An Uncertain value with value and uncertainty derived from the WeightedValue's value and precision.
+An uncertain value with:
+- value = `get_value(x)`
+- uncertainty = `1 / sqrt(get_precision(x))`
+
+# Notes
+Uncertainty is the standard deviation.
 
 # Example
 ```julia

@@ -1,13 +1,20 @@
 """
     WeightedValue{T<:Real} <: Number
 
-A structure representing a numerical value weighted by its precision.
+Value with associated precision (inverse variance).
+
+`WeightedValue` stores a numeric `value` and a non-negative `precision`.
+It is the scalar building block used throughout `WeightedData.jl`.
+
+Constructor behavior:
+- `precision < 0` throws an error;
+- non-finite input `value` is converted to `(0, 0)`.
 
 ## Fields
 - `value::T`: The value
-- `precision::T`: The precision (or weight) associated with the value (must be positive)
+- `precision::T`: The precision (must be non-negative)
 
-## Examples
+## Example
 ```julia
 x = WeightedValue(1.0, 0.5)  # value 1.0 with precision 0.5
 ```
@@ -32,7 +39,18 @@ WeightedValue{T}(value::Number, precision::Number) where {T} = WeightedValue(T(v
 WeightedValue(::Missing, x) = WeightedValue(0, 0)
 WeightedValue(::Missing) = WeightedValue(0, 0)
 
+"""
+    get_value(x::WeightedValue)
+
+Return the numeric value stored in `x`.
+"""
 get_value(A::WeightedValue) = A.value
+
+"""
+    get_precision(x::WeightedValue)
+
+Return the precision (inverse variance) stored in `x`.
+"""
 get_precision(A::WeightedValue) = A.precision
 
 Base.real(A::WeightedValue) = WeightedValue(real(A.value), real(A.precision))
@@ -41,8 +59,12 @@ Base.imag(A::WeightedValue) = WeightedValue(imag(A.value), imag(A.precision))
 """
     +(A::WeightedValue, B::WeightedValue)
 
-Add two weighted points. The result's value is the sum of values, and the precision
-is calculated according to error propagation rules.
+Add two weighted values.
+
+The resulting value is `A.value + B.value`. The resulting precision is computed
+using standard independent-error propagation:
+
+`p = 1 / (1/A.precision + 1/B.precision)`
 """
 Base.:+(A::WeightedValue, B::WeightedValue) = WeightedValue(A.value + B.value, inv(inv(A.precision) + inv(B.precision)))
 Base.:+((; value, precision)::WeightedValue, B::Number) = WeightedValue(value + B, precision)
@@ -63,16 +85,20 @@ Base.zero(::Type{WeightedValue{T}}) where {T} = WeightedValue(zero(T), T(+Inf))
 Base.:(==)(x::WeightedValue, y::WeightedValue) = x.value == y.value && x.precision == y.precision
 
 TypeUtils.get_precision(::Type{<:WeightedValue{T}}) where {T} = T
-""" 
+"""
     weightedmean(A::WeightedValue, B::WeightedValue)
 
-weightedmeans two WeightedValue objects by calculating their weighted average based on precision. The result has a precision equal to the sum of the individual precisions.
+Compute the precision-weighted mean of two `WeightedValue` objects.
 
-Example
+For `A = (v₁, p₁)` and `B = (v₂, p₂)`, this returns:
+- value: `(p₁*v₁ + p₂*v₂) / (p₁ + p₂)`
+- precision: `p₁ + p₂`
+
+## Example
 ```julia
-    x = WeightedValue(1.0, 0.5)
-    y = WeightedValue(2.0, 1.5)
-    z = weightedmean(x, y)  # WeightedValue(1.75, 2.0)
+x = WeightedValue(1.0, 0.5)
+y = WeightedValue(2.0, 1.5)
+z = weightedmean(x, y)  # WeightedValue(1.75, 2.0)
 ```
 """
 function weightedmean(A::WeightedValue, B::WeightedValue)
@@ -80,10 +106,13 @@ function weightedmean(A::WeightedValue, B::WeightedValue)
     value = (A.precision * A.value + B.precision * B.value) / (precision)
     return WeightedValue(value, precision)
 end
-""" 
-    weightedmean(B::NTuple{N,WeightedValue{T}}) where {N,T}
+"""
+    weightedmean(A::NTuple{N,WeightedValue}) where {N}
 
-weightedmeans a tuple of WeightedValue objects by calculating their weighted average. """
+Compute the precision-weighted mean of a tuple of `WeightedValue` objects.
+
+This method reduces the tuple with pairwise `weightedmean`.
+"""
 weightedmean(A::NTuple{N, WeightedValue}) where {N} = reduce(weightedmean, A)
 weightedmean(::NTuple{0}) = weightedmean()
 weightedmean() = nothing #zero(WeightedValue{Float64})
@@ -92,6 +121,13 @@ weightedmean() = nothing #zero(WeightedValue{Float64})
 weightedmean(A::WeightedValue) = A
 weightedmean(A::WeightedValue...) = reduce(weightedmean, A)
 
+"""
+    show(io::IO, x::WeightedValue)
+
+Pretty-print `x` as `value ± uncertainty`, with uncertainty computed as
+`1/sqrt(precision)`. The number of significant digits in the uncertainty can
+be controlled with IO context key `:error_digits` (default: `2`).
+"""
 function Base.show(io::IO, (; value, precision)::WeightedValue)
     error_digits = get(io, :error_digits, 2)
     return print(io, value, " ± ", round(1 / sqrt(precision), sigdigits = error_digits))

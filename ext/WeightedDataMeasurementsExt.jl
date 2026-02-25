@@ -5,16 +5,18 @@ import WeightedData: WeightedValue, get_value, get_precision
 """
     WeightedValue(x::Measurements.Measurement)
 
-Convert a Measurement to a WeightedValue, using the measurement uncertainty to determine precision.
+Convert a `Measurements.Measurement` to `WeightedValue`.
 
 # Arguments
-- `x::Measurements.Measurement`: A value with measurement uncertainty
+- `x::Measurements.Measurement`: value with uncertainty
 
 # Returns
-A WeightedValue with value and precision derived from the measurement's value and uncertainty.
+A `WeightedValue` with:
+- value = `Measurements.value(x)`
+- precision = `Measurements.uncertainty(x)^(-2)`
 
-# Details
-The precision is computed as `uncertainty^(-2)`, i.e., the inverse square of the uncertainty.
+# Notes
+Precision is the inverse variance.
 
 # Example
 ```julia
@@ -28,16 +30,18 @@ WeightedValue(x::Measurements.Measurement) = WeightedValue(Measurements.value(x)
 """
     Measurement(x::WeightedValue)
 
-Convert a WeightedValue to a Measurement, using precision to determine uncertainty.
+Convert `WeightedValue` to `Measurements.Measurement`.
 
 # Arguments
 - `x::WeightedValue`: A WeightedValue with value and precision
 
 # Returns
-A Measurement with value and uncertainty derived from the WeightedValue's value and precision.
+A `Measurements.Measurement` with:
+- value = `get_value(x)`
+- uncertainty = `1 / sqrt(get_precision(x))`
 
-# Details
-The uncertainty is computed as `1 / sqrt(precision)`.
+# Notes
+Uncertainty is the standard deviation.
 
 # Example
 ```julia

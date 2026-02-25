@@ -30,8 +30,11 @@ import RobustModels: LossFunction,
 """
     likelihood(loss::LossFunction, data::WeightedValue, model::Number)
 
-Compute robust negative log-likelihood contribution for a single weighted
-observation using a `RobustModels` loss.
+Compute robust loss contribution for a single weighted observation.
+
+Residual is defined as:
+`r = sqrt(get_precision(data)) * (model - get_value(data))`
+and the returned value is `rho(loss, r)`.
 """
 function likelihood(loss::LossFunction, data::WeightedValue, model::Number)
     r = sqrt(get_precision(data)) * (model - get_value(data))
@@ -41,7 +44,7 @@ end
 """
     likelihood(loss::LossFunction, data::AbstractArray{<:WeightedValue}, model::AbstractArray)
 
-Compute robust negative log-likelihood for arrays of weighted observations.
+Compute robust loss for arrays of weighted observations.
 `data` and `model` must have the same shape.
 """
 function likelihood(loss::LossFunction, data::AbstractArray{<:WeightedValue}, model::AbstractArray)
@@ -54,7 +57,7 @@ end
 """
     get_weight(loss::LossFunction, data::WeightedValue, model::Number)
 
-Compute IRLS weight for a single weighted observation and robust loss.
+Compute IRLS weight for a single weighted observation.
 """
 function get_weight(loss::LossFunction, data::WeightedValue, model::Number)
     r = sqrt(get_precision(data)) * (model - get_value(data))
