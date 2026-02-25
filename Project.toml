@@ -4,7 +4,7 @@ version = "0.1.0"
 authors = ["Ferréol Soulez <ferreol.soulez@univ-lyon1.fr>"]
 
 [workspace]
-projects = ["test"]
+projects = ["test","docs"]
 
 
 [deps]

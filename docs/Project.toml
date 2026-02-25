@@ -1,0 +1,6 @@
+[deps]
+Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
+WeightedData = "198d7fc6-4dbd-4d01-be45-be9677e11b0d"
+
+[compat]
+Documenter = "1"
