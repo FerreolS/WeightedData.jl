@@ -94,6 +94,6 @@ weightedmean(A::WeightedValue) = A
 weightedmean(A::WeightedValue...) = reduce(weightedmean, A)
 
 function Base.show(io::IO, (; value, precision)::WeightedValue)
-    error_digits = get(stdout, :error_digits, 2)
+    error_digits = get(io, :error_digits, 2)
     return print(io, value, " ± ", round(1 / sqrt(precision), sigdigits = error_digits))
 end
