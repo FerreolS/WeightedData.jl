@@ -28,6 +28,7 @@ WeightedDataTwoDimensionalExt = ["TwoDimensional"]
 WeightedDataUncertainExt = ["Uncertain"]
 
 [compat]
+ChainRulesCore = "1"
 Measurements = "2"
 Plots = "1"
 RobustModels = "0.6"
