@@ -1,5 +1,5 @@
-using DifferentiationInterface, Zygote, ForwardDiff
 @testset "likelihood.jl" begin
+    using DifferentiationInterface, Zygote, ForwardDiff, ChainRulesCore
     A = [WeightedValue(1.0, 1.0), WeightedValue(2.0, 0.5)]
     B = [1.0, 1.0]
 
