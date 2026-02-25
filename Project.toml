@@ -3,6 +3,10 @@ uuid = "198d7fc6-4dbd-4d01-be45-be9677e11b0d"
 version = "0.1.0"
 authors = ["Ferréol Soulez <ferreol.soulez@univ-lyon1.fr>"]
 
+[workspace]
+projects = ["test"]
+
+
 [deps]
 ChainRulesCore = "d360d2e6-b24c-11e9-a2a3-2a2ae2dbcce4"
 TypeUtils = "c3b1956e-8857-4d84-9b79-890df85b1e67"
@@ -24,30 +28,11 @@ WeightedDataUncertainExt = ["Uncertain"]
 
 [compat]
 ChainRulesCore = "1.25"
-DifferentiationInterface = "0.7"
-ForwardDiff = "1"
 Measurements = "2"
 Plots = "1"
 RobustModels = "0.6"
-Test = "1"
 TwoDimensional = "0.4 - 0.5"
 TypeUtils = "1"
 Uncertain = "0.1"
 ZippedArrays = "0.2"
-Zygote = "0.7"
 julia = "1.6"
-
-[extras]
-DifferentiationInterface = "a0c0ee7d-e4b9-4e03-894e-1c5f64a51d63"
-ForwardDiff = "f6369f11-7733-5829-9624-2563aa707210"
-Measurements = "eff96d63-e80a-5855-80a2-b1b0885c5ab7"
-Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
-RobustModels = "d6ea1423-9682-4bbd-952f-b1577cbf8c98"
-Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
-TwoDimensional = "1907e7ba-7586-4310-a2ba-dd01462aeb50"
-TypeUtils = "c3b1956e-8857-4d84-9b79-890df85b1e67"
-Uncertain = "b33f403f-199b-472b-b9d0-1cd2092892d0"
-Zygote = "e88e6eb3-aa80-5325-afca-941959d7151f"
-
-[targets]
-test = ["Test", "Uncertain","TypeUtils", "Zygote", "Measurements", "Plots", "TwoDimensional", "RobustModels", "DifferentiationInterface", "ForwardDiff"]
