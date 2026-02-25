@@ -1,5 +1,4 @@
 ## Array of WeightedValue
-using ZippedArrays
 
 get_value(x::AbstractArray{<:WeightedValue}) = map(x -> x.value, x)
 get_precision(x::AbstractArray{<:WeightedValue}) = map(x -> x.precision, x)
@@ -22,6 +21,8 @@ WeightedArray(x::WeightedArray) = x
 
 WeightedArray(x::AbstractArray{Missing}) = WeightedArray(zeros(size(x)), zeros(size(x)))
 #WeightedArray(x::AbstractArray{T}) where {T <: Real} = WeightedArray(x, ones(size(x)))
+TypeUtils.get_precision(::Type{<:WeightedArray{T}}) where {T} = T
+
 
 Base.zeros(::Type{WeightedValue{T1}}, dims::Int...) where {T1 <: Real} = WeightedArray(zeros(T1, dims...), fill(T1(+Inf), dims...))
 

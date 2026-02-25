@@ -20,6 +20,8 @@
     z = zeros(WeightedValue{Float64}, 2, 3)
     @test z isa WeightedArray
     @test eltype(z) == WeightedValue{Float64}
+    @test TypeUtils.get_precision(z) == Float64
+
     @test size(z) == (2, 3)
     @test all(wv -> wv == WeightedValue(0.0, +Inf), z)
 
@@ -56,6 +58,7 @@
 
     D = WeightedArray(ones(Float32, 2, 2), ones(2, 2))
     @test @inferred(weightedmean(D; dims = 2)) == WeightedArray(ones(Float32, 2, 1), 2 * ones(2, 1))
+    @test TypeUtils.get_precision(D) == Float32
 
 
 end

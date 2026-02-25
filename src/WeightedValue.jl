@@ -62,8 +62,7 @@ Base.zero(::Type{WeightedValue{T}}) where {T} = WeightedValue(zero(T), T(+Inf))
 
 Base.:(==)(x::WeightedValue, y::WeightedValue) = x.value == y.value && x.precision == y.precision
 
-
-Base.convert(::Type{T}, (; value, precision)::WeightedValue) where {T <: Real} = WeightedValue(convert(T, value), convert(T, precision))
+TypeUtils.get_precision(::Type{<:WeightedValue{T}}) where {T} = T
 """ 
     weightedmean(A::WeightedValue, B::WeightedValue)
 

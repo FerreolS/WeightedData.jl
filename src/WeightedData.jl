@@ -1,5 +1,9 @@
 module WeightedData
-using ChainRulesCore
+using ChainRulesCore,
+    ZippedArrays
+
+import TypeUtils
+
 
 export WeightedValue,
     weightedmean,
