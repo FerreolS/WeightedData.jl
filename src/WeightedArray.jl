@@ -9,10 +9,17 @@ const WeightedArray{T, N} = ZippedArray{WeightedValue{T}, N, 2, I, Tuple{A, B}} 
 WeightedArray(A::AbstractArray{T, N}, B::AbstractArray{T, N}) where {T <: Real, N} = ZippedArray{WeightedValue{T}}(A, B)
 WeightedArray(A::AbstractArray{T1, N}, B::AbstractArray{T2, N}) where {T1 <: Real, T2 <: Real, N} = ZippedArray{WeightedValue{T1}}(A, T1.(B))
 
-function WeightedArray(x::AbstractArray{<:Union{T, Missing}, N}, y::AbstractArray{T2, N}) where {T <: Real, T2 <: Real, N}
+function WeightedArray(x::AbstractArray{<:Union{Missing, Real}, N}, y::AbstractArray{T2, N}) where {T2 <: Real, N}
     size(x) == size(y) || error("WeightedArray: size(value) != size(precision)")
-    m = @. (ismissing(x) || isnan(x) || ismissing(y) || isnan(y))
-    return ZippedArray{WeightedValue{T}}(@. ifelse(m, T(0), x), ifelse(m, T(0), T(y)))
+    Tx = Base.nonmissingtype(eltype(x))
+    T = Tx <: Real ? promote_type(Tx, T2) : T2
+    value = map(x, y) do xv, yv
+        (ismissing(xv) || isnan(xv) || isnan(yv)) ? zero(T) : T(xv)
+    end
+    precision = map(x, y) do xv, yv
+        (ismissing(xv) || isnan(xv) || isnan(yv)) ? zero(T) : T(yv)
+    end
+    return ZippedArray{WeightedValue{T}}(value, precision)
 end
 
 
