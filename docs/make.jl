@@ -2,6 +2,7 @@ using WeightedData
 using Documenter
 using ChainRulesCore
 using Measurements
+using OnlineSampleStatistics
 using RobustModels
 using Uncertain
 
@@ -10,6 +11,7 @@ DocMeta.setdocmeta!(WeightedData, :DocTestSetup, :(using WeightedData); recursiv
 extensions = Module[]
 for ext in (:WeightedDataChainRulesCoreExt,
             :WeightedDataMeasurementsExt,
+            :WeightedDataOnlineSampleStatisticsExt,
             :WeightedDataRobustModelsExt,
             :WeightedDataUncertainExt)
     m = Base.get_extension(WeightedData, ext)

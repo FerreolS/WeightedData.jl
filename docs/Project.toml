@@ -2,6 +2,7 @@
 ChainRulesCore = "d360d2e6-b24c-11e9-a2a3-2a2ae2dbcce4"
 Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
 Measurements = "eff96d63-e80a-5855-80a2-b1b0885c5ab7"
+OnlineSampleStatistics = "455218f6-ed6f-43e9-ad07-c481a1567983"
 RobustModels = "d6ea1423-9682-4bbd-952f-b1577cbf8c98"
 Uncertain = "b33f403f-199b-472b-b9d0-1cd2092892d0"
 WeightedData = "198d7fc6-4dbd-4d01-be45-be9677e11b0d"

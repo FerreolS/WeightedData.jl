@@ -80,6 +80,7 @@ import TypeUtils
     include("WeightedDataRobustModelsExt_test.jl")
     include("WeightedDataTwoDimensionalExt_test.jl")
     include("WeightedDataMeasurementsExt_test.jl")
+    include("WeightedDataOnlineSampleStatisticsExt_test.jl")
     include("WeightedDataUncertainExt_test.jl")
 
 end
