@@ -1,6 +1,5 @@
 module WeightedData
-using ChainRulesCore,
-    ZippedArrays
+using ZippedArrays
 
 import TypeUtils
 

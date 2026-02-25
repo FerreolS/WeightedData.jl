@@ -1,10 +1,25 @@
 using WeightedData
 using Documenter
+using ChainRulesCore
+using Measurements
+using RobustModels
+using Uncertain
 
 DocMeta.setdocmeta!(WeightedData, :DocTestSetup, :(using WeightedData); recursive = true)
 
+extensions = Module[]
+for ext in (:WeightedDataChainRulesCoreExt,
+            :WeightedDataMeasurementsExt,
+            :WeightedDataRobustModelsExt,
+            :WeightedDataUncertainExt)
+    m = Base.get_extension(WeightedData, ext)
+    m === nothing || push!(extensions, m)
+end
+
+const DOC_MODULES = [WeightedData; extensions]
+
 makedocs(;
-    modules = [WeightedData],
+    modules = DOC_MODULES,
     authors = "Ferréol Soulez <ferreol.soulez@univ-lyon1.fr>",
     sitename = "WeightedData.jl",
     clean = true,

@@ -1,10 +1,10 @@
 ```@meta
-CurrentModule = WeightedData
+CurrentModule = Main
 ```
 
 # API
 
 ```@autodocs
-Modules = [WeightedData]
+Modules = DOC_MODULES
 Order = [:type, :function, :macro, :constant]
 ```

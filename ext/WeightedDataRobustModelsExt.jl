@@ -27,11 +27,23 @@ import RobustModels: LossFunction,
     weight
 
 
+"""
+    likelihood(loss::LossFunction, data::WeightedValue, model::Number)
+
+Compute robust negative log-likelihood contribution for a single weighted
+observation using a `RobustModels` loss.
+"""
 function likelihood(loss::LossFunction, data::WeightedValue, model::Number)
     r = sqrt(get_precision(data)) * (model - get_value(data))
     return rho(loss, r)
 end
 
+"""
+    likelihood(loss::LossFunction, data::AbstractArray{<:WeightedValue}, model::AbstractArray)
+
+Compute robust negative log-likelihood for arrays of weighted observations.
+`data` and `model` must have the same shape.
+"""
 function likelihood(loss::LossFunction, data::AbstractArray{<:WeightedValue}, model::AbstractArray)
     size(data) == size(model) || error("likelihood : size(A) != size(model)")
     r = @. sqrt($get_precision(data)) * (model - $get_value(data))
@@ -39,11 +51,22 @@ function likelihood(loss::LossFunction, data::AbstractArray{<:WeightedValue}, mo
     return mapreduce(l, +, r)
 end
 
+"""
+    get_weight(loss::LossFunction, data::WeightedValue, model::Number)
+
+Compute IRLS weight for a single weighted observation and robust loss.
+"""
 function get_weight(loss::LossFunction, data::WeightedValue, model::Number)
     r = sqrt(get_precision(data)) * (model - get_value(data))
     return weight(loss, r)
 end
 
+"""
+    get_weight(loss::LossFunction, data::AbstractArray{<:WeightedValue}, model::AbstractArray)
+
+Compute IRLS weights element-wise for arrays of weighted observations.
+`data` and `model` must have the same shape.
+"""
 function get_weight(loss::LossFunction, data::AbstractArray{<:WeightedValue}, model::AbstractArray)
     size(data) == size(model) || error("likelihood : size(A) != size(model)")
     r = @. sqrt($get_precision(data)) * (model - $get_value(data))

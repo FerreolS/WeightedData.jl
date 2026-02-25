@@ -1,5 +1,5 @@
 module WeightedDataUncertainExt
-using Uncertain
+import Uncertain
 using WeightedData
 import WeightedData: WeightedValue, get_value, get_precision
 
@@ -21,7 +21,7 @@ u = Uncertain.Value(1.0, 0.1)  # value = 1.0, uncertainty = 0.1
 w = WeightedValue(u)  # WeightedValue(1.0, 100.0)
 ```
 """
-WeightedData.WeightedValue(x::U.Value) = WeightedValue(Uncertain.value(x), Uncertain.uncertainty(x)^(-2))
+WeightedData.WeightedValue(x::Uncertain.Value) = WeightedValue(Uncertain.value(x), Uncertain.uncertainty(x)^(-2))
 
 """
     T(x::WeightedValue) where T <: Uncertain.Value
