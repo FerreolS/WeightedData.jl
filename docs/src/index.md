@@ -31,6 +31,3 @@ when the corresponding package is loaded:
 - `Uncertain` → conversion between `Uncertain.Value` and `WeightedValue`
 
 See the API page for extension method docstrings.
-
-```@index
-```
