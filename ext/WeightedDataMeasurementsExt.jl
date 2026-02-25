@@ -1,7 +1,5 @@
 module WeightedDataMeasurementsExt
-using Measurements
-using WeightedData
-import Measurements: Measurement, measurement, value, uncertainty
+import Measurements
 import WeightedData: WeightedValue, get_value, get_precision
 
 """
@@ -25,7 +23,7 @@ m = 1.0 ± 0.1  # Measurement with value 1.0 and uncertainty 0.1
 w = WeightedValue(m)  # WeightedValue(1.0, 100.0)
 ```
 """
-WeightedData.WeightedValue(x::Measurements.Measurement) = WeightedValue(Measurements.value(x), Measurements.uncertainty(x)^(-2))
+WeightedValue(x::Measurements.Measurement) = WeightedValue(Measurements.value(x), Measurements.uncertainty(x)^(-2))
 
 """
     Measurement(x::WeightedValue)
@@ -49,4 +47,5 @@ m = Measurement(w)  # 1.0 ± 0.1
 ```
 """
 Measurements.Measurement(x::WeightedValue) = Measurements.measurement(get_value(x), 1 / sqrt(get_precision(x)))
+
 end
