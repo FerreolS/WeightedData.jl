@@ -1,5 +1,6 @@
 module WeightedDataRobustModelsExt
 
+import StatsAPI: loglikelihood
 import WeightedData: likelihood, WeightedValue, value, precision, get_weight
 
 import RobustModels: LossFunction,
@@ -29,7 +30,7 @@ import RobustModels: LossFunction,
 
 
 """
-    likelihood(loss::LossFunction, data::WeightedValue, model::Number)
+    loglikelihood(loss::LossFunction, data::WeightedValue, model::Number)
 
 Compute robust loss contribution for a single weighted observation.
 
@@ -37,23 +38,27 @@ Residual is defined as:
 `r = sqrt(precision(data)) * (model - value(data))`
 and the returned value is `rho(loss, r)`.
 """
-function likelihood(loss::LossFunction, data::WeightedValue, model::Number)
+function loglikelihood(loss::LossFunction, data::WeightedValue, model::Number)
     r = sqrt(precision(data)) * (model - value(data))
     return rho(loss, r)
 end
 
+@deprecate likelihood(loss::LossFunction, data::WeightedValue, model::Number) loglikelihood(loss, data, model)
+
 """
-    likelihood(loss::LossFunction, data::AbstractArray{<:WeightedValue}, model::AbstractArray)
+    loglikelihood(loss::LossFunction, data::AbstractArray{<:WeightedValue}, model::AbstractArray)
 
 Compute robust loss for arrays of weighted observations.
 `data` and `model` must have the same shape.
 """
-function likelihood(loss::LossFunction, data::AbstractArray{<:WeightedValue}, model::AbstractArray)
+function loglikelihood(loss::LossFunction, data::AbstractArray{<:WeightedValue}, model::AbstractArray)
     size(data) == size(model) || error("likelihood : size(A) != size(model)")
     r = @. sqrt($precision(data)) * (model - $value(data))
     l = Base.Fix1(rho, loss)
     return mapreduce(l, +, r)
 end
+
+@deprecate likelihood(loss::LossFunction, data::AbstractArray{<:WeightedValue}, model::AbstractArray) loglikelihood(loss, data, model)
 
 """
     get_weight(loss::LossFunction, data::WeightedValue, model::Number)

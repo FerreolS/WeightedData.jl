@@ -9,9 +9,11 @@ import Statistics: mean, var, std
 export WeightedValue,
     likelihood,
     WeightedArray,
-    get_value,
-    get_precision,
-    get_weight
+    value,
+    precision,
+    loglikelihood,
+    get_weight,
+    mean, var, std
 
 if VERSION >= v"1.11"
     Core.eval(
