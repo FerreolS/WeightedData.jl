@@ -50,6 +50,6 @@ w = WeightedValue(1.0, 100.0)  # value = 1.0, precision = 100.0
 m = Measurement(w)  # 1.0 ± 0.1
 ```
 """
-Measurements.Measurement(x::WeightedValue) = Measurements.measurement(get_value(x), 1 / sqrt(get_precision(x)))
+Measurements.measurement(x::WeightedValue) = Measurements.measurement(get_value(x), 1 / sqrt(get_precision(x)))
 
 end

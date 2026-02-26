@@ -16,7 +16,7 @@ import WeightedData: get_value, get_precision, weightedmean
     @testset "Measurement from WeightedValue" begin
         # Test basic conversion from WeightedValue to Measurement
         w = WeightedValue(3.0, 16.0)  # precision = 16 => uncertainty = 1/sqrt(16) = 0.25
-        m = Measurement(w)
+        m = measurement(w)
 
         @test Measurements.value(m) == 3.0
         @test Measurements.uncertainty(m) ≈ 0.25
@@ -26,7 +26,7 @@ import WeightedData: get_value, get_precision, weightedmean
         # Verify that round-trip conversion preserves value and uncertainty
         m_orig = 1.5 ± 0.2
         w = WeightedValue(m_orig)
-        m_round = Measurement(w)
+        m_round = measurement(w)
 
         @test Measurements.value(m_round) ≈ Measurements.value(m_orig)
         @test Measurements.uncertainty(m_round) ≈ Measurements.uncertainty(m_orig) atol = 1.0e-15
@@ -68,8 +68,8 @@ import WeightedData: get_value, get_precision, weightedmean
         @test get_value(w_sum) ≈ 3.0
 
         # Convert back and verify uncertainty propagation
-        m_back1 = Measurement(w1)
-        m_back2 = Measurement(w2)
+        m_back1 = measurement(w1)
+        m_back2 = measurement(w2)
         m_calc_sum = m_back1 + m_back2
 
         @test Measurements.value(m_calc_sum) ≈ 3.0
@@ -92,7 +92,7 @@ import WeightedData: get_value, get_precision, weightedmean
         @test get_value(w_neg) == -3.0
         @test get_precision(w_neg) ≈ 4.0
 
-        m_back = Measurement(w_neg)
+        m_back = measurement(w_neg)
         @test Measurements.value(m_back) ≈ -3.0
         @test Measurements.uncertainty(m_back) ≈ 0.5
     end
