@@ -1,15 +1,16 @@
 using RobustModels
+import WeightedData: value, precision
 @testset "WeightedDataRobustModelsExt" begin
     # Test likelihood method
     @testset "likelihood" begin
         loss = L2Loss()
         data = WeightedValue(1.0, 0.5)
         model = 2.0
-        @test likelihood(loss, data, model) == RobustModels.rho(loss, sqrt(get_precision(data)) * (model - get_value(data)))
+        @test likelihood(loss, data, model) == RobustModels.rho(loss, sqrt(precision(data)) * (model - value(data)))
 
         data = [WeightedValue(1.0, 0.5), WeightedValue(2.0, 0.5)]
         model = [2.0, 3.0]
-        @test likelihood(loss, data, model) == sum(RobustModels.rho.(loss, sqrt.(get_precision(data)) .* (model .- get_value(data))))
+        @test likelihood(loss, data, model) == sum(RobustModels.rho.(loss, sqrt.(precision(data)) .* (model .- value(data))))
     end
 
     # Test get_weight method
@@ -17,11 +18,11 @@ using RobustModels
         loss = L2Loss()
         data = WeightedValue(1.0, 0.5)
         model = 2.0
-        @test get_weight(loss, data, model) == RobustModels.weight(loss, sqrt(get_precision(data)) * (model - get_value(data)))
+        @test get_weight(loss, data, model) == RobustModels.weight(loss, sqrt(precision(data)) * (model - value(data)))
 
         data = [WeightedValue(1.0, 0.5), WeightedValue(2.0, 0.5)]
         model = [2.0, 3.0]
-        @test get_weight(loss, data, model) == RobustModels.weight.(loss, sqrt.(get_precision(data)) .* (model .- get_value(data)))
+        @test get_weight(loss, data, model) == RobustModels.weight.(loss, sqrt.(precision(data)) .* (model .- value(data)))
         @test workingweights(loss, data, model) == get_weight(loss, data, model)
 
         bad_model = [2.0, 3.0, 4.0]
@@ -35,7 +36,7 @@ using RobustModels
         model = 2.0
         losses = [L2Loss(), L1Loss(), HuberLoss()]
         for loss in losses
-            @test likelihood(loss, data, model) == RobustModels.rho(loss, sqrt(get_precision(data)) * (model - get_value(data)))
+            @test likelihood(loss, data, model) == RobustModels.rho(loss, sqrt(precision(data)) * (model - value(data)))
         end
     end
 end

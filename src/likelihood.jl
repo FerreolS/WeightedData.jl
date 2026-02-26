@@ -56,7 +56,7 @@ function get_weight(data::WeightedValue, model; loss = L2Loss())
     return get_weight(loss, data, model)
 end
 
-get_weight(_, data::WeightedValue, _::Number) = get_precision(data)
+get_weight(_, data::WeightedValue, _::Number) = precision(data)
 
 
 """
@@ -87,7 +87,7 @@ end
 
 function get_weight(_, data::AbstractArray{WeightedValue{T1}, N}, model::AbstractArray{T2, N}) where {T1, T2, N}
     size(data) == size(model) || error("get_weight : size(A) != size(model)")
-    return get_precision(data)
+    return precision(data)
 end
 
 struct ScaledL2Loss
@@ -98,15 +98,15 @@ ScaledL2Loss(; dims = 1, nonnegative = false) = ScaledL2Loss(dims, nonnegative)
 
 function loglikelihood((; dims, nonnegative)::ScaledL2Loss, weighteddata::AbstractArray{WeightedValue{T1}, N}, model::AbstractArray{T2, N}) where {T1, T2, N}
     size(weighteddata) == size(model) || error("scaledL2loss : size(A) != size(model)")
-    data = get_value(weighteddata)
-    precision = get_precision(weighteddata)
+    data = value(weighteddata)
+    p = precision(weighteddata)
 
 
     a = similar(data)
     b = similar(data)
     @inbounds @simd for i in eachindex(data, model)
-        b[i] = model[i] .* precision[i] .* data[i]
-        a[i] = model[i] .* precision[i] .* model[i]
+        b[i] = model[i] .* p[i] .* data[i]
+        a[i] = model[i] .* p[i] .* model[i]
     end
 
     α = sum(b, dims = dims) ./ sum(a, dims = dims)
@@ -116,7 +116,7 @@ function loglikelihood((; dims, nonnegative)::ScaledL2Loss, weighteddata::Abstra
             α[i] = T2(0)
         end
     end
-    res = @. (α * model - data)^2 * precision
+    res = @. (α * model - data)^2 * p
     return sum(res) / 2
 end
 

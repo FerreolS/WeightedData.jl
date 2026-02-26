@@ -27,7 +27,7 @@
     @test Zygote.withgradient(g, D) == (val = 0.0, grad = ([0.0 0.0; 0.0 0.0],))
     @test get_weight(C, D) == ones(2, 2)
 
-    @test get_weight(A[1], B[1]) == get_precision(A[1])
+    @test get_weight(A[1], B[1]) == precision(A[1])
 
     bad_model = ones(3, 2)
     @test_throws ErrorException loglikelihood(C, bad_model)

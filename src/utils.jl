@@ -42,16 +42,16 @@ function _weighted_mean(iterable; dims = :)
 
     if dims isa Colon
         out = mapreduce((a, b) -> map(.+, a, b), iterable; init = (zero(T), zero(T))) do el::WeightedValue
-            w = get_precision(el)
-            get_value(el) * w, w
+            w = precision(el)
+            value(el) * w, w
         end
         invsumw = inv(out[2])
         return WeightedValue(out[1] * invsumw, out[2])
     end
 
     out = mapreduce((a, b) -> map(.+, a, b), iterable; dims = dims, init = (zero(T), zero(T))) do el::WeightedValue
-        w = get_precision(el)
-        get_value(el) * w, w
+        w = precision(el)
+        value(el) * w, w
     end
     invsumw = map(x -> inv(x[2]), out)
     return WeightedArray(map((x, y) -> y * x[1], out, invsumw), map(x -> x[2], out))

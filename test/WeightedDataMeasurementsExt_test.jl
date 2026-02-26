@@ -1,6 +1,6 @@
 using Measurements
 using WeightedData
-import WeightedData: get_value, get_precision
+import WeightedData: value, precision
 
 @testset "WeightedDataMeasurementsExt" begin
     @testset "WeightedValue from Measurement" begin
@@ -8,9 +8,9 @@ import WeightedData: get_value, get_precision
         m = 2.0 ± 0.5
         w = WeightedValue(m)
 
-        @test get_value(w) == 2.0
-        @test get_precision(w) ≈ 1 / 0.5^2  # precision = uncertainty^(-2)
-        @test get_precision(w) ≈ 4.0
+        @test value(w) == 2.0
+        @test precision(w) ≈ 1 / 0.5^2  # precision = uncertainty^(-2)
+        @test precision(w) ≈ 4.0
     end
 
     @testset "Measurement from WeightedValue" begin
@@ -38,22 +38,22 @@ import WeightedData: get_value, get_precision
         w_array = WeightedValue.(m_array)
 
         @test length(w_array) == 3
-        @test get_value(w_array[1]) == 1.0
-        @test get_precision(w_array[1]) ≈ 100.0
-        @test get_precision(w_array[2]) ≈ 25.0
-        @test get_precision(w_array[3]) ≈ 100 / 9
+        @test value(w_array[1]) == 1.0
+        @test precision(w_array[1]) ≈ 100.0
+        @test precision(w_array[2]) ≈ 25.0
+        @test precision(w_array[3]) ≈ 100 / 9
     end
 
     @testset "High and low precision values" begin
         # Test with very small uncertainties (high precision)
         m_precise = 1.0 ± 1.0e-10
         w_precise = WeightedValue(m_precise)
-        @test get_precision(w_precise) ≈ 1.0e20
+        @test precision(w_precise) ≈ 1.0e20
 
         # Test with very large uncertainties (low precision)
         m_imprecise = 1.0 ± 1.0e10
         w_imprecise = WeightedValue(m_imprecise)
-        @test get_precision(w_imprecise) ≈ 1.0e-20
+        @test precision(w_imprecise) ≈ 1.0e-20
     end
 
     @testset "Arithmetic with Measurements" begin
@@ -65,7 +65,7 @@ import WeightedData: get_value, get_precision
 
         # Test arithmetic preserves structure
         w_sum = w1 + w2
-        @test get_value(w_sum) ≈ 3.0
+        @test value(w_sum) ≈ 3.0
 
         # Convert back and verify uncertainty propagation
         m_back1 = measurement(w1)
@@ -80,8 +80,8 @@ import WeightedData: get_value, get_precision
         m_zero_unc = 5.0 ± 0.0
         w_zero_unc = WeightedValue(m_zero_unc)
 
-        @test get_value(w_zero_unc) == 5.0
-        @test isinf(get_precision(w_zero_unc))
+        @test value(w_zero_unc) == 5.0
+        @test isinf(precision(w_zero_unc))
     end
 
     @testset "Negative value handling" begin
@@ -89,8 +89,8 @@ import WeightedData: get_value, get_precision
         m_neg = -3.0 ± 0.5
         w_neg = WeightedValue(m_neg)
 
-        @test get_value(w_neg) == -3.0
-        @test get_precision(w_neg) ≈ 4.0
+        @test value(w_neg) == -3.0
+        @test precision(w_neg) ≈ 4.0
 
         m_back = measurement(w_neg)
         @test Measurements.value(m_back) ≈ -3.0
@@ -103,6 +103,6 @@ import WeightedData: get_value, get_precision
         w32 = WeightedValue(m32)
 
         # Note: WeightedValue(m32) may promote to Float64, so check the value
-        @test get_value(w32) ≈ 1.0f0 rtol = 1.0e-6
+        @test value(w32) ≈ 1.0f0 rtol = 1.0e-6
     end
 end

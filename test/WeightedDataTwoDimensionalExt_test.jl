@@ -1,4 +1,5 @@
 using TwoDimensional
+import WeightedData: value, precision
 @testset "WeightedDataTwoDimensionalExt" begin
     # Test Base.view method
     @testset "Base.view" begin
@@ -6,7 +7,7 @@ using TwoDimensional
         I = BoundingBox(1:5, 1:5)
         view_A = view(A, I)
         @test size(view_A) == (5, 5)
-        @test get_value(view_A) == view(get_value(A), I)
-        @test WeightedData.get_precision(view_A) == view(WeightedData.get_precision(A), I)
+        @test value(view_A) == view(value(A), I)
+        @test precision(view_A) == view(precision(A), I)
     end
 end

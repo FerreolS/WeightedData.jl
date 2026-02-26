@@ -33,4 +33,7 @@ include("WeightedArray.jl")
 include("utils.jl")
 include("likelihood.jl")
 
+@deprecate get_value(args...; kwargs...) value(args...; kwargs...)
+@deprecate get_precision(args...; kwargs...) precision(args...; kwargs...)
+
 end

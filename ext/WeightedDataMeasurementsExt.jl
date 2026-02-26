@@ -1,6 +1,6 @@
 module WeightedDataMeasurementsExt
 import Measurements
-import WeightedData: WeightedValue, get_value, get_precision
+import WeightedData: WeightedValue, value, precision
 
 """
     WeightedValue(x::Measurements.Measurement)
@@ -37,8 +37,8 @@ Convert `WeightedValue` to `Measurements.Measurement`.
 
 # Returns
 A `Measurements.Measurement` with:
-- value = `get_value(x)`
-- uncertainty = `1 / sqrt(get_precision(x))`
+- value = `value(x)`
+- uncertainty = `1 / sqrt(precision(x))`
 
 # Notes
 Uncertainty is the standard deviation.
@@ -50,6 +50,6 @@ w = WeightedValue(1.0, 100.0)  # value = 1.0, precision = 100.0
 m = Measurement(w)  # 1.0 ± 0.1
 ```
 """
-Measurements.measurement(x::WeightedValue) = Measurements.measurement(get_value(x), 1 / sqrt(get_precision(x)))
+Measurements.measurement(x::WeightedValue) = Measurements.measurement(value(x), 1 / sqrt(precision(x)))
 
 end

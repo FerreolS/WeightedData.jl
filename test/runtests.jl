@@ -2,6 +2,7 @@ using WeightedData
 using Test
 import TypeUtils
 import Statistics: mean, var, std
+import WeightedData: value, precision
 
 if VERSION >= v"1.11"
     @test !isdefined(@__MODULE__, :ScaledL2Loss)

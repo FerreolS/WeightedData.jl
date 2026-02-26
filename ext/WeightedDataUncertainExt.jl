@@ -1,6 +1,6 @@
 module WeightedDataUncertainExt
 import Uncertain
-import WeightedData: WeightedValue, get_value, get_precision
+import WeightedData: WeightedValue, value, precision
 
 """
     WeightedValue(x::Uncertain.Value)
@@ -37,8 +37,8 @@ Convert `WeightedValue` to an `Uncertain.Value` subtype.
 
 # Returns
 An uncertain value with:
-- value = `get_value(x)`
-- uncertainty = `1 / sqrt(get_precision(x))`
+- value = `value(x)`
+- uncertainty = `1 / sqrt(precision(x))`
 
 # Notes
 Uncertainty is the standard deviation.
@@ -50,6 +50,6 @@ w = WeightedValue(1.0, 100.0)  # value = 1.0, precision = 100.0
 u = Uncertain.Value(w)  # Uncertain.Value(1.0, 0.1)
 ```
 """
-(::Type{T})(x::WeightedValue) where {T <: Uncertain.Value} = T(get_value(x), 1 / sqrt(get_precision(x)))
+(::Type{T})(x::WeightedValue) where {T <: Uncertain.Value} = T(value(x), 1 / sqrt(precision(x)))
 
 end

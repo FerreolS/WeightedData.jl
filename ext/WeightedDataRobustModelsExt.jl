@@ -1,6 +1,6 @@
 module WeightedDataRobustModelsExt
 
-import WeightedData: likelihood, WeightedValue, get_value, get_precision, get_weight
+import WeightedData: likelihood, WeightedValue, value, precision, get_weight
 
 import RobustModels: LossFunction,
     BoundedLossFunction,
@@ -34,11 +34,11 @@ import RobustModels: LossFunction,
 Compute robust loss contribution for a single weighted observation.
 
 Residual is defined as:
-`r = sqrt(get_precision(data)) * (model - get_value(data))`
+`r = sqrt(precision(data)) * (model - value(data))`
 and the returned value is `rho(loss, r)`.
 """
 function likelihood(loss::LossFunction, data::WeightedValue, model::Number)
-    r = sqrt(get_precision(data)) * (model - get_value(data))
+    r = sqrt(precision(data)) * (model - value(data))
     return rho(loss, r)
 end
 
@@ -50,7 +50,7 @@ Compute robust loss for arrays of weighted observations.
 """
 function likelihood(loss::LossFunction, data::AbstractArray{<:WeightedValue}, model::AbstractArray)
     size(data) == size(model) || error("likelihood : size(A) != size(model)")
-    r = @. sqrt($get_precision(data)) * (model - $get_value(data))
+    r = @. sqrt($precision(data)) * (model - $value(data))
     l = Base.Fix1(rho, loss)
     return mapreduce(l, +, r)
 end
@@ -61,7 +61,7 @@ end
 Compute IRLS weight for a single weighted observation.
 """
 function get_weight(loss::LossFunction, data::WeightedValue, model::Number)
-    r = sqrt(get_precision(data)) * (model - get_value(data))
+    r = sqrt(precision(data)) * (model - value(data))
     return weight(loss, r)
 end
 
@@ -73,7 +73,7 @@ Compute IRLS weights element-wise for arrays of weighted observations.
 """
 function get_weight(loss::LossFunction, data::AbstractArray{<:WeightedValue}, model::AbstractArray)
     size(data) == size(model) || error("likelihood : size(A) != size(model)")
-    r = @. sqrt($get_precision(data)) * (model - $get_value(data))
+    r = @. sqrt($precision(data)) * (model - $value(data))
     w = Base.Fix1(weight, loss)
     return map(w, r)
 end
@@ -107,8 +107,8 @@ end
 
 function ChainRulesCore.rrule(::typeof(likelihood), (; s)::CauchyLoss, data::AbstractArray{WeightedValue{T},N}, model::AbstractArray{T2,N}) where {T,T2,N}
     C = T(s / 2.385)^2
-    r = model .- get_value(data)
-    rp = get_precision(data) .* r
+    r = model .- value(data)
+    rp = precision(data) .* r
 
     q = T(1) .+ C .* rp .* r
 

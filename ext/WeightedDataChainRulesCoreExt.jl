@@ -2,7 +2,7 @@ module WeightedDataChainRulesCoreExt
 import ChainRulesCore: NoTangent, ZeroTangent
 import ChainRulesCore
 import StatsAPI: loglikelihood
-import WeightedData: L2Loss, get_value, get_precision, WeightedValue, ScaledL2Loss
+import WeightedData: L2Loss, value, precision, WeightedValue, ScaledL2Loss
 
 
 """
@@ -22,8 +22,8 @@ Custom reverse-mode rule for
 function ChainRulesCore.rrule(::typeof(loglikelihood), ::L2Loss, data::AbstractArray{WeightedValue{T}, N}, model::AbstractArray{T, N}) where {T, N}
     size(data) == size(model) || error("likelihood : size(A) != size(model)")
 
-    d = get_value(data)
-    p = get_precision(data)
+    d = value(data)
+    p = precision(data)
     rp = similar(d)
     l = T(0)
     @inbounds @simd for i in eachindex(data, model)
@@ -55,15 +55,15 @@ at optimum).
 """
 function ChainRulesCore.rrule(::typeof(loglikelihood), (; dims, nonnegative)::ScaledL2Loss, weighteddata::AbstractArray{WeightedValue{T1}, N}, model::AbstractArray{T2, N}) where {T1, T2, N}
     size(weighteddata) == size(model) || error("scaledlikelihood : size(A) != size(model)")
-    data = get_value(weighteddata)
-    precision = get_precision(weighteddata)
+    data = value(weighteddata)
+    p = precision(weighteddata)
 
 
     a = similar(data)
     b = similar(data)
     @inbounds @simd for i in eachindex(data, model)
-        b[i] = model[i] .* precision[i] .* data[i]
-        a[i] = model[i] .* precision[i] .* model[i]
+        b[i] = model[i] .* p[i] .* data[i]
+        a[i] = model[i] .* p[i] .* model[i]
     end
 
     α = sum(b, dims = dims) ./ sum(a, dims = dims)
@@ -74,7 +74,7 @@ function ChainRulesCore.rrule(::typeof(loglikelihood), (; dims, nonnegative)::Sc
         end
     end
     r = (α .* model .- data)
-    rp = r .* precision
+    rp = r .* p
     loglikelihood_pullback(Δy) = (NoTangent(), NoTangent(), ZeroTangent(), α .* rp .* Δy)
     return sum(r .* rp) / 2, loglikelihood_pullback
 end
