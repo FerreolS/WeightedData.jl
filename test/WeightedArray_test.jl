@@ -10,7 +10,7 @@
     @test B == WeightedArray(A)
     @test B == WeightedArray(WeightedArray(A))
 
-    @test @inferred(flagbadpix(A, [true, false])) == WeightedArray([WeightedValue(0.0, 0.0), WeightedValue(2.0, 0.5)])
+    @test @inferred(flagbaddata(A, [true, false])) == WeightedArray([WeightedValue(0.0, 0.0), WeightedValue(2.0, 0.5)])
     @test WeightedArray([1.0, missing], ones(2)) == WeightedArray([WeightedValue(1.0, 1.0), WeightedValue(0.0, 0.0)])
     #@test WeightedArray(ones(2, 3)) == WeightedArray(ones(2, 3), ones(2, 3))
     @test WeightedArray([missing, 1.0], ones(2)) == WeightedArray([WeightedValue(0.0, 0.0), WeightedValue(1.0, 1.0)])
@@ -44,11 +44,11 @@
     @test reshape(weighted_array, :) == WeightedArray(reshape(A, :), reshape(B, :))
 
     badpix = [false, true, false]
-    flagged_array = flagbadpix(weighted_array, badpix)
+    flagged_array = flagbaddata(weighted_array, badpix)
     @test get_value(flagged_array) == [1.0, 0.0, 3.0]
     @test get_precision(flagged_array) == [0.1, 0.0, 0.3]
 
-    flagbadpix!(weighted_array, badpix)
+    flagbaddata!(weighted_array, badpix)
     @test get_value(weighted_array) == [1.0, 0.0, 3.0]
     @test get_precision(weighted_array) == [0.1, 0.0, 0.3]
 
