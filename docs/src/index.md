@@ -78,10 +78,10 @@ pred = [1.8, 1.2]
 `WeightedData.jl` provides optional extensions that are activated automatically
 when the corresponding package is loaded:
 
-- `ChainRulesCore` → custom `rrule` methods for `likelihood`
+- `RobustModels` → robust `loglikelihood` taking any Losses defined in `RobustModels`
+- `OnlineSampleStatistics` → extract sample mean and sample variance of a series of observation to build a WeightedData (`WeightedValue` or `WeightedArray`)
+- `ChainRulesCore` → custom `rrule` methods for `loglikelihood`
 - `Measurements` → conversion between `Measurement` and `WeightedValue`
-- `OnlineSampleStatistics` → conversion from online mean/variance statistics to `WeightedValue` and `WeightedArray`
-- `RobustModels` → robust `likelihood` and `get_weight` methods
 - `Uncertain` → conversion between `Uncertain.Value` and `WeightedValue`
 
 See [API Reference](api.md) for full method docstrings, including extension methods.

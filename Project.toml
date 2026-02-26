@@ -1,6 +1,6 @@
 name = "WeightedData"
 uuid = "198d7fc6-4dbd-4d01-be45-be9677e11b0d"
-version = "0.1.0"
+version = "0.2.0"
 authors = ["Ferréol Soulez <ferreol.soulez@univ-lyon1.fr>"]
 
 [workspace]
