@@ -6,7 +6,7 @@ Compute the precision-weighted mean of one or more scalar weighted values.
 Equivalent to reducing the inputs with the same precision-weighted averaging
 rule used for tuples/iterables.
 """
-weightedmean(A::WeightedValue, B::Vararg{<:WeightedValue}) = weightedmean(tuple(A, B...))
+weightedmean(A::WeightedValue, B::Vararg{T}) where {T <: WeightedValue} = weightedmean(tuple(A, B...))
 
 """
     weightedmean(A::AbstractArray{<:WeightedValue, N}, B::Vararg{AbstractArray{<:WeightedValue, N}}) where {N}
@@ -16,7 +16,7 @@ Element-wise precision-weighted mean of weighted arrays with matching shape.
 - `weightedmean(A)` returns the global weighted mean of all entries.
 - `weightedmean(A, B, ...)` returns an element-wise weighted mean.
 """
-function weightedmean(A::AbstractArray{<:WeightedValue, N}, B::Vararg{AbstractArray{<:WeightedValue, N}}) where {N}
+function weightedmean(A::AbstractArray{<:WeightedValue, N}, B::Vararg{T}) where {N, T <: AbstractArray{<:WeightedValue, N}}
     isempty(B) && return weightedmean(A; dims = :)
     return dropdims(weightedmean(cat(A, B...; dims = N + 1); dims = N + 1), dims = N + 1)
 end
