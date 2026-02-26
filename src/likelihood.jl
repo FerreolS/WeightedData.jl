@@ -77,7 +77,7 @@ function loglikelihood(data::AbstractArray{<:WeightedValue}, model::AbstractArra
 end
 
 function loglikelihood(loss, data::AbstractArray{WeightedValue{T1}, N}, model::AbstractArray{T2, N}) where {T1, T2, N}
-    size(data) == size(model) || error("likelihood : size(A) != size(model)")
+    size(data) == size(model) || error("loglikelihood : size(A) != size(model)")
     return mapreduce(loss, +, data, model)
 end
 
@@ -86,7 +86,7 @@ function get_weight(data::AbstractArray{<:WeightedValue}, model::AbstractArray; 
 end
 
 function get_weight(_, data::AbstractArray{WeightedValue{T1}, N}, model::AbstractArray{T2, N}) where {T1, T2, N}
-    size(data) == size(model) || error("likelihood : size(A) != size(model)")
+    size(data) == size(model) || error("get_weight : size(A) != size(model)")
     return get_precision(data)
 end
 
@@ -120,4 +120,4 @@ function loglikelihood((; dims, nonnegative)::ScaledL2Loss, weighteddata::Abstra
     return sum(res) / 2
 end
 
-likelihood(args...; kwargs...) = loglikelihood(args...; kwargs...)
+@deprecate likelihood(args...; kwargs...) loglikelihood(args...; kwargs...)

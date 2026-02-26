@@ -25,7 +25,7 @@ All notable changes to this project are documented in this file.
 - Internal module imports standardized to explicit `import` style.
 
 ### Compatibility notes
-- `likelihood(...)` remains available as a compatibility forwarder to `loglikelihood(...)`.
+- `likelihood(...)` is deprecated and forwards to `loglikelihood(...)` (with deprecation warning).
 - Users are encouraged to migrate to `StatsAPI.loglikelihood`.
 
 ---
