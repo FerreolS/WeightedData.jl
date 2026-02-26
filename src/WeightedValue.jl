@@ -115,3 +115,16 @@ function Base.show(io::IO, (; value, precision)::WeightedValue)
     error_digits = get(io, :error_digits, 2)
     return print(io, value, " ± ", round(1 / sqrt(precision), sigdigits = error_digits))
 end
+
+"""
+    show(io::IO, ::MIME"text/plain", x::WeightedValue)
+
+Pretty-print `x` in non-compact mode with explicit type information.
+"""
+function Base.show(io::IO, ::MIME"text/plain", x::WeightedValue{T}) where {T}
+    typeinfo = get(io, :typeinfo, Any)
+    if !(get(io, :compact, false) || (typeinfo isa DataType && typeinfo <: WeightedValue))
+        println(io, summary(x))
+    end
+    return show(io, x)
+end

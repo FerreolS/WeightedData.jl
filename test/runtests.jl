@@ -65,6 +65,22 @@ import WeightedData: ScaledL2Loss, flagbaddata, flagbaddata!
         s1 = sprint(show, wv1)
         @test s1 == "1.0 ± 0.5"
 
+        s1_plain = sprint(show, MIME"text/plain"(), wv1)
+        @test contains(s1_plain, "WeightedValue{Float64}:")
+        @test contains(s1_plain, "1.0 ± 0.5")
+
+        s1_plain_compact = sprint(io -> show(IOContext(io, :compact => true), MIME"text/plain"(), wv1))
+        @test !contains(s1_plain_compact, "WeightedValue{Float64}:")
+        @test s1_plain_compact == "1.0 ± 0.5"
+
+        A = WeightedArray([1.0, 2.0], [0.5, 0.2])
+        sA_plain = sprint(show, MIME"text/plain"(), A)
+        @test contains(sA_plain, "ZippedArrays.ZippedVector{WeightedValue{Float64}")
+        @test occursin(r"\n\s*1\.0 ± 1\.4", sA_plain)
+        @test occursin(r"\n\s*2\.0 ± 2\.2", sA_plain)
+        @test !occursin(r"\n\s*WeightedValue\{Float64\}: 1\.0 ± 1\.4", sA_plain)
+        @test !occursin(r"\n\s*WeightedValue\{Float64\}: 2\.0 ± 2\.2", sA_plain)
+
         wv2 = WeightedValue(2.5, 0.25)
         s2 = sprint(show, wv2)
         @test s2 == "2.5 ± 2.0"
