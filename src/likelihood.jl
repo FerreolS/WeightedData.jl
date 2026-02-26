@@ -30,6 +30,9 @@ Calculate the negative log-likelihood for a weighted data point.
 
 ## Returns
 The neg log likelihood value.
+
+## Deprecation note
+`likelihood(data, model; loss=...)` is deprecated and forwards to this method.
 """
 function loglikelihood(data::WeightedValue, model; loss = L2Loss())
     return loglikelihood(loss, data, model)
@@ -40,7 +43,7 @@ loglikelihood(loss, data::WeightedValue, model::Number) = loss(data, model)
 
 
 """
-    get_weight(data::WeightedValue, model; loss=L2Loss())
+    get_weights(data::WeightedValue, model; loss=L2Loss())
 
 Calculate the equivalent weight for a given the loss function for IRLS.
 
@@ -52,11 +55,11 @@ Calculate the equivalent weight for a given the loss function for IRLS.
 ## Returns
 The equivalent weight.
 """
-function get_weight(data::WeightedValue, model; loss = L2Loss())
-    return get_weight(loss, data, model)
+function get_weights(data::WeightedValue, model; loss = L2Loss())
+    return get_weights(loss, data, model)
 end
 
-get_weight(_, data::WeightedValue, _::Number) = precision(data)
+get_weights(_, data::WeightedValue, _::Number) = precision(data)
 
 
 """
@@ -71,6 +74,9 @@ Calculate the negative log-likelihood for an array of weighted data points.
 
 ## Returns
 The neg log likelihood value.
+
+## Deprecation note
+`likelihood(data, model; loss=...)` is deprecated and forwards to this method.
 """
 function loglikelihood(data::AbstractArray{<:WeightedValue}, model::AbstractArray; loss = L2Loss())
     return loglikelihood(loss, data, model)
@@ -81,12 +87,12 @@ function loglikelihood(loss, data::AbstractArray{WeightedValue{T1}, N}, model::A
     return mapreduce(loss, +, data, model)
 end
 
-function get_weight(data::AbstractArray{<:WeightedValue}, model::AbstractArray; loss = L2Loss())
-    return get_weight(loss, data, model)
+function get_weights(data::AbstractArray{<:WeightedValue}, model::AbstractArray; loss = L2Loss())
+    return get_weights(loss, data, model)
 end
 
-function get_weight(_, data::AbstractArray{WeightedValue{T1}, N}, model::AbstractArray{T2, N}) where {T1, T2, N}
-    size(data) == size(model) || error("get_weight : size(A) != size(model)")
+function get_weights(_, data::AbstractArray{WeightedValue{T1}, N}, model::AbstractArray{T2, N}) where {T1, T2, N}
+    size(data) == size(model) || error("get_weights : size(A) != size(model)")
     return precision(data)
 end
 

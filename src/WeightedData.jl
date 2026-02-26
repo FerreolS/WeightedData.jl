@@ -12,7 +12,7 @@ export WeightedValue,
     value,
     precision,
     loglikelihood,
-    get_weight,
+    get_weights,
     mean, var, std
 
 if VERSION >= v"1.11"

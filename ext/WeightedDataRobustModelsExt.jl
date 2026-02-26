@@ -1,7 +1,7 @@
 module WeightedDataRobustModelsExt
 
 import StatsAPI: loglikelihood
-import WeightedData: likelihood, WeightedValue, value, precision, get_weight
+import WeightedData: likelihood, WeightedValue, value, precision, get_weights
 
 import RobustModels: LossFunction,
     BoundedLossFunction,
@@ -61,22 +61,22 @@ end
 @deprecate likelihood(loss::LossFunction, data::AbstractArray{<:WeightedValue}, model::AbstractArray) loglikelihood(loss, data, model)
 
 """
-    get_weight(loss::LossFunction, data::WeightedValue, model::Number)
+    get_weights(loss::LossFunction, data::WeightedValue, model::Number)
 
 Compute IRLS weight for a single weighted observation.
 """
-function get_weight(loss::LossFunction, data::WeightedValue, model::Number)
+function get_weights(loss::LossFunction, data::WeightedValue, model::Number)
     r = sqrt(precision(data)) * (model - value(data))
     return weight(loss, r)
 end
 
 """
-    get_weight(loss::LossFunction, data::AbstractArray{<:WeightedValue}, model::AbstractArray)
+    get_weights(loss::LossFunction, data::AbstractArray{<:WeightedValue}, model::AbstractArray)
 
 Compute IRLS weights element-wise for arrays of weighted observations.
 `data` and `model` must have the same shape.
 """
-function get_weight(loss::LossFunction, data::AbstractArray{<:WeightedValue}, model::AbstractArray)
+function get_weights(loss::LossFunction, data::AbstractArray{<:WeightedValue}, model::AbstractArray)
     size(data) == size(model) || error("likelihood : size(A) != size(model)")
     r = @. sqrt($precision(data)) * (model - $value(data))
     w = Base.Fix1(weight, loss)
@@ -89,7 +89,7 @@ end
 Compute the working weights for a given loss function, weighted data, and model.
 
 This function calculates the weights used in iterative weighted least squares algorithms
-by delegating to [`get_weight`](@ref) with the specified loss function, data, and model parameters.
+by delegating to [`get_weights`](@ref) with the specified loss function, data, and model parameters.
 
 # Arguments
 - `loss::LossFunction`: The loss function defining the weighting scheme
@@ -100,11 +100,11 @@ by delegating to [`get_weight`](@ref) with the specified loss function, data, an
 Array of working weights corresponding to the input data
 
 # See Also
-- [`get_weight`](@ref)
+- [`get_weights`](@ref)
 - `RobustModels.LossFunction`
 - [`WeightedValue`](@ref)
 """
-workingweights(loss::LossFunction, data::AbstractArray{<:WeightedValue}, model::AbstractArray) = get_weight(loss, data, model)
+workingweights(loss::LossFunction, data::AbstractArray{<:WeightedValue}, model::AbstractArray) = get_weights(loss, data, model)
 
 end
 
