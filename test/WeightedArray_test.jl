@@ -1,6 +1,11 @@
 @testset "WeightedArray.jl" begin
     A = [WeightedValue(1.0, 0.5), WeightedValue(2.0, 0.5)]
 
+    A_summary = WeightedArray([1.0, 2.0], [0.5, 0.2])
+    s_summary = sprint(summary, A_summary)
+    @test startswith(s_summary, "2-element WeightedArray{Float64, 1} (alias of ZippedArrays.ZippedVector{WeightedValue{Float64}")
+    @test endswith(s_summary, "):")
+
 
     @test WeightedData.get_value(A) == [1.0, 2.0]
     @test WeightedData.get_precision(A) == [0.5, 0.5]

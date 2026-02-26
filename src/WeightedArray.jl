@@ -43,6 +43,11 @@ WeightedValue(A::AbstractArray{T1, N}, B::AbstractArray{T2, N}) where {T1, T2, N
 """
 const WeightedArray{T, N} = ZippedArray{WeightedValue{T}, N, 2, I, Tuple{A, B}} where {A <: AbstractArray{T, N}, B <: AbstractArray{T, N}, I}
 
+function Base.summary(io::IO, A::WeightedArray{T, N}) where {T, N}
+    shape = N == 1 ? "$(length(A))-element" : Base.dims2string(size(A))
+    return print(io, shape, " WeightedArray{", T, ", ", N, "} (alias of ", typeof(A), "):")
+end
+
 """
     WeightedArray(values::AbstractArray{T,N}, precision::AbstractArray{T,N})
 

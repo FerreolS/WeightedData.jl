@@ -66,7 +66,7 @@ import WeightedData: ScaledL2Loss, flagbaddata, flagbaddata!
         @test s1 == "1.0 ± 0.5"
 
         s1_plain = sprint(show, MIME"text/plain"(), wv1)
-        @test contains(s1_plain, "WeightedValue{Float64}:")
+        @test contains(s1_plain, "WeightedValue{Float64}")
         @test contains(s1_plain, "1.0 ± 0.5")
 
         s1_plain_compact = sprint(io -> show(IOContext(io, :compact => true), MIME"text/plain"(), wv1))

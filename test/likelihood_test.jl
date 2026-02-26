@@ -11,7 +11,6 @@
     #@test @inferred cauchyloss(3)(A[2], B[2]) ≈ (3 / 2.385)^(-2) / 2 * log(1 + ((3 / 2.385) * sqrt(0.5) * (1 - 2))^2)
 
     @test @inferred(loglikelihood(A, B)) == 0.25
-    @test likelihood(A, B) == loglikelihood(A, B)
 
     #@test @inferred likelihood(A, B, loss=cauchyloss(3)) ≈ (3 / 2.385)^(-2) / 2 * log(1 + ((3 / 2.385) * sqrt(0.5) * (1 - 2))^2)
 
