@@ -1,6 +1,6 @@
 using Measurements
 using WeightedData
-import WeightedData: get_value, get_precision, weightedmean
+import WeightedData: get_value, get_precision
 
 @testset "WeightedDataMeasurementsExt" begin
     @testset "WeightedValue from Measurement" begin

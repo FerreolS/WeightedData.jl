@@ -8,21 +8,22 @@ A Julia package to manipulate data weighted by their precision and compute likel
 
 ```julia
 using WeightedData
-import WeightedData: weightedmean, flagbaddata!
+import Statistics: mean, var, std
+import WeightedData: flagbaddata!
 
 # Create weighted points
 x = WeightedValue(1.0, 0.5)  # value 1.0 with precision 0.5
 y = WeightedValue(2.0, 0.2)  # value 2.0 with precision 0.2
 
-# weightedmean points (weighted average)
-z = weightedmean(x, y)  
+# weighted mean points (weighted average)
+z = mean(x, y)
 
 # build an array of weighted points
 data = WeightedArray([1.0, 1.0], [2.0, 0.5])
 
 # global weighted mean over an array of weighted values
 wa = WeightedArray([1.0, 2.0, 3.0], [1.0, 1.0, 0.5])
-mg = weightedmean(wa)
+mg = mean(wa)
 
 # flag invalid entries
 flagbaddata!(wa, [false, true, false])

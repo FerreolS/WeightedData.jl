@@ -1,12 +1,12 @@
 using WeightedData
 using Test
 import TypeUtils
+import Statistics: mean, var, std
 
 if VERSION >= v"1.11"
-    @test !isdefined(@__MODULE__, :weightedmean)
     @test !isdefined(@__MODULE__, :ScaledL2Loss)
 end
-import WeightedData: weightedmean, ScaledL2Loss, flagbaddata, flagbaddata!
+import WeightedData: ScaledL2Loss, flagbaddata, flagbaddata!
 
 @testset "WeightedData.jl" begin
     @testset "WeightedValue" begin
@@ -19,6 +19,10 @@ import WeightedData: weightedmean, ScaledL2Loss, flagbaddata, flagbaddata!
         @test WeightedValue{Float32}(2, 1) == WeightedValue(2.0f0, 1.0f0)
         @test TypeUtils.get_precision(A) == Float64
         @test TypeUtils.get_precision(WeightedValue{Float32}(2, 1)) == Float32
+        @test var(A) == 2.0
+        @test std(A) == sqrt(2.0)
+        @test var(WeightedValue(1.0, 0.0)) == Inf
+        @test std(WeightedValue(1.0, 0.0)) == Inf
 
         @test real(A) == WeightedValue(1.0, 0.5)
         @test imag(A) == WeightedValue(0.0, Int(0))
@@ -45,14 +49,14 @@ import WeightedData: weightedmean, ScaledL2Loss, flagbaddata, flagbaddata!
 
         # Test for Base.zero
         @test zero(A) + A == A
-        @test_throws ArgumentError weightedmean(())
+        @test_throws ArgumentError mean(())
 
         #@test convert(Float32, A) == WeightedValue(1.0f0, 0.5f0)
 
-        @test @inferred weightedmean(A, B) == WeightedValue(1.5, 1.0)
-        @test @inferred weightedmean(A) == A
-        @test @inferred weightedmean((A, B, A, B)) == WeightedValue(1.5, 2.0)
-        @test @inferred weightedmean((A, B, A, B)...) == WeightedValue(1.5, 2.0)
+        @test @inferred mean(A, B) == WeightedValue(1.5, 1.0)
+        @test @inferred mean(A) == A
+        @test @inferred mean((A, B, A, B)) == WeightedValue(1.5, 2.0)
+        @test @inferred mean((A, B, A, B)...) == WeightedValue(1.5, 2.0)
 
 
     end

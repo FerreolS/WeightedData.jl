@@ -53,11 +53,15 @@
     @test get_precision(weighted_array) == [0.1, 0.0, 0.3]
 
     C = WeightedArray([1.0, 2.0, 3.0], [1, 1, 0.5])
-    @test @inferred(weightedmean(C)) == WeightedValue{Float64}(1.8, 2.5)
-    @test @inferred(weightedmean(C, C)) == WeightedArray([1.0, 2.0, 3.0], [2, 2, 1])
+    @test @inferred(mean(C)) == WeightedValue{Float64}(1.8, 2.5)
+    @test @inferred(mean(C, C)) == WeightedArray([1.0, 2.0, 3.0], [2, 2, 1])
+    @test @inferred(var(C)) == [1.0, 1.0, 2.0]
+    @test @inferred(std(C)) == [1.0, 1.0, sqrt(2.0)]
 
     D = WeightedArray(ones(Float32, 2, 2), ones(2, 2))
-    @test @inferred(weightedmean(D; dims = 2)) == WeightedArray(ones(Float32, 2, 1), 2 * ones(2, 1))
+    @test @inferred(mean(D; dims = 2)) == WeightedArray(ones(Float32, 2, 1), 2 * ones(2, 1))
+    @test @inferred(var(D)) == ones(Float32, 2, 2)
+    @test @inferred(std(D)) == ones(Float32, 2, 2)
     @test TypeUtils.get_precision(D) == Float32
 
 

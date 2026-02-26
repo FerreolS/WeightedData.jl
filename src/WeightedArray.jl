@@ -13,6 +13,26 @@ get_value(x::AbstractArray{<:WeightedValue}) = map(x -> x.value, x)
 Extract an array with the precisions of each `WeightedValue` element.
 """
 get_precision(x::AbstractArray{<:WeightedValue}) = map(x -> x.precision, x)
+
+"""
+    var(x::AbstractArray{<:WeightedValue})
+
+Return the element-wise variance array of `x`, defined as the inverse
+precision at each position:
+
+`var(x) = 1 ./ get_precision(x)`.
+"""
+var(x::AbstractArray{<:WeightedValue}) = inv.(get_precision(x))
+
+"""
+    std(x::AbstractArray{<:WeightedValue})
+
+Return the element-wise standard deviation array of `x`, defined as:
+
+`std(x) = sqrt.(var(x))`.
+"""
+std(x::AbstractArray{<:WeightedValue}) = sqrt.(var(x))
+
 WeightedValue(A::AbstractArray{T1, N}, B::AbstractArray{T2, N}) where {T1, T2, N} = map((a, b) -> WeightedValue(a, b), A, B)
 
 

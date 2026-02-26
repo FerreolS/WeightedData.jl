@@ -1,6 +1,7 @@
 using Uncertain
 using WeightedData
-import WeightedData: get_value, get_precision, weightedmean
+import WeightedData: get_value, get_precision
+import Statistics: mean
 
 @testset "WeightedDataUncertainExt" begin
     @testset "WeightedValue from Uncertain.Value" begin
@@ -114,7 +115,7 @@ import WeightedData: get_value, get_precision, weightedmean
         w1 = WeightedValue(u1)
         w2 = WeightedValue(u2)
         
-        w_mean = weightedmean(w1, w2)
+        w_mean = mean(w1, w2)
         @test get_value(w_mean) == 2.0
         @test get_precision(w_mean) ≈ 8.0  # 4 + 4
     end

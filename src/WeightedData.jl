@@ -3,6 +3,7 @@ import ZippedArrays: ZippedArray
 
 import TypeUtils
 
+import Statistics: mean, var, std
 
 export WeightedValue,
     likelihood,
@@ -15,7 +16,6 @@ if VERSION >= v"1.11"
     Core.eval(
         @__MODULE__, Expr(
             :public,
-            :weightedmean,
             :ScaledL2Loss,
             :flagbaddata,
             :flagbaddata!,
@@ -23,13 +23,13 @@ if VERSION >= v"1.11"
     )
 else
     @eval begin
-        export weightedmean, ScaledL2Loss, flagbaddata, flagbaddata!
+        export ScaledL2Loss, flagbaddata, flagbaddata!
     end
 end
 
 include("WeightedValue.jl")
 include("WeightedArray.jl")
-include("weightedmean.jl")
+include("utils.jl")
 include("likelihood.jl")
 
 end

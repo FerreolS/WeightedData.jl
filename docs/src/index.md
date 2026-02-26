@@ -30,11 +30,13 @@ Pkg.add("WeightedData")
 
 ```julia
 using WeightedData
-import WeightedData: weightedmean
+import Statistics: mean, var, std
 
 x = WeightedValue(1.0, 0.5)
 y = WeightedValue(2.0, 0.2)
-z = weightedmean(x, y)
+z = mean(x, y)
+vx = var(x)
+sx = std(x)
 
 data = WeightedArray([1.0, 1.0], [2.0, 0.5])
 model = [1.0, 1.5]
@@ -45,16 +47,20 @@ ll = likelihood(data, model)
 
 ```julia
 using WeightedData
-import WeightedData: weightedmean, flagbaddata!
+import Statistics: mean, var, std
+import WeightedData: flagbaddata!
 
 # Weighted means from two observations
 a = WeightedValue(1.2, 2.0)
 b = WeightedValue(0.8, 1.0)
-m = weightedmean(a, b)
+m = mean(a, b)
+va = var(a)
 
 # Global weighted mean over a weighted array
 wa = WeightedArray([1.0, 2.0, 3.0], [1.0, 1.0, 0.5])
-mg = weightedmean(wa)
+mg = mean(wa)
+vg = var(wa)
+sg = std(wa)
 
 # Mark invalid entries before analysis
 w = WeightedArray([1.0, NaN, 3.0], [1.0, 1.0, 1.0])

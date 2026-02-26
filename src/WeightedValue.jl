@@ -53,6 +53,24 @@ Return the precision (inverse variance) stored in `x`.
 """
 get_precision(A::WeightedValue) = A.precision
 
+"""
+    var(x::WeightedValue)
+
+Return the variance of `x`, defined as the inverse precision:
+
+`var(x) = 1 / get_precision(x)`.
+"""
+var(A::WeightedValue) = inv(get_precision(A))
+
+"""
+    std(x::WeightedValue)
+
+Return the standard deviation of `x`, defined as:
+
+`std(x) = sqrt(var(x))`.
+"""
+std(A::WeightedValue) = sqrt(var(A))
+
 Base.real(A::WeightedValue) = WeightedValue(real(A.value), real(A.precision))
 Base.imag(A::WeightedValue) = WeightedValue(imag(A.value), imag(A.precision))
 
