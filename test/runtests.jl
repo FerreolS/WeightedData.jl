@@ -2,9 +2,10 @@ using WeightedData
 using Test
 import TypeUtils
 
-@test !isdefined(@__MODULE__, :weightedmean)
-@test !isdefined(@__MODULE__, :ScaledL2Loss)
-
+if VERSION >= v"1.11"
+    @test !isdefined(@__MODULE__, :weightedmean)
+    @test !isdefined(@__MODULE__, :ScaledL2Loss)
+end
 import WeightedData: weightedmean, ScaledL2Loss, flagbaddata, flagbaddata!
 
 @testset "WeightedData.jl" begin
