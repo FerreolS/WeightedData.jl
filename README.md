@@ -19,6 +19,10 @@ z = weightedmean(x, y)
 # build an array of weighted points
 data = WeightedArray([1.0, 1.0], [2.0, 0.5])
 
+# global weighted mean over an array of weighted values
+wa = WeightedArray([1.0, 2.0, 3.0], [1.0, 1.0, 0.5])
+mg = weightedmean(wa)
+
 # Compute likelihood
 model = [1.0, 1.5]
 l = likelihood(data, model)  # Default Gaussian likelihood

@@ -39,7 +39,7 @@ import TypeUtils
 
         # Test for Base.zero
         @test zero(A) + A == A
-        @test weightedmean(()) === nothing #WeightedValue(0.0, Inf)
+        @test_throws ArgumentError weightedmean(())
 
         #@test convert(Float32, A) == WeightedValue(1.0f0, 0.5f0)
 

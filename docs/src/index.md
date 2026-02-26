@@ -50,6 +50,10 @@ a = WeightedValue(1.2, 2.0)
 b = WeightedValue(0.8, 1.0)
 m = weightedmean(a, b)
 
+# Global weighted mean over a weighted array
+wa = WeightedArray([1.0, 2.0, 3.0], [1.0, 1.0, 0.5])
+mg = weightedmean(wa)
+
 # Mark invalid entries before analysis
 w = WeightedArray([1.0, NaN, 3.0], [1.0, 1.0, 1.0])
 flagbadpix!(w)

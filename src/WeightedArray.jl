@@ -129,33 +129,3 @@ function flagbadpix!(data::WeightedArray{T1, N}, badpix::Union{AbstractArray{Boo
     size(data) == size(badpix) || error("flagbadpix! : size(data) != size(badpix)")
     return data[badpix] .= WeightedValue{T1}(T1(0), T1(0))
 end
-
-
-"""
-    weightedmean(A::AbstractArray{WeightedValue}; dims=:)
-
-Compute a precision-weighted mean over all elements (`dims=:`) or along the
-specified dimensions.
-"""
-function weightedmean(A::AbstractArray{WeightedValue{T}}; dims = Colon()) where {T}
-    if dims == Colon()
-        return reduce(weightedmean, A)
-    end
-    return mapslices(weightedmean, A; dims = dims)
-end
-
-"""
-    weightedmean(A::AbstractArray{WeightedValue}, B::AbstractArray{WeightedValue})
-
-Element-wise precision-weighted mean of two weighted arrays with matching
-shape.
-"""
-function weightedmean(A::AbstractArray{WeightedValue{T1}}, B::AbstractArray{WeightedValue{T2}}) where {T1, T2}
-    T = promote_type(T1, T2)
-    dataA = get_value(A)
-    dataB = get_value(B)
-    precisionA = get_precision(A)
-    precisionB = get_precision(B)
-    precision = T.(precisionA .+ precisionB)
-    return WeightedArray(T.(dataA .* precisionA .+ dataB .* precisionB) ./ precision, precision)
-end

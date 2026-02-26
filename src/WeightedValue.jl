@@ -85,41 +85,6 @@ Base.zero(::Type{WeightedValue{T}}) where {T} = WeightedValue(zero(T), T(+Inf))
 Base.:(==)(x::WeightedValue, y::WeightedValue) = x.value == y.value && x.precision == y.precision
 
 TypeUtils.get_precision(::Type{<:WeightedValue{T}}) where {T} = T
-"""
-    weightedmean(A::WeightedValue, B::WeightedValue)
-
-Compute the precision-weighted mean of two `WeightedValue` objects.
-
-For `A = (v₁, p₁)` and `B = (v₂, p₂)`, this returns:
-- value: `(p₁*v₁ + p₂*v₂) / (p₁ + p₂)`
-- precision: `p₁ + p₂`
-
-## Example
-```julia
-x = WeightedValue(1.0, 0.5)
-y = WeightedValue(2.0, 1.5)
-z = weightedmean(x, y)  # WeightedValue(1.75, 2.0)
-```
-"""
-function weightedmean(A::WeightedValue, B::WeightedValue)
-    precision = A.precision + B.precision
-    value = (A.precision * A.value + B.precision * B.value) / (precision)
-    return WeightedValue(value, precision)
-end
-"""
-    weightedmean(A::NTuple{N,WeightedValue}) where {N}
-
-Compute the precision-weighted mean of a tuple of `WeightedValue` objects.
-
-This method reduces the tuple with pairwise `weightedmean`.
-"""
-weightedmean(A::NTuple{N, WeightedValue}) where {N} = reduce(weightedmean, A)
-weightedmean(::NTuple{0}) = weightedmean()
-weightedmean() = nothing #zero(WeightedValue{Float64})
-#weightedmeandmean(A::WeightedValue, B...) = weightedmean(weightedmean(A, first(B)), last(B, length(B) - 1))
-#weightedmean(A::WeightedValue, B::NTuple{N,WeightedValue}) where {N} = weightedmean(weightedmean(A, first(B)), last(B, N - 1))
-weightedmean(A::WeightedValue) = A
-weightedmean(A::WeightedValue...) = reduce(weightedmean, A)
 
 """
     show(io::IO, x::WeightedValue)

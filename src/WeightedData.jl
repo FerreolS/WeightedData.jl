@@ -17,6 +17,7 @@ export WeightedValue,
 
 include("WeightedValue.jl")
 include("WeightedArray.jl")
+include("weightedmean.jl")
 include("likelihood.jl")
 
 end
