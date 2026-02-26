@@ -30,6 +30,7 @@ Pkg.add("WeightedData")
 
 ```julia
 using WeightedData
+import WeightedData: weightedmean
 
 x = WeightedValue(1.0, 0.5)
 y = WeightedValue(2.0, 0.2)
@@ -44,6 +45,7 @@ ll = likelihood(data, model)
 
 ```julia
 using WeightedData
+import WeightedData: weightedmean, flagbaddata!
 
 # Weighted means from two observations
 a = WeightedValue(1.2, 2.0)
@@ -56,7 +58,7 @@ mg = weightedmean(wa)
 
 # Mark invalid entries before analysis
 w = WeightedArray([1.0, NaN, 3.0], [1.0, 1.0, 1.0])
-flagbadpix!(w)
+flagbaddata!(w)
 
 # Likelihood of model predictions
 obs = WeightedArray([2.0, 1.0], [4.0, 0.5])

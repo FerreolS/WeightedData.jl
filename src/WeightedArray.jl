@@ -113,19 +113,19 @@ function Base.getproperty(A::WeightedArray, s::Symbol)
     end
 end
 
-function flagbadpix(data::AbstractArray{WeightedValue{T}, N}, badpix::Union{Array{Bool, N}, BitArray{N}}) where {T, N}
-    size(data) == size(badpix) || error("flagbadpix! : size(data) != size(badpix)")
-    return @inbounds map((d, flag) -> ifelse(flag, WeightedValue(T(0), T(0)), d), data, badpix)
+function flagbaddata(data::AbstractArray{WeightedValue{T}, N}, badmask::Union{Array{Bool, N}, BitArray{N}}) where {T, N}
+    size(data) == size(badmask) || error("flagbaddata! : size(data) != size(badmask)")
+    return @inbounds map((d, flag) -> ifelse(flag, WeightedValue(T(0), T(0)), d), data, badmask)
 end
 
 """
-    flagbadpix!(data::WeightedArray, badpix)
+    flagbaddata!(data::WeightedArray, badmask)
 
-In-place version of `flagbadpix` for `WeightedArray`.
+In-place version of `flagbaddata` for `WeightedArray`.
 
-All positions where `badpix` is `true` are set to `(0, 0)`.
+All positions where `badmask` is `true` are set to `(0, 0)`.
 """
-function flagbadpix!(data::WeightedArray{T1, N}, badpix::Union{AbstractArray{Bool, N}, BitArray{N}}) where {T1, N}
-    size(data) == size(badpix) || error("flagbadpix! : size(data) != size(badpix)")
-    return data[badpix] .= WeightedValue{T1}(T1(0), T1(0))
+function flagbaddata!(data::WeightedArray{T1, N}, badmask::Union{AbstractArray{Bool, N}, BitArray{N}}) where {T1, N}
+    size(data) == size(badmask) || error("flagbaddata! : size(data) != size(badmask)")
+    return data[badmask] .= WeightedValue{T1}(T1(0), T1(0))
 end
