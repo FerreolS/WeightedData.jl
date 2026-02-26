@@ -1,13 +1,13 @@
 module WeightedDataPlotsExt
-using Plots
+import Plots: @recipe
 import WeightedData: WeightedValue, get_value, get_precision, WeightedArray
 
-@recipe function f(A::AbstractArray{WeightedValue{T},N}) where {T,N}
+@recipe function f(A::AbstractArray{WeightedValue{T}, N}) where {T, N}
     data = get_value(A)
     precision = get_precision(A)
     extval = extrema(data)
     σ = 3 .* sqrt.(1 ./ precision)
-    σ[σ.==Inf] .= extval[2] - extval[1]
+    σ[σ .== Inf] .= extval[2] - extval[1]
     ribbon := σ
     fillalpha := 0.5
     ylims := extval
@@ -15,12 +15,12 @@ import WeightedData: WeightedValue, get_value, get_precision, WeightedArray
 end
 
 
-@recipe function f(x, A::AbstractArray{WeightedValue{T},N}) where {T,N}
+@recipe function f(x, A::AbstractArray{WeightedValue{T}, N}) where {T, N}
     data = get_value(A)
     precision = get_precision(A)
     extval = extrema(data)
     σ = 3 .* sqrt.(1 ./ precision)
-    σ[σ.==Inf] .= extval[2] - extval[1]
+    σ[σ .== Inf] .= extval[2] - extval[1]
     ribbon := σ
     fillalpha := 0.5
     ylims := extval

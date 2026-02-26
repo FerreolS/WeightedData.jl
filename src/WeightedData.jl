@@ -1,5 +1,5 @@
 module WeightedData
-using ZippedArrays
+import ZippedArrays: ZippedArray
 
 import TypeUtils
 
