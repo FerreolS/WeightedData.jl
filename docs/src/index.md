@@ -31,6 +31,7 @@ Pkg.add("WeightedData")
 ```julia
 using WeightedData
 import Statistics: mean, var, std
+import StatsAPI: loglikelihood
 
 x = WeightedValue(1.0, 0.5)
 y = WeightedValue(2.0, 0.2)
@@ -40,7 +41,7 @@ sx = std(x)
 
 data = WeightedArray([1.0, 1.0], [2.0, 0.5])
 model = [1.0, 1.5]
-ll = likelihood(data, model)
+ll = loglikelihood(data, model)
 ```
 
 ## Common workflows
@@ -69,7 +70,7 @@ flagbaddata!(w)
 # Likelihood of model predictions
 obs = WeightedArray([2.0, 1.0], [4.0, 0.5])
 pred = [1.8, 1.2]
-ℓ = likelihood(obs, pred)
+ℓ = loglikelihood(obs, pred)
 ```
 
 ## Extensions

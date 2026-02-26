@@ -9,6 +9,7 @@ A Julia package to manipulate data weighted by their precision and compute likel
 ```julia
 using WeightedData
 import Statistics: mean, var, std
+import StatsAPI: loglikelihood
 import WeightedData: flagbaddata!
 
 # Create weighted points
@@ -30,17 +31,17 @@ flagbaddata!(wa, [false, true, false])
 
 # Compute likelihood
 model = [1.0, 1.5]
-l = likelihood(data, model)  # Default Gaussian likelihood
+l = loglikelihood(data, model)  # Default Gaussian negative log-likelihood
 
 # Compute derivative with autodifferentiation
-f(x) = likelihood(data, x)
+f(x) = loglikelihood(data, x)
 using Zygote
 lkl, grad = Zygote.withgradient(f, model)
 
 
 # Robust likelihood
 using RobustModels
-l_robust = likelihood(data, model, loss=HuberLoss())
+l_robust = loglikelihood(data, model, loss=HuberLoss())
 ```
 
 [license-url]: ./LICENSE.md

@@ -2,6 +2,7 @@ module WeightedData
 import ZippedArrays: ZippedArray
 
 import TypeUtils
+import StatsAPI: loglikelihood
 
 import Statistics: mean, var, std
 
