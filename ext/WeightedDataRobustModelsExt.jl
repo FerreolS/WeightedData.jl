@@ -96,7 +96,7 @@ Array of working weights corresponding to the input data
 
 # See Also
 - [`get_weight`](@ref)
-- [`LossFunction`](@ref)
+- `RobustModels.LossFunction`
 - [`WeightedValue`](@ref)
 """
 workingweights(loss::LossFunction, data::AbstractArray{<:WeightedValue}, model::AbstractArray) = get_weight(loss, data, model)
