@@ -22,6 +22,11 @@ using RobustModels
         data = [WeightedValue(1.0, 0.5), WeightedValue(2.0, 0.5)]
         model = [2.0, 3.0]
         @test get_weight(loss, data, model) == RobustModels.weight.(loss, sqrt.(get_precision(data)) .* (model .- get_value(data)))
+        @test workingweights(loss, data, model) == get_weight(loss, data, model)
+
+        bad_model = [2.0, 3.0, 4.0]
+        @test_throws ErrorException likelihood(loss, data, bad_model)
+        @test_throws ErrorException get_weight(loss, data, bad_model)
     end
 
     # Test likelihood method with different loss functions
