@@ -102,6 +102,12 @@ jobs:
         with:
           version: "1"
       - uses: julia-actions/cache@v2
+      - name: Configure test environment
+        shell: julia --project=test --color=yes {0}
+        run: |
+          using Pkg
+          Pkg.develop(PackageSpec(path=pwd()))
+          Pkg.instantiate()
       - run: julia --project=test --color=yes test/check_readme_examples.jl
 
   docs-examples:
@@ -116,4 +122,10 @@ jobs:
         with:
           version: "1"
       - uses: julia-actions/cache@v2
+      - name: Configure test environment
+        shell: julia --project=test --color=yes {0}
+        run: |
+          using Pkg
+          Pkg.develop(PackageSpec(path=pwd()))
+          Pkg.instantiate()
       - run: julia --project=test --color=yes test/check_docs_examples.jl
