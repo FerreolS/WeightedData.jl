@@ -2,6 +2,28 @@
 
 All notable changes to this project are documented in this file.
 
+## [Unreleased]
+
+### Added
+- `WeightedDataAdaptExt` support for adapting `WeightedArray` containers across backends via `Adapt.adapt`.
+- `WeightedDataGPUArraysExt` support for generic `loglikelihood` evaluation on GPU-backed `WeightedArray` values (`AnyGPUArray`) and GPU-aware plain-text display.
+- `WeightedDataRobustModelsGPUArraysExt` support for robust `loglikelihood` on GPU-backed `WeightedArray` values (`AnyGPUArray`) with `RobustModels.LossFunction`.
+- Test coverage for `WeightedDataAdaptExt` with backend adaptation round-trip checks.
+- Test coverage for `WeightedDataGPUArraysExt` with `JLArrays` backend:
+  - generic `L2Loss` `loglikelihood` parity check against CPU reference
+  - mismatch behavior check following zipped-array semantics
+  - GPU-backed `show` smoke test
+- Test coverage for `WeightedDataRobustModelsGPUArraysExt` with `JLArrays` backend:
+  - robust `loglikelihood` parity checks (`L2Loss`, `HuberLoss`) against CPU references
+  - dispatch check for non-`RobustModels` loss on GPU arrays
+  - mismatch behavior check following zipped-array semantics
+  - zero-precision parity case
+
+### Fixed
+- `WeightedDataRobustModelsGPUArraysExt` now imports `AnyGPUArray` explicitly.
+- `WeightedDataRobustModelsGPUArraysExt.loglikelihood` now uses an explicit `init` value in GPU `mapreduce` to avoid output-type inference errors.
+- `WeightedDataRobustModelsGPUArraysExt.loglikelihood` now imports and calls `rho` directly from `RobustModels`, preventing `UndefVarError` during GPU execution.
+
 ## [0.2.0] - 2026-02-26
 
 ### Breaking changes

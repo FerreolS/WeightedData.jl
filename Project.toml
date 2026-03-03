@@ -7,13 +7,15 @@ authors = ["Ferréol Soulez <ferreol.soulez@univ-lyon1.fr>"]
 projects = ["test", "docs"]
 
 [deps]
-StatsAPI = "82ae8749-77ed-4fe6-ae5f-f523153014b0"
 Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
+StatsAPI = "82ae8749-77ed-4fe6-ae5f-f523153014b0"
 TypeUtils = "c3b1956e-8857-4d84-9b79-890df85b1e67"
 ZippedArrays = "8051824b-fc5e-4603-89c4-0e6ea551cb88"
 
 [weakdeps]
+Adapt = "79e6a3ab-5dfb-504d-930d-738a2a938a0e"
 ChainRulesCore = "d360d2e6-b24c-11e9-a2a3-2a2ae2dbcce4"
+GPUArrays = "0c68f7d7-f131-5f86-a1c3-88cf8149b2d7"
 Measurements = "eff96d63-e80a-5855-80a2-b1b0885c5ab7"
 OnlineSampleStatistics = "455218f6-ed6f-43e9-ad07-c481a1567983"
 Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
@@ -22,22 +24,27 @@ TwoDimensional = "1907e7ba-7586-4310-a2ba-dd01462aeb50"
 Uncertain = "b33f403f-199b-472b-b9d0-1cd2092892d0"
 
 [extensions]
+WeightedDataAdaptExt = ["Adapt"]
 WeightedDataChainRulesCoreExt = ["ChainRulesCore"]
+WeightedDataGPUArraysExt = ["GPUArrays"]
 WeightedDataMeasurementsExt = ["Measurements"]
 WeightedDataOnlineSampleStatisticsExt = ["OnlineSampleStatistics"]
 WeightedDataPlotsExt = ["Plots"]
 WeightedDataRobustModelsExt = ["RobustModels"]
+WeightedDataRobustModelsGPUArraysExt = ["RobustModels","GPUArrays"]
 WeightedDataTwoDimensionalExt = ["TwoDimensional"]
 WeightedDataUncertainExt = ["Uncertain"]
 
 [compat]
+Adapt = "4"
 ChainRulesCore = "1"
+GPUArrays = "11"
 Measurements = "2"
 OnlineSampleStatistics = "0.1"
 Plots = "1"
 RobustModels = "0.6"
-StatsAPI = "1"
 Statistics = "1"
+StatsAPI = "1"
 TwoDimensional = "0.4 - 0.5"
 TypeUtils = "1"
 Uncertain = "0.1"

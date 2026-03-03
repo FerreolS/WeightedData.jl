@@ -105,9 +105,12 @@ import WeightedData: ScaledL2Loss, flagbaddata, flagbaddata!
     include("likelihood_test.jl")
     include("WeightedDataPlotsExt_test.jl")
     include("WeightedDataRobustModelsExt_test.jl")
+    include("WeightedDataAdaptExt_test.jl")
+    include("WeightedDataGPUArraysExt_test.jl")
     include("WeightedDataTwoDimensionalExt_test.jl")
     include("WeightedDataMeasurementsExt_test.jl")
     include("WeightedDataOnlineSampleStatisticsExt_test.jl")
     include("WeightedDataUncertainExt_test.jl")
+    include("WeightedDataRobustModelsGPUArraysExt_test.jl")
 
 end

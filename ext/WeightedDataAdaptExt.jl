@@ -1,0 +1,16 @@
+module WeightedDataAdaptExt
+
+import Adapt:adapt_structure, adapt
+import WeightedData:WeightedArray, value, precision
+
+"""
+    adapt_structure(to, wd::WeightedArray)
+
+Adapt a `WeightedArray` structure to a target backend using `Adapt.jl`.
+
+Both value and precision arrays are adapted consistently and wrapped back into
+`WeightedArray`.
+"""
+adapt_structure(to, wd::WeightedArray) = 
+	WeightedArray(adapt(to, value(wd)),adapt(to, precision(wd)))
+end

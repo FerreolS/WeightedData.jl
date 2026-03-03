@@ -17,6 +17,9 @@ function (::L2Loss)((; value, precision)::WeightedValue, model::Number)
     return (value - model)^2 * precision / 2
 end
 
+function (::L2Loss)(value::T, precision::T, model::T) where {T <: Number}
+           return (value - model)^2 * precision / 2
+end
 
 """
     loglikelihood(data::WeightedValue, model; loss=L2Loss())
