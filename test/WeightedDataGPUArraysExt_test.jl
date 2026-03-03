@@ -3,6 +3,32 @@ using JLArrays
 import WeightedData: value, precision
 
 @testset "WeightedDataGPUArraysExt" begin
+    @testset "WeightedArray methods on WeightedArrayGPU" begin
+        values = Float32[1.0, 2.0, 3.0]
+        precisions = Float32[0.5, 0.2, 1.5]
+        data_gpu = WeightedArray(JLArray(values), JLArray(precisions))
+
+        @test size(data_gpu) == (3,)
+        @test value(data_gpu) == JLArray(values)
+        @test precision(data_gpu) == JLArray(precisions)
+        @test propertynames(data_gpu) == (:value, :precision)
+        @test data_gpu.value == JLArray(values)
+        @test data_gpu.precision == JLArray(precisions)
+
+        reshaped = reshape(data_gpu, 3, 1)
+        @test size(reshaped) == (3, 1)
+        @test value(reshaped) == reshape(JLArray(values), 3, 1)
+        @test precision(reshaped) == reshape(JLArray(precisions), 3, 1)
+
+        shifted = data_gpu + 2.0f0
+        @test value(shifted) == JLArray(Float32[3.0, 4.0, 5.0])
+        @test precision(shifted) == JLArray(precisions)
+
+        scaled = 2.0f0 * data_gpu
+        @test value(scaled) == JLArray(Float32[2.0, 4.0, 6.0])
+        @test precision(scaled) ≈ JLArray(Float32[0.125, 0.05, 0.375])
+    end
+
     @testset "generic GPU loglikelihood parity" begin
         values = Float32[1.0, 2.0, 3.0]
         precisions = Float32[0.5, 0.2, 1.5]
@@ -33,6 +59,22 @@ import WeightedData: value, precision
         s = sprint(show, MIME"text/plain"(), data_gpu)
         @test !isempty(s)
         @test occursin("WeightedValue", s) || occursin("WeightedArray", s)
+
+        empty_gpu = WeightedArray(JLArray(Float32[]), JLArray(Float32[]))
+        s_empty = sprint(show, MIME"text/plain"(), empty_gpu)
+        @test !isempty(s_empty)
+
+        io_empty = IOBuffer()
+        ctx_empty = IOContext(io_empty, :compact => true)
+        show(ctx_empty, MIME"text/plain"(), empty_gpu)
+        @test !isempty(String(take!(io_empty)))
+
+        data_gpu_mat = WeightedArray(JLArray(Float32[1.0 2.0; 3.0 4.0]), JLArray(Float32[0.5 0.2; 1.0 0.8]))
+        io = IOBuffer()
+        ctx = IOContext(io, :limit => true, :displaysize => (4, 80))
+        show(ctx, MIME"text/plain"(), data_gpu_mat)
+        s_limited = String(take!(io))
+        @test occursin("…", s_limited)
     end
 
     @testset "flagbaddata disambiguation" begin

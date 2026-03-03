@@ -203,3 +203,15 @@ end
     @test value(res5) == [2.0, 8.0]
     @test precision(res5) ≈ [0.125, 0.0125]
 end
+
+@testset "WeightedValue extra coverage" begin
+    @test WeightedValue(missing, 1.0) == WeightedValue(0.0, 0.0)
+    @test WeightedValue(missing) == WeightedValue(0, 0)
+
+    @test WeightedValue(NaN, 1.0) == WeightedValue(0.0, 0.0)
+    @test WeightedValue(Inf, 1.0) == WeightedValue(0.0, 0.0)
+
+    w = WeightedValue(1.0, 9.0)
+    s = sprint(io -> show(IOContext(io, :error_digits => 1), w))
+    @test s == "1.0 ± 0.3"
+end

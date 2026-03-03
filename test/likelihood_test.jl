@@ -11,6 +11,7 @@
     #@test @inferred cauchyloss(3)(A[2], B[2]) ≈ (3 / 2.385)^(-2) / 2 * log(1 + ((3 / 2.385) * sqrt(0.5) * (1 - 2))^2)
 
     @test @inferred(loglikelihood(A, B)) == 0.25
+    @test_deprecated WeightedData.likelihood(A, B)
 
     #@test @inferred likelihood(A, B, loss=cauchyloss(3)) ≈ (3 / 2.385)^(-2) / 2 * log(1 + ((3 / 2.385) * sqrt(0.5) * (1 - 2))^2)
 
@@ -55,5 +56,21 @@
 
     model_zero = [0.0, 0.0]
     @test loglikelihood(data_nonneg, model_zero, loss = ScaledL2Loss(nonnegative = true)) == 2.5
+
+    weighted_nanalpha = WeightedArray([1.0, 2.0], [1.0, 1.0])
+    model_nanalpha = [0.0, 0.0]
+    val_rrule_nanalpha, pb_rrule_nanalpha = ChainRulesCore.rrule(loglikelihood, ScaledL2Loss(), weighted_nanalpha, model_nanalpha)
+    @test val_rrule_nanalpha == 2.5
+    @test pb_rrule_nanalpha(1.0)[4] == [0.0, 0.0]
+
+    weighted_negativealpha = WeightedArray([1.0, 2.0], [1.0, 1.0])
+    model_negativealpha = [-1.0, -2.0]
+    val_rrule_negativealpha, pb_rrule_negativealpha = ChainRulesCore.rrule(loglikelihood, ScaledL2Loss(nonnegative = true), weighted_negativealpha, model_negativealpha)
+    @test val_rrule_negativealpha == 2.5
+    @test pb_rrule_negativealpha(1.0)[4] == [0.0, 0.0]
+
+    bad_model_rrule = ones(3, 2)
+    @test_throws ErrorException ChainRulesCore.rrule(loglikelihood, WeightedData.L2Loss(), C, bad_model_rrule)
+    @test_throws ErrorException ChainRulesCore.rrule(loglikelihood, ScaledL2Loss(), C, bad_model_rrule)
 
 end
