@@ -44,6 +44,13 @@ using RobustModels
 l_robust = loglikelihood(data, model, loss=HuberLoss())
 ```
 
+## GPU support
+
+GPU support is provided through an automatic extension (`WeightedDataGPUArraysExt`) when
+`GPUArrays.jl` and a backend package are loaded.
+
+
+
 [license-url]: ./LICENSE.md
 [license-img]: http://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat
 [github-ci-img]: https://github.com/FerreolS/WeightedData.jl/actions/workflows/CI.yml/badge.svg?branch=master

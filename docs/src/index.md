@@ -28,7 +28,7 @@ Pkg.add("WeightedData")
 
 ## Quick start
 
-```julia
+```@repl
 using WeightedData
 import Statistics: mean, var, std
 import StatsAPI: loglikelihood
@@ -46,7 +46,7 @@ ll = loglikelihood(data, model)
 
 ## Common workflows
 
-```julia
+```@repl
 using WeightedData
 import Statistics: mean, var, std
 import WeightedData: flagbaddata!
@@ -85,3 +85,46 @@ when the corresponding package is loaded:
 - `Uncertain` → conversion between `Uncertain.Value` and `WeightedValue`
 
 See [API Reference](api.md) for full method docstrings, including extension methods.
+
+## GPU support
+
+`WeightedData.jl` supports GPU-backed weighted arrays through the
+`WeightedDataGPUArraysExt` extension, activated automatically when
+`GPUArrays.jl` is loaded.
+
+### What is supported
+
+- `WeightedArray` storage on GPU arrays (for example `CuArray`) for values and precisions.
+- `loglikelihood(loss, data, model)` where `data` is GPU-backed and `model` has matching shape.
+- `flagbaddata` and `flagbaddata!` on GPU-backed weighted arrays.
+
+### Example (CUDA)
+
+```@example
+using WeightedData
+using CUDA
+using RobustModels
+import StatsAPI: loglikelihood
+
+values = CUDA.ones(Float32, 1024)
+precisions = CUDA.fill(Float32(2), 1024)
+data = WeightedArray(values, precisions)
+model = CUDA.fill(Float32(0.9), 1024)
+
+# Gaussian (default) negative log-likelihood
+ℓ1 = loglikelihood(data, model)
+
+# Robust negative log-likelihood (requires RobustModels extension)
+ℓ2 = loglikelihood(data, model, loss=HuberLoss())
+
+# Flag invalid points from a Boolean mask
+badmask = falses(1024)
+badmask[10] = true
+flagbaddata!(data, badmask)
+```
+
+Notes:
+
+- The `data` and `model` arrays must have identical shapes.
+- A CPU `badmask` (`Array` or `BitArray`) is accepted and adapted to the GPU backend.
+- Backend choice is delegated to your GPU array package (for example `CUDA.jl`, `AMDGPU.jl`, `oneAPI.jl`).
