@@ -1,6 +1,6 @@
 module WeightedDataGPUArraysExt
 
-import WeightedData:WeightedArray, loglikelihood
+import WeightedData:WeightedArray, WeightedValue, loglikelihood,flagbaddata, flagbaddata!, value, precision
 import GPUArrays: adapt, AnyGPUArray, @allowscalar
 import ZippedArrays: ZippedArray
 import Base: Base, show
@@ -12,7 +12,7 @@ import Base: Base, show
 Alias for a `WeightedArray`-like zipped container whose value and precision
 storage live on GPU-compatible arrays (`AnyGPUArray`).
 """
-WeightedArrayGPU{T, N}  = ZippedArray{T,N,2,I,Tuple{A, A}} where {T,N,I,A <: AnyGPUArray}
+WeightedArrayGPU{T, N}  = ZippedArray{WeightedValue{T},N,2,I,Tuple{A, A}} where {T,N,I,A <: AnyGPUArray{T,N}}
 # typeinfo aware
 # implements: show(io::IO, ::MIME"text/plain", X::AbstractArray)
 function Base.show(io::IO, ::MIME{Symbol("text/plain")}, X::WeightedArrayGPU) 
@@ -66,4 +66,33 @@ function loglikelihood(loss, data::WeightedArrayGPU{T1, N}, model::AbstractArray
         size(data) == size(model) || error("loglikelihood : size(A) != size(model)")
         return mapreduce(loss, +, data.args..., model)
 end
+
+function flagbaddata(data::WeightedArrayGPU{T, N}, badmask::Union{Array{Bool, N}, BitArray{N}}) where {T, N}
+    size(data) == size(badmask) || error("flagbaddata! : size(data) != size(badmask)")
+    badmask = adapt(get_wrapper(data), badmask)
+    newprecision = map((v, p, flag) -> ifelse(flag, zero(typeof(p)), p), value(data), precision(data), badmask)
+    return WeightedArray(value(data), newprecision)
+end
+
+function flagbaddata(data::WeightedArrayGPU{T, N}, badmask::AbstractArray{Bool, N}) where {T, N}
+    size(data) == size(badmask) || error("flagbaddata! : size(data) != size(badmask)")
+    newprecision = map((v, p, flag) -> ifelse(flag, zero(typeof(p)), p), value(data), precision(data), badmask)
+    return WeightedArray(value(data), newprecision)
+end
+
+function flagbaddata!(data::WeightedArrayGPU{T, N}, badmask::Union{Array{Bool, N}, BitArray{N}}) where {T, N}
+    size(data) == size(badmask) || error("flagbaddata! : size(data) != size(badmask)")
+    badmask = adapt(get_wrapper(data), badmask)
+    map!((v, p, flag) -> ifelse(flag, zero(typeof(p)), p), precision(data), value(data), precision(data), badmask)
+    return data
+end
+
+function flagbaddata!(data::WeightedArrayGPU{T, N}, badmask::AbstractArray{Bool, N}) where {T, N}
+    size(data) == size(badmask) || error("flagbaddata! : size(data) != size(badmask)")
+    map!((v, p, flag) -> ifelse(flag, zero(typeof(p)), p), precision(data), value(data), precision(data), badmask)
+    return data
+end
+
+get_wrapper(x::ZippedArray{T,N,L,I,<:NTuple{L,S}} ) where {T,N,L,I,S <: AnyGPUArray}  = S.name.wrapper
+
 end
