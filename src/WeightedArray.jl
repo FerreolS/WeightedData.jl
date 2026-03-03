@@ -43,46 +43,33 @@ WeightedValue(A::AbstractArray{T1, N}, B::AbstractArray{T2, N}) where {T1, T2, N
 """
 const WeightedArray{T, N} = ZippedArray{WeightedValue{T}, N, 2, I, Tuple{A, B}} where {A <: AbstractArray{T, N}, B <: AbstractArray{T, N}, I}
 
-function Base.summary(io::IO, A::WeightedArray{T, N}) where {T, N}
-    shape = N == 1 ? "$(length(A))-element" : Base.dims2string(size(A))
-    return print(io, shape, " WeightedArray{", T, ", ", N, "} (alias of ", typeof(A), "):")
-end
+_WeightedArray(A::AbstractArray{T, N}, B::AbstractArray{T, N}) where {T <: Real, N} = ZippedArray{WeightedValue{T}}(A, B)
 
 """
-    WeightedArray(values::AbstractArray{T,N}, precision::AbstractArray{T,N})
+    WeightedArray(values::AbstractArray, precision::AbstractArray)
 
 Build a weighted array from value and precision arrays of the same shape.
 """
-WeightedArray(A::AbstractArray{T, N}, B::AbstractArray{T, N}) where {T <: Real, N} = ZippedArray{WeightedValue{T}}(A, B)
-WeightedArray(A::AbstractArray{T1, N}, B::AbstractArray{T2, N}) where {T1 <: Real, T2 <: Real, N} = ZippedArray{WeightedValue{T1}}(A, T1.(B))
-
-"""
-    WeightedArray(values::AbstractArray{<:Union{Missing,Real},N}, precision::AbstractArray{<:Real,N})
-
-Build a `WeightedArray` while handling invalid entries.
-
-Any position where `values` is `missing`/`NaN` or `precision` is `NaN` is
-replaced by `(0, 0)` in the resulting weighted array.
-"""
-function WeightedArray(x::AbstractArray{<:Union{Missing, Real}, N}, y::AbstractArray{T2, N}) where {T2 <: Real, N}
-    size(x) == size(y) || error("WeightedArray: size(value) != size(precision)")
-    Tx = Base.nonmissingtype(eltype(x))
-    T = Tx <: Real ? promote_type(Tx, T2) : T2
-    value = map(x, y) do xv, yv
-        (ismissing(xv) || isnan(xv) || isnan(yv)) ? zero(T) : T(xv)
-    end
-    precision = map(x, y) do xv, yv
-        (ismissing(xv) || isnan(xv) || isnan(yv)) ? zero(T) : T(yv)
-    end
-    return ZippedArray{WeightedValue{T}}(value, precision)
+function WeightedArray(A::AbstractArray{<:Union{Missing, T1}, N}, B::AbstractArray{T2, N}) where {T1 <: Real, T2 <: Real, N}
+    size(A) == size(B) || error("WeightedArray: value and precision arrays must have the same shape")
+    filterbaddata(A, B)
+    return _WeightedArray(A, B)
 end
-
 
 WeightedArray(x::AbstractArray{<:WeightedValue}) = WeightedArray(value(x), precision(x))
 WeightedArray(x::WeightedArray) = x
 
-WeightedArray(x::AbstractArray{Missing}) = WeightedArray(zeros(size(x)), zeros(size(x)))
-#WeightedArray(x::AbstractArray{T}) where {T <: Real} = WeightedArray(x, ones(size(x)))
+WeightedArray(x::AbstractArray{Missing}) = _WeightedArray(zeros(size(x)), zeros(size(x)))
+
+
+function filterbaddata(val::AbstractArray{<:Union{Missing, T1}, N}, pre::AbstractArray{T2, N}) where {T1, T2, N}
+    ((T = promote_type(T1, T2)) <: Real) || error("filterbaddata: value and precision arrays must have a real element type")
+    prec = map((v, p) -> ifelse(isfinite(p) && isfinite(v), T(p), T(0)), val, pre)
+    val = map((v, p) -> ifelse(isfinite(p) && isfinite(v), T(v), T(0)), val, pre)
+    return val, prec
+end
+
+
 TypeUtils.get_precision(::Type{<:WeightedArray{T}}) where {T} = T
 
 
@@ -136,6 +123,12 @@ function Base.getproperty(A::WeightedArray, s::Symbol)
     else
         getfield(A, s)
     end
+end
+
+
+function Base.summary(io::IO, A::WeightedArray{T, N}) where {T, N}
+    shape = N == 1 ? "$(length(A))-element" : Base.dims2string(size(A))
+    return print(io, shape, " WeightedArray{", T, ", ", N, "} (alias of ", typeof(A), "):")
 end
 
 function flagbaddata(data::AbstractArray{WeightedValue{T}, N}, badmask::Union{Array{Bool, N}, BitArray{N}}) where {T, N}
