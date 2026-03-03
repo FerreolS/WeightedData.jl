@@ -100,7 +100,7 @@ See [API Reference](api.md) for full method docstrings, including extension meth
 
 ### Example (CUDA)
 
-```@example
+```julia
 using WeightedData
 using CUDA
 using RobustModels
