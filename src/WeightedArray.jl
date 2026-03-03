@@ -50,7 +50,10 @@ _WeightedArray(A::AbstractArray{T, N}, B::AbstractArray{T, N}) where {T <: Real,
 
 Build a weighted array from value and precision arrays of the same shape.
 """
-function WeightedArray(A::AbstractArray{<:Union{Missing, T1}, N}, B::AbstractArray{T2, N}) where {T1 <: Real, T2 <: Real, N}
+function WeightedArray(
+        A::AbstractArray{<:Union{Missing, Real}, N},
+        B::AbstractArray{<:Union{Missing, Real}, N}
+    ) where {N}
     size(A) == size(B) || error("WeightedArray: value and precision arrays must have the same shape")
     A, B = filterbaddata(A, B)
     return _WeightedArray(A, B)
@@ -62,14 +65,19 @@ WeightedArray(x::WeightedArray) = x
 WeightedArray(x::AbstractArray{Missing}) = _WeightedArray(zeros(size(x)), zeros(size(x)))
 
 
-function filterbaddata(val::AbstractArray{<:Union{Missing, T1}, N}, pre::AbstractArray{<:Union{Missing, T2}, N}) where {T1, T2, N}
-    ((T = promote_type(T1, T2)) <: Real) || error("filterbaddata: value and precision arrays must have a real element type")
-    map!(p -> ifelse(ismissing(p), T(NaN), p), pre, pre)
-    map!(v -> ifelse(ismissing(v), T(NaN), v), val, val)
+function filterbaddata(
+        val::AbstractArray{<:Union{Missing, Real}, N},
+        pre::AbstractArray{<:Union{Missing, Real}, N}
+    ) where {N}
+    Tv = Base.nonmissingtype(eltype(val))
+    Tp = Base.nonmissingtype(eltype(pre))
+    T = promote_type(Tv, Tp)
+    T <: Real || error("filterbaddata: value and precision arrays must have a real element type")
 
-    prec = map((v, p) -> ifelse(isfinite(p) && isfinite(v), T(p), T(0)), val, pre)
-    val = map((v, p) -> ifelse(isfinite(p) && isfinite(v), T(v), T(0)), val, pre)
-    return val, prec
+    bad(v, p) = ismissing(v) || ismissing(p) || !isfinite(v) || !isfinite(p)
+    prec = map((v, p) -> bad(v, p) ? zero(T) : T(p), val, pre)
+    vals = map((v, p) -> bad(v, p) ? zero(T) : T(v), val, pre)
+    return vals, prec
 end
 
 
