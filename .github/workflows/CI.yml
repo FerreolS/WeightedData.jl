@@ -71,7 +71,7 @@ jobs:
           version: "1"
       - uses: julia-actions/cache@v2
       - run: julia --project=test --color=yes -e 'using Pkg; Pkg.add("ExplicitImports")'
-      - run: julia --project=test --color=yes -e 'using ExplicitImports, WeightedData; ExplicitImports.check_no_implicit_imports(WeightedData); ExplicitImports.check_no_stale_explicit_imports(WeightedData)'
+      - run: julia --project=test --color=yes -e 'using ExplicitImports, WeightedData; ExplicitImports.check_no_implicit_imports(WeightedData); ExplicitImports.check_no_stale_explicit_imports(WeightedData); extfiles = filter(f -> endswith(f, ".jl"), readdir("ext"; join = true)); for f in extfiles; ExplicitImports.check_no_implicit_imports(WeightedData, f); ExplicitImports.check_no_stale_explicit_imports(WeightedData, f); end'
   docs:
     name: Documentation
     runs-on: ubuntu-latest
