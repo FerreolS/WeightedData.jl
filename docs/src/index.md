@@ -31,7 +31,6 @@ Pkg.add("WeightedData")
 ```@repl
 using WeightedData
 import Statistics: mean, var, std
-import StatsAPI: loglikelihood
 
 x = WeightedValue(1.0, 0.5)
 y = WeightedValue(2.0, 0.2)
@@ -104,7 +103,6 @@ See [API Reference](api.md) for full method docstrings, including extension meth
 using WeightedData
 using CUDA
 using RobustModels
-import StatsAPI: loglikelihood
 
 values = CUDA.ones(Float32, 1024)
 precisions = CUDA.fill(Float32(2), 1024)
