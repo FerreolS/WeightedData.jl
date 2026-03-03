@@ -88,10 +88,21 @@ function filterbaddata(
     T = promote_type(Tv, Tp)
     T <: Real || error("filterbaddata: value and precision arrays must have a real element type")
 
-    bad(v, p) = !isfinite(v) || !isfinite(p)
-    pre = map((v, p) -> bad(v, p) ? zero(T) : T(p), val, pre)
-    val = map((v, p) -> bad(v, p) ? zero(T) : T(v), val, pre)
-    return val, pre
+    if VERSION < v"1.11"
+        vals = T.(val)
+        prec = T.(pre)
+        valid = isfinite.(vals) .& isfinite.(prec)
+        z = zero(T)
+        vals = ifelse.(valid, vals, z)
+        prec = ifelse.(valid, prec, z)
+        return vals, prec
+    else
+        bad(v, p) = !isfinite(v) || !isfinite(p)
+        pre = map((v, p) -> bad(v, p) ? zero(T) : T(p), val, pre)
+        val = map((v, p) -> bad(v, p) ? zero(T) : T(v), val, pre)
+        return val, pre
+    end
+
 end
 
 
