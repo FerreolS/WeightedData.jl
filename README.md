@@ -9,7 +9,6 @@ A Julia package to manipulate data weighted by their precision and compute likel
 ```julia
 using WeightedData
 import Statistics: mean, var, std
-import StatsAPI: loglikelihood
 
 # Create weighted points
 x = WeightedValue(1.0, 0.5)  # value 1.0 with precision 0.5
@@ -43,7 +42,7 @@ l_robust = loglikelihood(data, model, loss=HuberLoss())
 ## GPU support
 
 GPU support is provided through an automatic extension (`WeightedDataGPUArraysExt`) when
-`GPUArrays.jl` and a backend package are loaded.
+`GPUArrays.jl` is loaded.
 
 
 

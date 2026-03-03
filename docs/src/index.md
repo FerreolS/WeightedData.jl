@@ -50,18 +50,21 @@ using WeightedData
 import Statistics: mean, var, std
 
 # Weighted means from two observations
+
 a = WeightedValue(1.2, 2.0)
 b = WeightedValue(0.8, 1.0)
 m = mean(a, b)
 va = var(a)
 
 # Global weighted mean over a weighted array
+
 wa = WeightedArray([1.0, 2.0, 3.0], [1.0, 1.0, 0.5])
 mg = mean(wa)
 vg = var(wa)
 sg = std(wa)
 
 # Likelihood of model predictions
+
 obs = WeightedArray([2.0, 1.0], [4.0, 0.5])
 pred = [1.8, 1.2]
 ℓ = loglikelihood(obs, pred)
@@ -104,10 +107,10 @@ data = WeightedArray(values, precisions)
 model = CUDA.fill(Float32(0.9), 1024)
 
 # Gaussian (default) negative log-likelihood
-ℓ1 = loglikelihood(data, model)
+ℓ2 = loglikelihood(data, model)
 
 # Robust negative log-likelihood (requires RobustModels extension)
-ℓ2 = loglikelihood(data, model, loss=HuberLoss())
+ℓh = loglikelihood(data, model, loss=HuberLoss())
 
 ```
 
