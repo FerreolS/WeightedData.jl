@@ -52,7 +52,7 @@ Build a weighted array from value and precision arrays of the same shape.
 """
 function WeightedArray(A::AbstractArray{<:Union{Missing, T1}, N}, B::AbstractArray{T2, N}) where {T1 <: Real, T2 <: Real, N}
     size(A) == size(B) || error("WeightedArray: value and precision arrays must have the same shape")
-    filterbaddata(A, B)
+    A, B = filterbaddata(A, B)
     return _WeightedArray(A, B)
 end
 
@@ -62,8 +62,11 @@ WeightedArray(x::WeightedArray) = x
 WeightedArray(x::AbstractArray{Missing}) = _WeightedArray(zeros(size(x)), zeros(size(x)))
 
 
-function filterbaddata(val::AbstractArray{<:Union{Missing, T1}, N}, pre::AbstractArray{T2, N}) where {T1, T2, N}
+function filterbaddata(val::AbstractArray{<:Union{Missing, T1}, N}, pre::AbstractArray{<:Union{Missing, T2}, N}) where {T1, T2, N}
     ((T = promote_type(T1, T2)) <: Real) || error("filterbaddata: value and precision arrays must have a real element type")
+    map!(p -> ifelse(ismissing(p), T(NaN), p), pre, pre)
+    map!(v -> ifelse(ismissing(v), T(NaN), v), val, val)
+
     prec = map((v, p) -> ifelse(isfinite(p) && isfinite(v), T(p), T(0)), val, pre)
     val = map((v, p) -> ifelse(isfinite(p) && isfinite(v), T(v), T(0)), val, pre)
     return val, prec
@@ -130,4 +133,3 @@ function Base.summary(io::IO, A::WeightedArray{T, N}) where {T, N}
     shape = N == 1 ? "$(length(A))-element" : Base.dims2string(size(A))
     return print(io, shape, " WeightedArray{", T, ", ", N, "} (alias of ", typeof(A), "):")
 end
-

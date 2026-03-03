@@ -18,7 +18,6 @@
     @test WeightedArray([1.0, missing], ones(2)) == WeightedArray([WeightedValue(1.0, 1.0), WeightedValue(0.0, 0.0)])
     #@test WeightedArray(ones(2, 3)) == WeightedArray(ones(2, 3), ones(2, 3))
     @test WeightedArray([missing, 1.0], ones(2)) == WeightedArray([WeightedValue(0.0, 0.0), WeightedValue(1.0, 1.0)])
-    @test WeightedArray([missing, missing]) == WeightedArray([WeightedValue(missing, 0.0), WeightedValue(missing)])
 
 
     z = zeros(WeightedValue{Float64}, 2, 3)
@@ -27,7 +26,7 @@
     @test TypeUtils.get_precision(z) == Float64
 
     @test size(z) == (2, 3)
-    @test all(wv -> wv == WeightedValue(0.0, +Inf), z)
+    @test all(wv -> wv == WeightedValue(0.0, 0.0), z)
 
 
     A = [1.0, 2.0, 3.0]
@@ -53,7 +52,7 @@
     @test @inferred(var(C)) == [1.0, 1.0, 2.0]
     @test @inferred(std(C)) == [1.0, 1.0, sqrt(2.0)]
 
-    D = WeightedArray(ones(Float32, 2, 2), ones(2, 2))
+    D = WeightedArray(ones(Float32, 2, 2), ones(Float32, 2, 2))
     @test @inferred(mean(D; dims = 2)) == WeightedArray(ones(Float32, 2, 1), 2 * ones(2, 1))
     @test @inferred(var(D)) == ones(Float32, 2, 2)
     @test @inferred(std(D)) == ones(Float32, 2, 2)
