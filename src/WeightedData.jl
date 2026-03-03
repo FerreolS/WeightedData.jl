@@ -20,13 +20,11 @@ if VERSION >= v"1.11"
         @__MODULE__, Expr(
             :public,
             :ScaledL2Loss,
-            :flagbaddata,
-            :flagbaddata!,
         )
     )
 else
     @eval begin
-        export ScaledL2Loss, flagbaddata, flagbaddata!
+        export ScaledL2Loss
     end
 end
 

@@ -7,7 +7,7 @@ import WeightedData: value, precision
 if VERSION >= v"1.11"
     @test !isdefined(@__MODULE__, :ScaledL2Loss)
 end
-import WeightedData: ScaledL2Loss, flagbaddata, flagbaddata!
+import WeightedData: ScaledL2Loss
 
 @testset "WeightedData.jl" begin
     @testset "WeightedValue" begin

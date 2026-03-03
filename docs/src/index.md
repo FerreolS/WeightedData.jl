@@ -48,7 +48,6 @@ ll = loglikelihood(data, model)
 ```@repl
 using WeightedData
 import Statistics: mean, var, std
-import WeightedData: flagbaddata!
 
 # Weighted means from two observations
 a = WeightedValue(1.2, 2.0)
@@ -61,10 +60,6 @@ wa = WeightedArray([1.0, 2.0, 3.0], [1.0, 1.0, 0.5])
 mg = mean(wa)
 vg = var(wa)
 sg = std(wa)
-
-# Mark invalid entries before analysis
-w = WeightedArray([1.0, NaN, 3.0], [1.0, 1.0, 1.0])
-flagbaddata!(w)
 
 # Likelihood of model predictions
 obs = WeightedArray([2.0, 1.0], [4.0, 0.5])
@@ -95,7 +90,6 @@ See [API Reference](api.md) for full method docstrings, including extension meth
 
 - `WeightedArray` storage on GPU arrays (for example `CuArray`) for values and precisions.
 - `loglikelihood(loss, data, model)` where `data` is GPU-backed and `model` has matching shape.
-- `flagbaddata` and `flagbaddata!` on GPU-backed weighted arrays.
 
 ### Example (CUDA)
 
@@ -115,14 +109,9 @@ model = CUDA.fill(Float32(0.9), 1024)
 # Robust negative log-likelihood (requires RobustModels extension)
 ℓ2 = loglikelihood(data, model, loss=HuberLoss())
 
-# Flag invalid points from a Boolean mask
-badmask = falses(1024)
-badmask[10] = true
-flagbaddata!(data, badmask)
 ```
 
 Notes:
 
 - The `data` and `model` arrays must have identical shapes.
-- A CPU `badmask` (`Array` or `BitArray`) is accepted and adapted to the GPU backend.
 - Backend choice is delegated to your GPU array package (for example `CUDA.jl`, `AMDGPU.jl`, `oneAPI.jl`).

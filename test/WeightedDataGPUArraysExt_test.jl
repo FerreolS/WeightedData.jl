@@ -40,7 +40,7 @@ import WeightedData: value, precision
         loss = WeightedData.L2Loss()
         got = loglikelihood(loss, data_gpu, model_gpu)
         ref = sum(0.5f0 .* precisions .* (model .- values) .^ 2)
-        @test got ≈ ref rtol = 1f-5 atol = 1f-6
+        @test got ≈ ref rtol = 1.0f-5 atol = 1.0f-6
     end
 
     @testset "shape mismatch throws" begin
@@ -77,23 +77,4 @@ import WeightedData: value, precision
         @test occursin("…", s_limited)
     end
 
-    @testset "flagbaddata disambiguation" begin
-        values = Float32[1.0, 2.0]
-        precisions = Float32[0.5, 0.2]
-        data_gpu = WeightedArray(JLArray(values), JLArray(precisions))
-
-        masked_vec = WeightedData.flagbaddata(data_gpu, [true, false])
-        @test value(masked_vec) == JLArray(values)
-        @test precision(masked_vec) == JLArray(Float32[0.0, 0.2])
-
-        masked_bit = WeightedData.flagbaddata(data_gpu, BitVector([false, true]))
-        @test value(masked_bit) == JLArray(values)
-        @test precision(masked_bit) == JLArray(Float32[0.5, 0.0])
-
-        data_gpu_copy = WeightedArray(JLArray(values), JLArray(precisions))
-        WeightedData.flagbaddata!(data_gpu_copy, [true, false])
-        @test precision(data_gpu_copy) == JLArray(Float32[0.0, 0.2])
-
-        @test_throws ErrorException("flagbaddata! : size(data) != size(badmask)") WeightedData.flagbaddata(data_gpu, [true])
-    end
 end

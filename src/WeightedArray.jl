@@ -131,19 +131,3 @@ function Base.summary(io::IO, A::WeightedArray{T, N}) where {T, N}
     return print(io, shape, " WeightedArray{", T, ", ", N, "} (alias of ", typeof(A), "):")
 end
 
-function flagbaddata(data::AbstractArray{WeightedValue{T}, N}, badmask::Union{Array{Bool, N}, BitArray{N}}) where {T, N}
-    size(data) == size(badmask) || error("flagbaddata! : size(data) != size(badmask)")
-    return @inbounds map((d, flag) -> ifelse(flag, WeightedValue(T(0), T(0)), d), data, badmask)
-end
-
-"""
-    flagbaddata!(data::WeightedArray, badmask)
-
-In-place version of `flagbaddata` for `WeightedArray`.
-
-All positions where `badmask` is `true` are set to `(0, 0)`.
-"""
-function flagbaddata!(data::WeightedArray{T1, N}, badmask::Union{AbstractArray{Bool, N}, BitArray{N}}) where {T1, N}
-    size(data) == size(badmask) || error("flagbaddata! : size(data) != size(badmask)")
-    return data[badmask] .= WeightedValue{T1}(T1(0), T1(0))
-end

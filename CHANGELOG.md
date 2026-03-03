@@ -29,7 +29,6 @@ All notable changes to this project are documented in this file.
 ### Breaking changes
 - Weighted mean API migrated to `Statistics.mean` for `WeightedValue` and weighted arrays.
 - Likelihood API migrated to `StatsAPI.loglikelihood` as the canonical entry point.
-- Bad-data masking API renamed from `flagbadpix`/`flagbadpix!` to `flagbaddata`/`flagbaddata!`.
 
 ### Added
 - `Statistics.var` support:

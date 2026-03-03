@@ -1,7 +1,7 @@
 module WeightedDataGPUArraysExt
 
-import WeightedData:WeightedArray, WeightedValue, loglikelihood,flagbaddata, flagbaddata!, value, precision
-import GPUArrays: adapt, AnyGPUArray, @allowscalar
+import WeightedData:WeightedArray, WeightedValue, loglikelihood, value, precision
+import GPUArrays: AnyGPUArray, @allowscalar
 import ZippedArrays: ZippedArray
 import Base: Base, show
 
@@ -66,33 +66,5 @@ function loglikelihood(loss, data::WeightedArrayGPU{T1, N}, model::AbstractArray
         size(data) == size(model) || error("loglikelihood : size(A) != size(model)")
         return mapreduce(loss, +, data.args..., model)
 end
-
-function flagbaddata(data::WeightedArrayGPU{T, N}, badmask::Union{Array{Bool, N}, BitArray{N}}) where {T, N}
-    size(data) == size(badmask) || error("flagbaddata! : size(data) != size(badmask)")
-    badmask = adapt(get_wrapper(data), badmask)
-    newprecision = map((v, p, flag) -> ifelse(flag, zero(typeof(p)), p), value(data), precision(data), badmask)
-    return WeightedArray(value(data), newprecision)
-end
-
-function flagbaddata(data::WeightedArrayGPU{T, N}, badmask::AbstractArray{Bool, N}) where {T, N}
-    size(data) == size(badmask) || error("flagbaddata! : size(data) != size(badmask)")
-    newprecision = map((v, p, flag) -> ifelse(flag, zero(typeof(p)), p), value(data), precision(data), badmask)
-    return WeightedArray(value(data), newprecision)
-end
-
-function flagbaddata!(data::WeightedArrayGPU{T, N}, badmask::Union{Array{Bool, N}, BitArray{N}}) where {T, N}
-    size(data) == size(badmask) || error("flagbaddata! : size(data) != size(badmask)")
-    badmask = adapt(get_wrapper(data), badmask)
-    map!((v, p, flag) -> ifelse(flag, zero(typeof(p)), p), precision(data), value(data), precision(data), badmask)
-    return data
-end
-
-function flagbaddata!(data::WeightedArrayGPU{T, N}, badmask::AbstractArray{Bool, N}) where {T, N}
-    size(data) == size(badmask) || error("flagbaddata! : size(data) != size(badmask)")
-    map!((v, p, flag) -> ifelse(flag, zero(typeof(p)), p), precision(data), value(data), precision(data), badmask)
-    return data
-end
-
-get_wrapper(x::ZippedArray{T,N,L,I,<:NTuple{L,S}} ) where {T,N,L,I,S <: AnyGPUArray}  = S.name.wrapper
 
 end
