@@ -36,7 +36,7 @@ import WeightedData: value, precision
         @test got ≈ ref rtol = 1f-5 atol = 1f-6
     end
 
-    @testset "shape mismatch follows zip semantics" begin
+    @testset "shape mismatch throws" begin
         values = Float32[1.0, 2.0, 3.0]
         precisions = Float32[0.5, 0.2, 1.5]
         model_bad = Float32[2.0, 3.0]
@@ -44,9 +44,7 @@ import WeightedData: value, precision
         data_gpu = WeightedArray(JLArray(values), JLArray(precisions))
         model_gpu_bad = JLArray(model_bad)
 
-        got = loglikelihood(L2Loss(), data_gpu, model_gpu_bad)
-        ref = sum(RobustModels.rho.(L2Loss(), sqrt.(precisions[1:2]) .* (model_bad .- values[1:2])))
-        @test got ≈ ref rtol = 1f-5 atol = 1f-6
+        @test_throws ErrorException("loglikelihood : size(A) != size(model)") loglikelihood(L2Loss(), data_gpu, model_gpu_bad)
     end
 
     @testset "zero precision parity" begin
