@@ -26,54 +26,54 @@ Pkg.add("WeightedData")
 - `WeightedArray(values, precisions)` stores array-valued observations and per-entry precisions.
 - Precision is interpreted as inverse variance, $w = 1 / \sigma^2$.
 
-## Quick start
-
-```@repl
-using WeightedData
-import Statistics: mean, var, std
-
-x = WeightedValue(1.0, 0.5)
-y = WeightedValue(2.0, 0.2)
-z = mean(x, y)
-vx = var(x)
-sx = std(x)
-
-data = WeightedArray([1.0, 1.0], [2.0, 0.5])
-model = [1.0, 1.5]
-ll = loglikelihood(data, model)
-```
-
 ## Common workflows
 
 ```@repl
+
 using WeightedData
-import Statistics: mean, var, std
 
-# Weighted means from two observations
+using WeightedData: filterbaddata!, get_value, get_precision
 
-a = WeightedValue(1.2, 2.0)
-b = WeightedValue(0.8, 1.0)
-m = mean(a, b)
-va = var(a)
+# Define arrays of values and precisions
+values = [ 	1.0 missing π
+            0.1 10 		NaN]
 
-# Global weighted mean over a weighted array
+precision = [0 	missing 5
+            0.1 10 		3.]
 
-wa = WeightedArray([1.0, 2.0, 3.0], [1.0, 1.0, 0.5])
-mg = mean(wa)
-vg = var(wa)
-sg = std(wa)
+# Create a WeightedArray
+data = WeightedArray(values, precision)
 
-# Likelihood of model predictions
+# Missing and non-numeric values are ignored by setting their precision to zero
+get_precision(data)
 
-obs = WeightedArray([2.0, 1.0], [4.0, 0.5])
-pred = [1.8, 1.2]
-ℓ = loglikelihood(obs, pred)
+# Elements are `WeightedValue`s, displayed with their standard deviation
+data[2]
 
-# Mask bad observations in-place (set precision to zero)
+# Weighted mean along a given dimension
+mean(data, dims=1)
 
-mask = [true, false]
-filterbaddata!(obs, mask)
-get_precision(obs)
+model = [1.0 2.0 3.
+        3 	2. 	1. ]
+
+
+# Compute the negative log-likelihood for a given model
+l = loglikelihood(data, model)  # Default Gaussian negative log-likelihood
+
+# Compute the derivative with automatic differentiation
+f(x) = loglikelihood(data, x)
+
+using Zygote
+
+lkl, grad = Zygote.withgradient(f, model)
+
+# Use a robust loss from the RobustModels package
+using RobustModels
+
+l_robust = loglikelihood(data, model, loss=HuberLoss())
+
+# Robust weights computed by the model (outlier weights are lower than weights of valid data points)
+get_weights(data, model;loss=HuberLoss())
 ```
 
 ## Extensions

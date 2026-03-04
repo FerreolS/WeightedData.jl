@@ -40,6 +40,21 @@ WeightedValue(A::AbstractArray{T1, N}, B::AbstractArray{T2, N}) where {T1, T2, N
     WeightedArray{T,N}
 
 `N`-dimensional array of `WeightedValue{T}`.
+
+`WeightedArray` stores observations and precisions side-by-side and behaves like
+an `AbstractArray{WeightedValue{T},N}`.
+
+- `T` is the numeric storage type used for both values and precisions.
+- Precision is interpreted as inverse variance.
+- Internally this is an alias of a `ZippedArray` over two arrays with the same shape.
+
+Typical ways to build a `WeightedArray`:
+
+- `WeightedArray(values, precisions)`
+- `WeightedArray(array_of_weighted_values)`
+- `WeightedArray(existing_weighted_array)` (identity)
+
+See the constructor docstring below for conversion and sanitization rules.
 """
 const WeightedArray{T, N} = ZippedArray{WeightedValue{T}, N, 2, I, Tuple{A, B}} where {A <: AbstractArray{T, N}, B <: AbstractArray{T, N}, I}
 
@@ -49,6 +64,29 @@ _WeightedArray(A::AbstractArray{T, N}, B::AbstractArray{T, N}) where {T <: Real,
     WeightedArray(values::AbstractArray, precision::AbstractArray)
 
 Build a weighted array from value and precision arrays of the same shape.
+
+Rules:
+
+- `size(values) == size(precision)` is required.
+- `values` and `precision` may have different real element types (for example
+    `Int`, `Float32`, `Float64`, or `Union{Missing,<:Real}`), and are promoted to
+    a common real type `T`.
+- Missing entries in either input are sanitized to `value=0` and `precision=0`.
+- Non-finite precision (`NaN`, `Inf`, `-Inf`) is sanitized to `precision=0`.
+- Non-finite values are sanitized to `value=0`.
+
+Additional constructors:
+
+- `WeightedArray(x::AbstractArray{<:WeightedValue})`
+- `WeightedArray(x::WeightedArray)`
+- `WeightedArray(x::AbstractArray{Missing})`
+
+## Example
+```julia
+values = [1.0, missing, 3.0]
+prec = [2, 4f0, NaN]
+A = WeightedArray(values, prec)
+```
 """
 function WeightedArray(
         A::AbstractArray{<:Union{Missing, Real}, N},
