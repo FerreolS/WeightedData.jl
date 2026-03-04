@@ -1,10 +1,11 @@
-module WeightedDataChainRulesCoreExt
+module WeightedDataGPUArraysChainRulesCoreExt
+
 import ChainRulesCore: NoTangent, ZeroTangent
 import ChainRulesCore
+import GPUArrays: AnyGPUArray
 import StatsAPI: loglikelihood
 import WeightedData: L2Loss, get_value, get_precision, WeightedValue, ScaledL2Loss
 import AcceleratedKernels as AK
-using Adapt
 """
     ChainRulesCore.rrule(::typeof(loglikelihood), ::L2Loss, data, model)
 
@@ -19,25 +20,20 @@ Custom reverse-mode rule for
 - scalar objective value
 - pullback that propagates gradients to `model`
 """
-function ChainRulesCore.rrule(::typeof(loglikelihood), ::L2Loss, data::AbstractArray{WeightedValue{T}, N}, model::AbstractArray{T, N}) where {T, N}
+function ChainRulesCore.rrule(::typeof(loglikelihood), ::L2Loss, data::AbstractArray{WeightedValue{T}, N}, model::AnyGPUArray) where {T, N}
     size(data) == size(model) || error("likelihood : size(A) != size(model)")
-
     d = get_value(data)
+    
+    AK.get_backend(d) == AK.get_backend(model) || error("likelihood : data and model must be on the same backend")
+
     p = get_precision(data)
     rp = similar(d)
     l = T(0)
-    @inbounds @simd for i in eachindex(data, model)
-        r = model[i] - d[i]
-        rp[i] = p[i] * r
-        l += r .* rp[i]
-    end
-
-#= 
-    l = AK.mapreduce(+, eachindex(d), AK.get_backend(d); init = zero(T)) do i
+    l = AK.mapreduce(+, eachindex(model), AK.get_backend(model); init = zero(T)) do i
         r = model[i] - d[i]
         rp[i] = p[i] * r
         return r .* rp[i]
-    end =#
+    end 
     loglikelihood_pullback(Δy) = (NoTangent(), NoTangent(), NoTangent(), rp .* Δy)
     return 1 / 2 * l, loglikelihood_pullback
 end
@@ -60,7 +56,7 @@ at optimum).
 - scalar objective value
 - pullback that propagates gradients to `model`
 """
-function ChainRulesCore.rrule(::typeof(loglikelihood), (; dims, nonnegative)::ScaledL2Loss, weighteddata::AbstractArray{WeightedValue{T1}, N}, model::AbstractArray{T2, N}) where {T1, T2, N}
+function ChainRulesCore.rrule(::typeof(loglikelihood), (; dims, nonnegative)::ScaledL2Loss, weighteddata::AbstractArray{WeightedValue{T1}, N}, model::AnyGPUArray) where {T1, N}
     size(weighteddata) == size(model) || error("scaledlikelihood : size(A) != size(model)")
     data = get_value(weighteddata)
     p = get_precision(weighteddata)

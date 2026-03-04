@@ -13,6 +13,7 @@ TypeUtils = "c3b1956e-8857-4d84-9b79-890df85b1e67"
 ZippedArrays = "8051824b-fc5e-4603-89c4-0e6ea551cb88"
 
 [weakdeps]
+AcceleratedKernels = "6a4ca0a5-0e36-4168-a932-d9be78d558f1"
 Adapt = "79e6a3ab-5dfb-504d-930d-738a2a938a0e"
 ChainRulesCore = "d360d2e6-b24c-11e9-a2a3-2a2ae2dbcce4"
 GPUArrays = "0c68f7d7-f131-5f86-a1c3-88cf8149b2d7"
@@ -27,15 +28,17 @@ Uncertain = "b33f403f-199b-472b-b9d0-1cd2092892d0"
 WeightedDataAdaptExt = ["Adapt"]
 WeightedDataChainRulesCoreExt = ["ChainRulesCore"]
 WeightedDataGPUArraysExt = ["GPUArrays"]
+WeightedDataGPUArraysChainRulesCoreExt =  ["GPUArrays", "ChainRulesCore"]
 WeightedDataMeasurementsExt = ["Measurements"]
 WeightedDataOnlineSampleStatisticsExt = ["OnlineSampleStatistics"]
 WeightedDataPlotsExt = ["Plots"]
 WeightedDataRobustModelsExt = ["RobustModels"]
-WeightedDataRobustModelsGPUArraysExt = ["RobustModels","GPUArrays"]
+WeightedDataRobustModelsGPUArraysExt = ["RobustModels", "GPUArrays"]
 WeightedDataTwoDimensionalExt = ["TwoDimensional"]
 WeightedDataUncertainExt = ["Uncertain"]
 
 [compat]
+AcceleratedKernels = "0.4"
 Adapt = "4"
 ChainRulesCore = "1"
 GPUArrays = "11"
