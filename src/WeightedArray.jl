@@ -81,7 +81,16 @@ Rules:
 - Missing entries in either input are sanitized to `value=0` and `precision=0`.
 - Non-finite precision (`NaN`, `Inf`, `-Inf`) is sanitized to `precision=0`.
 - Non-finite values are sanitized to `value=0`.
-
+- If `values` and `precision` have different element types, or if sanitization is needed
+    (missing/non-finite entries), the constructor may allocate new arrays of type
+    `Array{T,N}`.
+- In those cases, the result is not guaranteed to be a simple wrapper around the
+    original array storage (for example custom backends such as fixed-size or GPU
+    arrays).
+- To maximize storage preservation, provide inputs with the same concrete real
+    element type and no missing/non-finite entries.
+- If you need to target a specific backend after construction, use `Adapt` to
+    adapt the resulting `WeightedArray` (e.g., `Adapt.adapt(FixedSizeArrayDefault, A)`).
 Additional constructors:
 
 - `WeightedArray(x::AbstractArray{<:WeightedValue})`

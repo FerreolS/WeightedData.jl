@@ -1,7 +1,7 @@
 module WeightedDataAdaptExt
 
-import Adapt:adapt_structure, adapt
-import WeightedData:WeightedArray, get_value, get_precision
+import Adapt: adapt_structure, adapt
+import WeightedData: WeightedArray, get_value, get_precision, _WeightedArray
 
 """
     adapt_structure(to, wd::WeightedArray)
