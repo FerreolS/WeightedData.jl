@@ -103,6 +103,17 @@ WeightedArray(x::WeightedArray) = x
 WeightedArray(x::AbstractArray{Missing}) = _WeightedArray(zeros(size(x)), zeros(size(x)))
 
 
+"""
+    filterbaddata(val, pre)
+
+Private helper used by `WeightedArray` constructors to sanitize value/precision
+inputs and return cleaned arrays `(vals, prec)`.
+
+This method accepts arrays that may contain `Missing` values. Entries where
+either value or precision is missing are mapped to `(0, 0)` before delegating
+to the real-valued implementation.
+
+"""
 function filterbaddata(
         val::AbstractArray{<:Union{Missing, Real}, N},
         pre::AbstractArray{<:Union{Missing, Real}, N}
@@ -119,6 +130,18 @@ function filterbaddata(
     return vals, prec
 end
 
+"""
+    filterbaddata(val, pre)
+
+Private helper used by `WeightedArray` constructors to sanitize real-valued
+inputs and return cleaned arrays `(vals, prec)`.
+
+Behavior:
+- Promotes values and precisions to a common real type.
+- Replaces non-finite values with zero values.
+- Replaces non-finite precisions with zero precision.
+
+"""
 function filterbaddata(
         val::AbstractArray{Tv, N},
         pre::AbstractArray{Tp, N}
