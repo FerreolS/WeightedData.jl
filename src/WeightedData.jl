@@ -9,8 +9,8 @@ import Statistics: mean, var, std
 export WeightedValue,
     likelihood,
     WeightedArray,
-    value,
-    precision,
+    get_value,
+    get_precision,
     loglikelihood,
     get_weights,
     mean, var, std
@@ -33,7 +33,7 @@ include("WeightedArray.jl")
 include("utils.jl")
 include("likelihood.jl")
 
-@deprecate get_value(args...; kwargs...) value(args...; kwargs...)
-@deprecate get_precision(args...; kwargs...) precision(args...; kwargs...)
+@deprecate value(args...; kwargs...) get_value(args...; kwargs...)
+@deprecate precision(args...; kwargs...) get_precision(args...; kwargs...)
 
 end

@@ -1,6 +1,6 @@
 module WeightedDataGPUArraysExt
 
-import WeightedData:WeightedArray, WeightedValue, loglikelihood, value, precision
+import WeightedData:WeightedArray, WeightedValue, loglikelihood
 import GPUArrays: AnyGPUArray, @allowscalar
 import ZippedArrays: ZippedArray
 import Base: Base, show

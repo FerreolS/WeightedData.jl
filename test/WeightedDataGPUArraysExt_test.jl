@@ -1,6 +1,6 @@
 using GPUArrays
 using JLArrays
-import WeightedData: value, precision
+import WeightedData: get_value, get_precision
 
 @testset "WeightedDataGPUArraysExt" begin
     @testset "WeightedArray methods on WeightedArrayGPU" begin
@@ -9,24 +9,24 @@ import WeightedData: value, precision
         data_gpu = WeightedArray(JLArray(values), JLArray(precisions))
 
         @test size(data_gpu) == (3,)
-        @test value(data_gpu) == JLArray(values)
-        @test precision(data_gpu) == JLArray(precisions)
+        @test get_value(data_gpu) == JLArray(values)
+        @test get_precision(data_gpu) == JLArray(precisions)
         @test propertynames(data_gpu) == (:value, :precision)
         @test data_gpu.value == JLArray(values)
         @test data_gpu.precision == JLArray(precisions)
 
         reshaped = reshape(data_gpu, 3, 1)
         @test size(reshaped) == (3, 1)
-        @test value(reshaped) == reshape(JLArray(values), 3, 1)
-        @test precision(reshaped) == reshape(JLArray(precisions), 3, 1)
+        @test get_value(reshaped) == reshape(JLArray(values), 3, 1)
+        @test get_precision(reshaped) == reshape(JLArray(precisions), 3, 1)
 
         shifted = data_gpu + 2.0f0
-        @test value(shifted) == JLArray(Float32[3.0, 4.0, 5.0])
-        @test precision(shifted) == JLArray(precisions)
+        @test get_value(shifted) == JLArray(Float32[3.0, 4.0, 5.0])
+        @test get_precision(shifted) == JLArray(precisions)
 
         scaled = 2.0f0 * data_gpu
-        @test value(scaled) == JLArray(Float32[2.0, 4.0, 6.0])
-        @test precision(scaled) ≈ JLArray(Float32[0.125, 0.05, 0.375])
+        @test get_value(scaled) == JLArray(Float32[2.0, 4.0, 6.0])
+        @test get_precision(scaled) ≈ JLArray(Float32[0.125, 0.05, 0.375])
     end
 
     @testset "generic GPU loglikelihood parity" begin

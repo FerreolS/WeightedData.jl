@@ -1,6 +1,6 @@
 using Uncertain
 using WeightedData
-import WeightedData: value, precision
+import WeightedData: get_value, get_precision
 import Statistics: mean
 
 @testset "WeightedDataUncertainExt" begin
@@ -9,9 +9,9 @@ import Statistics: mean
         u = Uncertain.Value(2.0, 0.5)
         w = WeightedValue(u)
 
-        @test value(w) == 2.0
-        @test precision(w) ≈ 1 / 0.5^2  # precision = uncertainty^(-2)
-        @test precision(w) ≈ 4.0
+        @test get_value(w) == 2.0
+        @test get_precision(w) ≈ 1 / 0.5^2  # precision = uncertainty^(-2)
+        @test get_precision(w) ≈ 4.0
     end
 
     @testset "Uncertain.Value from WeightedValue" begin
@@ -39,22 +39,22 @@ import Statistics: mean
         w_array = WeightedValue.(u_array)
 
         @test length(w_array) == 3
-        @test value(w_array[1]) == 1.0
-        @test precision(w_array[1]) ≈ 100.0
-        @test precision(w_array[2]) ≈ 25.0
-        @test precision(w_array[3]) ≈ 100 / 9
+        @test get_value(w_array[1]) == 1.0
+        @test get_precision(w_array[1]) ≈ 100.0
+        @test get_precision(w_array[2]) ≈ 25.0
+        @test get_precision(w_array[3]) ≈ 100 / 9
     end
 
     @testset "High and low precision values" begin
         # Test with very small uncertainties (high precision)
         u_precise = Uncertain.Value(1.0, 1.0e-10)
         w_precise = WeightedValue(u_precise)
-        @test precision(w_precise) ≈ 1.0e20
+        @test get_precision(w_precise) ≈ 1.0e20
 
         # Test with very large uncertainties (low precision)
         u_imprecise = Uncertain.Value(1.0, 1.0e10)
         w_imprecise = WeightedValue(u_imprecise)
-        @test precision(w_imprecise) ≈ 1.0e-20
+        @test get_precision(w_imprecise) ≈ 1.0e-20
     end
 
     @testset "Arithmetic with uncertain values" begin
@@ -66,7 +66,7 @@ import Statistics: mean
 
         # Test arithmetic preserves structure
         w_sum = w1 + w2
-        @test value(w_sum) ≈ 3.0
+        @test get_value(w_sum) ≈ 3.0
 
         # Convert back and verify uncertainty propagation
         u_back1 = Uncertain.Value(w1)
@@ -81,8 +81,8 @@ import Statistics: mean
         u_zero_unc = Uncertain.Value(5.0, 0.0)
         w_zero_unc = WeightedValue(u_zero_unc)
 
-        @test value(w_zero_unc) == 5.0
-        @test isinf(precision(w_zero_unc))
+        @test get_value(w_zero_unc) == 5.0
+        @test isinf(get_precision(w_zero_unc))
     end
 
     @testset "Negative value handling" begin
@@ -90,8 +90,8 @@ import Statistics: mean
         u_neg = Uncertain.Value(-3.0, 0.5)
         w_neg = WeightedValue(u_neg)
 
-        @test value(w_neg) == -3.0
-        @test precision(w_neg) ≈ 4.0
+        @test get_value(w_neg) == -3.0
+        @test get_precision(w_neg) ≈ 4.0
 
         u_back = Uncertain.Value(w_neg)
         @test Uncertain.value(u_back) ≈ -3.0
@@ -103,8 +103,8 @@ import Statistics: mean
         u32 = Uncertain.Value(Float32(1.0), Float32(0.1))
         w32 = WeightedValue(u32)
 
-        @test value(w32) ≈ 1.0f0 rtol = 1.0e-6
-        @test precision(w32) ≈ 100.0 rtol = 1.0e-5
+        @test get_value(w32) ≈ 1.0f0 rtol = 1.0e-6
+        @test get_precision(w32) ≈ 100.0 rtol = 1.0e-5
     end
 
     @testset "Weighted mean with uncertain values" begin
@@ -116,7 +116,7 @@ import Statistics: mean
         w2 = WeightedValue(u2)
 
         w_mean = mean(w1, w2)
-        @test value(w_mean) == 2.0
-        @test precision(w_mean) ≈ 8.0  # 4 + 4
+        @test get_value(w_mean) == 2.0
+        @test get_precision(w_mean) ≈ 8.0  # 4 + 4
     end
 end

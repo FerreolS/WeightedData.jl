@@ -1,14 +1,14 @@
 using OnlineSampleStatistics
 using WeightedData
-import WeightedData: value, precision
+import WeightedData: get_value, get_precision
 
 @testset "WeightedDataOnlineSampleStatisticsExt" begin
     @testset "WeightedValue from UnivariateStatistic" begin
         s = UnivariateStatistic([1.0, 2.0, 3.0], 2)
         w = WeightedValue(s)
 
-        @test value(w) ≈ mean(s)
-        @test precision(w) ≈ inv(var(s))
+        @test get_value(w) ≈ mean(s)
+        @test get_precision(w) ≈ inv(var(s))
     end
 
     @testset "WeightedValue requires variance moment" begin
@@ -25,8 +25,8 @@ import WeightedData: value, precision
         s = IndependentStatistic(x, 2; dims = 3)
         w = WeightedArray(s)
 
-        @test value(w) ≈ mean(s)
-        @test precision(w) ≈ inv.(var(s))
+        @test get_value(w) ≈ mean(s)
+        @test get_precision(w) ≈ inv.(var(s))
     end
 
     @testset "WeightedArray requires variance moment" begin

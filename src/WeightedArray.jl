@@ -1,18 +1,18 @@
 ## Array of WeightedValue
 
 """
-    value(x::AbstractArray{<:WeightedValue})
+    get_value(x::AbstractArray{<:WeightedValue})
 
 Extract an array with the values of each `WeightedValue` element.
 """
-value(x::AbstractArray{<:WeightedValue}) = map(x -> x.value, x)
+get_value(x::AbstractArray{<:WeightedValue}) = map(x -> x.value, x)
 
 """
-    precision(x::AbstractArray{<:WeightedValue})
+    get_precision(x::AbstractArray{<:WeightedValue})
 
 Extract an array with the precisions of each `WeightedValue` element.
 """
-precision(x::AbstractArray{<:WeightedValue}) = map(x -> x.precision, x)
+get_precision(x::AbstractArray{<:WeightedValue}) = map(x -> x.precision, x)
 
 """
     var(x::AbstractArray{<:WeightedValue})
@@ -20,9 +20,9 @@ precision(x::AbstractArray{<:WeightedValue}) = map(x -> x.precision, x)
 Return the element-wise variance array of `x`, defined as the inverse
 precision at each position:
 
-`var(x) = 1 ./ precision(x)`.
+`var(x) = 1 ./ get_precision(x)`.
 """
-var(x::AbstractArray{<:WeightedValue}) = inv.(precision(x))
+var(x::AbstractArray{<:WeightedValue}) = inv.(get_precision(x))
 
 """
     std(x::AbstractArray{<:WeightedValue})
@@ -59,7 +59,7 @@ function WeightedArray(
     return _WeightedArray(A, B)
 end
 
-WeightedArray(x::AbstractArray{<:WeightedValue}) = WeightedArray(value(x), precision(x))
+WeightedArray(x::AbstractArray{<:WeightedValue}) = WeightedArray(get_value(x), get_precision(x))
 WeightedArray(x::WeightedArray) = x
 
 WeightedArray(x::AbstractArray{Missing}) = _WeightedArray(zeros(size(x)), zeros(size(x)))
@@ -142,20 +142,20 @@ Broadcast.broadcasted(::typeof(*), A::WeightedArray, B::AbstractArray{<:Real}) =
 Base.:*(::WeightedArray, ::WeightedArray) = error("Multiplication of WeightedArray objects is not supported")
 Base.:/(::WeightedArray, ::WeightedArray) = error("Division of WeightedArray objects is not supported")
 
-Base.view(A::WeightedArray, I...) = WeightedArray(view(value(A), I...), view(precision(A), I...))
+Base.view(A::WeightedArray, I...) = WeightedArray(view(get_value(A), I...), view(get_precision(A), I...))
 
-value(x::WeightedArray) = x.args[1]
-precision(x::WeightedArray) = x.args[2]
+get_value(x::WeightedArray) = x.args[1]
+get_precision(x::WeightedArray) = x.args[2]
 
-Base.reshape(A::WeightedArray, dims::Union{Colon, Int64}...) = WeightedArray(reshape(value(A), dims...), reshape(precision(A), dims...))
-Base.reshape(A::WeightedArray, ::Colon) = WeightedArray(reshape(value(A), :), reshape(precision(A), :))
+Base.reshape(A::WeightedArray, dims::Union{Colon, Int64}...) = WeightedArray(reshape(get_value(A), dims...), reshape(get_precision(A), dims...))
+Base.reshape(A::WeightedArray, ::Colon) = WeightedArray(reshape(get_value(A), :), reshape(get_precision(A), :))
 
 Base.propertynames(::WeightedArray) = (:value, :precision)
 function Base.getproperty(A::WeightedArray, s::Symbol)
     if s == :value
-        return value(A)
+        return get_value(A)
     elseif s == :precision
-        return precision(A)
+        return get_precision(A)
     else
         getfield(A, s)
     end

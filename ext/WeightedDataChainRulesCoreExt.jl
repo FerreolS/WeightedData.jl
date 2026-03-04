@@ -2,7 +2,7 @@ module WeightedDataChainRulesCoreExt
 import ChainRulesCore: NoTangent, ZeroTangent
 import ChainRulesCore
 import StatsAPI: loglikelihood
-import WeightedData: L2Loss, value, precision, WeightedValue, ScaledL2Loss
+import WeightedData: L2Loss, get_value, get_precision, WeightedValue, ScaledL2Loss
 
 
 """
@@ -22,8 +22,8 @@ Custom reverse-mode rule for
 function ChainRulesCore.rrule(::typeof(loglikelihood), ::L2Loss, data::AbstractArray{WeightedValue{T}, N}, model::AbstractArray{T, N}) where {T, N}
     size(data) == size(model) || error("likelihood : size(A) != size(model)")
 
-    d = value(data)
-    p = precision(data)
+    d = get_value(data)
+    p = get_precision(data)
     rp = similar(d)
     l = T(0)
     @inbounds @simd for i in eachindex(data, model)
@@ -55,8 +55,8 @@ at optimum).
 """
 function ChainRulesCore.rrule(::typeof(loglikelihood), (; dims, nonnegative)::ScaledL2Loss, weighteddata::AbstractArray{WeightedValue{T1}, N}, model::AbstractArray{T2, N}) where {T1, T2, N}
     size(weighteddata) == size(model) || error("scaledlikelihood : size(A) != size(model)")
-    data = value(weighteddata)
-    p = precision(weighteddata)
+    data = get_value(weighteddata)
+    p = get_precision(weighteddata)
 
 
     a = similar(data)

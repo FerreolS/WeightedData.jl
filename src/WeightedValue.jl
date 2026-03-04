@@ -40,27 +40,27 @@ WeightedValue(::Missing, x) = WeightedValue(0, 0)
 WeightedValue(::Missing) = WeightedValue(0, 0)
 
 """
-    value(x::WeightedValue)
+    get_value(x::WeightedValue)
 
 Return the numeric value stored in `x`.
 """
-value(A::WeightedValue) = A.value
+get_value(A::WeightedValue) = A.value
 
 """
-    precision(x::WeightedValue)
+    get_precision(x::WeightedValue)
 
 Return the precision (inverse variance) stored in `x`.
 """
-precision(A::WeightedValue) = A.precision
+get_precision(A::WeightedValue) = A.precision
 
 """
     var(x::WeightedValue)
 
 Return the variance of `x`, defined as the inverse precision:
 
-`var(x) = 1 / precision(x)`.
+`var(x) = 1 / get_precision(x)`.
 """
-var(A::WeightedValue) = inv(precision(A))
+var(A::WeightedValue) = inv(get_precision(A))
 
 """
     std(x::WeightedValue)

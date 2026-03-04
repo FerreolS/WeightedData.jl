@@ -62,7 +62,7 @@ function get_weights(data::WeightedValue, model; loss = L2Loss())
     return get_weights(loss, data, model)
 end
 
-get_weights(_, data::WeightedValue, _::Number) = precision(data)
+get_weights(_, data::WeightedValue, _::Number) = get_precision(data)
 
 
 """
@@ -96,7 +96,7 @@ end
 
 function get_weights(_, data::AbstractArray{WeightedValue{T1}, N}, model::AbstractArray{T2, N}) where {T1, T2, N}
     size(data) == size(model) || error("get_weights : size(A) != size(model)")
-    return precision(data)
+    return get_precision(data)
 end
 
 struct ScaledL2Loss
@@ -107,8 +107,8 @@ ScaledL2Loss(; dims = 1, nonnegative = false) = ScaledL2Loss(dims, nonnegative)
 
 function loglikelihood((; dims, nonnegative)::ScaledL2Loss, weighteddata::AbstractArray{WeightedValue{T1}, N}, model::AbstractArray{T2, N}) where {T1, T2, N}
     size(weighteddata) == size(model) || error("scaledL2loss : size(A) != size(model)")
-    data = value(weighteddata)
-    p = precision(weighteddata)
+    data = get_value(weighteddata)
+    p = get_precision(weighteddata)
 
 
     a = similar(data)
