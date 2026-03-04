@@ -6,6 +6,7 @@ OnlineSampleStatistics = "455218f6-ed6f-43e9-ad07-c481a1567983"
 RobustModels = "d6ea1423-9682-4bbd-952f-b1577cbf8c98"
 Uncertain = "b33f403f-199b-472b-b9d0-1cd2092892d0"
 WeightedData = "198d7fc6-4dbd-4d01-be45-be9677e11b0d"
+Zygote = "e88e6eb3-aa80-5325-afca-941959d7151f"
 
 [compat]
 Documenter = "1"

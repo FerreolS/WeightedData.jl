@@ -35,11 +35,11 @@ using WeightedData
 using WeightedData: filterbaddata!, get_value, get_precision, get_weights
 
 # Define arrays of values and precisions
-values = [ 	1.0 missing π
-            0.1 10 		NaN]
+values = [ 1.0 missing π
+        	0.1 10 NaN]
 
-precision = [0 	missing 5
-            0.1 10 		3.]
+precision = [0 missing 5
+            0.1 10 3.]
 
 # Create a WeightedArray
 data = WeightedArray(values, precision)
