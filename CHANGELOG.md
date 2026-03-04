@@ -4,6 +4,17 @@ All notable changes to this project are documented in this file.
 
 ## [Unreleased]
 
+## [0.3.1] - 2026-03-04
+
+### Added
+
+- Additional tests for `WeightedDataAdaptExt` to verify backend/storage preservation when adapting `WeightedArray` values and precisions.
+- Expanded  documentation.
+
+### Fixed
+
+- Fixed type instability in `mean(::WeightedArray; dims=...)` caused by empty-array paths in `filterbaddata`, restoring `@inferred` stability.
+
 ## [0.3.0] - 2026-03-04
 
 ### Added
