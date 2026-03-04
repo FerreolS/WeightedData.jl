@@ -99,6 +99,14 @@ function get_weights(_, data::AbstractArray{WeightedValue{T1}, N}, model::Abstra
     return get_precision(data)
 end
 
+"""
+    ScaledL2Loss(; dims=1, nonnegative=false)
+
+Loss object for a scaled least-squares likelihood where the model is multiplied
+by a per-slice scaling factor estimated along dimension `dims`.
+
+If `nonnegative=true`, negative or non-finite scale factors are clamped to zero.
+"""
 struct ScaledL2Loss
     dims::Int
     nonnegative::Bool

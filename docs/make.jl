@@ -19,6 +19,7 @@ for ext in (:WeightedDataChainRulesCoreExt,
 end
 
 const DOC_MODULES = [WeightedData; extensions]
+const DOC_EXTENSION_MODULES = extensions
 
 makedocs(;
     modules = DOC_MODULES,
