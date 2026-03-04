@@ -58,6 +58,13 @@ See the constructor docstring below for conversion and sanitization rules.
 """
 const WeightedArray{T, N} = ZippedArray{WeightedValue{T}, N, 2, I, Tuple{A, B}} where {A <: AbstractArray{T, N}, B <: AbstractArray{T, N}, I}
 
+
+"""
+    _WeightedArray(A::AbstractArray{T, N}, B::AbstractArray{T, N}) where {T <: Real, N}
+
+Inner constructor for `WeightedArray` that builds a zipped array of `WeightedValue{T}` from value and precision arrays of the same shape. This method assumes that the inputs
+have already been sanitized and converted to a common real type `T` by `filterbaddata`. This method is not exported and is not intended to be called directly by users. See the `WeightedArray` constructor for the public API.
+"""
 _WeightedArray(A::AbstractArray{T, N}, B::AbstractArray{T, N}) where {T <: Real, N} = ZippedArray{WeightedValue{T}}(A, B)
 
 """
