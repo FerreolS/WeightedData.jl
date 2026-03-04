@@ -1,10 +1,10 @@
 module WeightedDataChainRulesCoreExt
+__precompile__(false)
+
 import ChainRulesCore: NoTangent, ZeroTangent
 import ChainRulesCore
 import StatsAPI: loglikelihood
 import WeightedData: L2Loss, get_value, get_precision, WeightedValue, ScaledL2Loss
-import AcceleratedKernels as AK
-using Adapt
 """
     ChainRulesCore.rrule(::typeof(loglikelihood), ::L2Loss, data, model)
 
@@ -31,13 +31,6 @@ function ChainRulesCore.rrule(::typeof(loglikelihood), ::L2Loss, data::AbstractA
         rp[i] = p[i] * r
         l += r .* rp[i]
     end
-
-#= 
-    l = AK.mapreduce(+, eachindex(d), AK.get_backend(d); init = zero(T)) do i
-        r = model[i] - d[i]
-        rp[i] = p[i] * r
-        return r .* rp[i]
-    end =#
     loglikelihood_pullback(Δy) = (NoTangent(), NoTangent(), NoTangent(), rp .* Δy)
     return 1 / 2 * l, loglikelihood_pullback
 end
