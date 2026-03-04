@@ -16,7 +16,6 @@ WeightedArray(::AbstractArray{<:Union{Missing, Real}, N}, ::AbstractArray{<:Unio
 
 ```@docs
 loglikelihood
-get_weights
 mean
 var
 std
@@ -27,6 +26,7 @@ std
 ```@docs
 get_value
 get_precision
+get_weights
 filterbaddata!
 ScaledL2Loss
 ```
@@ -37,7 +37,6 @@ ScaledL2Loss
 
 ```@autodocs
 Modules = Main.DOC_EXT_MEASUREMENTS
-Order = [:function]
 Private = true
 ```
 
@@ -45,7 +44,6 @@ Private = true
 
 ```@autodocs
 Modules = Main.DOC_EXT_ONLINESAMPLESTATISTICS
-Order = [:function]
 Private = true
 ```
 
@@ -53,7 +51,6 @@ Private = true
 
 ```@autodocs
 Modules = Main.DOC_EXT_ROBUSTMODELS
-Order = [:function]
 Private = true
 ```
 
@@ -61,6 +58,5 @@ Private = true
 
 ```@autodocs
 Modules = Main.DOC_EXT_UNCERTAIN
-Order = [:function]
 Private = true
 ```
