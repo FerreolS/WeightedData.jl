@@ -4,33 +4,31 @@ All notable changes to this project are documented in this file.
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-03-04
+
 ### Added
+
 - `WeightedDataAdaptExt` support for adapting `WeightedArray` containers across backends via `Adapt.adapt`.
 - `WeightedDataGPUArraysExt` support for generic `loglikelihood` evaluation on GPU-backed `WeightedArray` values (`AnyGPUArray`) and GPU-aware plain-text display.
 - `WeightedDataRobustModelsGPUArraysExt` support for robust `loglikelihood` on GPU-backed `WeightedArray` values (`AnyGPUArray`) with `RobustModels.LossFunction`.
-- Test coverage for `WeightedDataAdaptExt` with backend adaptation round-trip checks.
-- Test coverage for `WeightedDataGPUArraysExt` with `JLArrays` backend:
-  - generic `L2Loss` `loglikelihood` parity check against CPU reference
-  - mismatch behavior check following zipped-array semantics
-  - GPU-backed `show` smoke test
-- Test coverage for `WeightedDataRobustModelsGPUArraysExt` with `JLArrays` backend:
-  - robust `loglikelihood` parity checks (`L2Loss`, `HuberLoss`) against CPU references
-  - dispatch check for non-`RobustModels` loss on GPU arrays
-  - mismatch behavior check following zipped-array semantics
-  - zero-precision parity case
 
 ### Fixed
+
 - `WeightedDataRobustModelsGPUArraysExt` now imports `AnyGPUArray` explicitly.
 - `WeightedDataRobustModelsGPUArraysExt.loglikelihood` now uses an explicit `init` value in GPU `mapreduce` to avoid output-type inference errors.
 - `WeightedDataRobustModelsGPUArraysExt.loglikelihood` now imports and calls `rho` directly from `RobustModels`, preventing `UndefVarError` during GPU execution.
+- Public API and internals now consistently use `get_value` / `get_precision`; deprecated getter usage was removed from source, extensions, tests, and docs examples.
+- `filterbaddata!` behavior was clarified and documented; shape validation now raises `DimensionMismatch` for invalid masks.
 
 ## [0.2.0] - 2026-02-26
 
 ### Breaking changes
+
 - Weighted mean API migrated to `Statistics.mean` for `WeightedValue` and weighted arrays.
 - Likelihood API migrated to `StatsAPI.loglikelihood` as the canonical entry point.
 
 ### Added
+
 - `Statistics.var` support:
   - `var(x::WeightedValue) = 1 / get_precision(x)`
   - `var(x::AbstractArray{<:WeightedValue}) = 1 ./ get_precision(x)`
@@ -41,11 +39,13 @@ All notable changes to this project are documented in this file.
 - Explicit import hygiene checks in CI via `ExplicitImports.jl`.
 
 ### Changed
+
 - Documentation and README examples updated to `mean`/`var`/`std` and `loglikelihood`.
 - `ChainRulesCore` extension updated to provide rrules for `loglikelihood`.
 - Internal module imports standardized to explicit `import` style.
 
 ### Compatibility notes
+
 - `likelihood(...)` is deprecated and forwards to `loglikelihood(...)` (with deprecation warning).
 - Users are encouraged to migrate to `StatsAPI.loglikelihood`.
 
