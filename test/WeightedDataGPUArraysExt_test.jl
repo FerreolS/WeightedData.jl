@@ -33,6 +33,7 @@ import WeightedData: get_value, get_precision
         values = Float32[1.0, 2.0, 3.0]
         precisions = Float32[0.5, 0.2, 1.5]
         model = Float32[2.0, 3.0, 2.5]
+        data = WeightedArray(values, precisions)
 
         data_gpu = WeightedArray(JLArray(values), JLArray(precisions))
         model_gpu = JLArray(model)
@@ -41,6 +42,9 @@ import WeightedData: get_value, get_precision
         got = loglikelihood(loss, data_gpu, model_gpu)
         ref = sum(0.5f0 .* precisions .* (model .- values) .^ 2)
         @test got ≈ ref rtol = 1.0f-5 atol = 1.0f-6
+
+        using Zygote
+        lkl, grad = Zygote.withgradient(model -> loglikelihood(loss, data, model), model)
     end
 
     @testset "shape mismatch throws" begin

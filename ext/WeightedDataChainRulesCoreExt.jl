@@ -1,5 +1,4 @@
 module WeightedDataChainRulesCoreExt
-__precompile__(false)
 
 import ChainRulesCore: NoTangent, ZeroTangent
 import ChainRulesCore

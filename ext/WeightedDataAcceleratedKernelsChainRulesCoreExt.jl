@@ -1,11 +1,14 @@
 module WeightedDataAcceleratedKernelsChainRulesCoreExt
-__precompile__(false)
 
 import ChainRulesCore: NoTangent, ZeroTangent
 import ChainRulesCore
 import StatsAPI: loglikelihood
 import WeightedData: L2Loss, get_value, get_precision, WeightedValue, ScaledL2Loss
 import AcceleratedKernels as AK
+import GPUArrays: AnyGPUArray
+import ZippedArrays: ZippedArray
+
+WeightedArrayGPU{T, N}  = ZippedArray{WeightedValue{T},N,2,I,Tuple{A, A}} where {T,N,I,A <: AnyGPUArray{T,N}}
 
 """
     ChainRulesCore.rrule(::typeof(loglikelihood), ::L2Loss, data, model)
@@ -29,7 +32,7 @@ An `ErrorException` is thrown when one of these constraints is not satisfied.
 - pullback that propagates gradients to `model` as
     `(NoTangent(), NoTangent(), NoTangent(), get_precision(data) .* (model .- get_value(data)) .* Δy)`
 """
-function ChainRulesCore.rrule(::typeof(loglikelihood), ::L2Loss, data::AbstractArray{WeightedValue{T}, N}, model::AbstractArray{T, N}) where {T, N}
+function ChainRulesCore.rrule(::typeof(loglikelihood), ::L2Loss, data::WeightedArrayGPU{T, N}, model::AnyGPUArray{T, N}) where {T, N}
     size(data) == size(model) || error("likelihood : size(A) != size(model)")
     d = get_value(data)
     
@@ -72,7 +75,7 @@ An `ErrorException` is thrown when one of these constraints is not satisfied.
 - pullback that propagates gradients to `model` as
     `(NoTangent(), NoTangent(), ZeroTangent(), α .* (α .* model .- get_value(weighteddata)) .* get_precision(weighteddata) .* Δy)`
 """
-function ChainRulesCore.rrule(::typeof(loglikelihood), (; dims, nonnegative)::ScaledL2Loss, weighteddata::AbstractArray{WeightedValue{T}, N}, model::AbstractArray{T, N}) where {T, N}
+function ChainRulesCore.rrule(::typeof(loglikelihood), (; dims, nonnegative)::ScaledL2Loss, weighteddata::WeightedArrayGPU{T, N}, model::AnyGPUArray{T, N}) where {T, N}
     size(weighteddata) == size(model) || error("scaledlikelihood : size(A) != size(model)")
     data = get_value(weighteddata)
     p = get_precision(weighteddata)
