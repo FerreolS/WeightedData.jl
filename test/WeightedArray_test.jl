@@ -193,6 +193,20 @@ end
     @test get_precision(res5) ≈ [0.125, 0.0125]
 end
 
+@testset "filterbaddata!" begin
+    data = WeightedArray([1.0, 2.0, 3.0], [4.0, 5.0, 6.0])
+    values_before = copy(get_value(data))
+    precisions_ref = get_precision(data)
+
+    out = WeightedData.filterbaddata!(data, Bool[true, false, true])
+    @test out === data
+    @test get_precision(out) === precisions_ref
+    @test get_value(data) == values_before
+    @test get_precision(data) == [4.0, 0.0, 6.0]
+
+    @test_throws DimensionMismatch WeightedData.filterbaddata!(data, Bool[true, false])
+end
+
 @testset "WeightedValue extra coverage" begin
     @test WeightedValue(missing, 1.0) == WeightedValue(0.0, 0.0)
     @test WeightedValue(missing) == WeightedValue(0, 0)

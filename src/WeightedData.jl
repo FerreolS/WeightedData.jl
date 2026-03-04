@@ -7,10 +7,7 @@ import StatsAPI: loglikelihood
 import Statistics: mean, var, std
 
 export WeightedValue,
-    likelihood,
     WeightedArray,
-    get_value,
-    get_precision,
     loglikelihood,
     get_weights,
     mean, var, std
@@ -20,11 +17,17 @@ if VERSION >= v"1.11"
         @__MODULE__, Expr(
             :public,
             :ScaledL2Loss,
+            :filterbaddata!,
+            :get_value,
+            :get_precision
         )
     )
 else
     @eval begin
-        export ScaledL2Loss
+        export ScaledL2Loss,
+            filterbaddata!,
+            get_value,
+            get_precision
     end
 end
 

@@ -105,6 +105,22 @@ function filterbaddata(
 
 end
 
+"""
+    filterbaddata!(data::WeightedArray, goodmask::AbstractArray{Bool})
+
+Mask bad entries in-place by setting precision to zero where `goodmask` is `false`.
+Entries where `goodmask` is `true` keep their original precision. Values are left
+unchanged. `goodmask` must have the same shape as `data`.
+
+Returns `data`.
+"""
+function filterbaddata!(data::WeightedArray{T}, goodmask::AbstractArray{Bool}) where {T <: Real}
+    size(goodmask) == size(data) || throw(DimensionMismatch("filterbaddata!: mask must have the same size as data"))
+    prec = get_precision(data)
+    map!((p, good) -> good ? p : zero(T), prec, prec, goodmask)
+    return data
+end
+
 
 TypeUtils.get_precision(::Type{<:WeightedArray{T}}) where {T} = T
 

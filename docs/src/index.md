@@ -68,6 +68,12 @@ sg = std(wa)
 obs = WeightedArray([2.0, 1.0], [4.0, 0.5])
 pred = [1.8, 1.2]
 ℓ = loglikelihood(obs, pred)
+
+# Mask bad observations in-place (set precision to zero)
+
+mask = [true, false]
+filterbaddata!(obs, mask)
+get_precision(obs)
 ```
 
 ## Extensions
@@ -88,11 +94,6 @@ See [API Reference](api.md) for full method docstrings, including extension meth
 `WeightedData.jl` supports GPU-backed weighted arrays through the
 `WeightedDataGPUArraysExt` extension, activated automatically when
 `GPUArrays.jl` is loaded.
-
-### What is supported
-
-- `WeightedArray` storage on GPU arrays (for example `CuArray`) for values and precisions.
-- `loglikelihood(loss, data, model)` where `data` is GPU-backed and `model` has matching shape.
 
 ### Example (CUDA)
 
@@ -116,5 +117,4 @@ model = CUDA.fill(Float32(0.9), 1024)
 
 Notes:
 
-- The `data` and `model` arrays must have identical shapes.
 - Backend choice is delegated to your GPU array package (for example `CUDA.jl`, `AMDGPU.jl`, `oneAPI.jl`).

@@ -28,6 +28,10 @@ mg = mean(wa)
 model = [1.0, 1.5]
 l = loglikelihood(data, model)  # Default Gaussian negative log-likelihood
 
+# Mask bad observations in-place (zero precision where mask is false)
+mask = [true, false]
+filterbaddata!(data, mask)
+
 # Compute derivative with autodifferentiation
 f(x) = loglikelihood(data, x)
 using Zygote
