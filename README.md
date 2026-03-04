@@ -2,46 +2,85 @@
 
 [![License][license-img]][license-url] [![Build Status][github-ci-img]][github-ci-url] [![Coverage][codecov-img]][codecov-url] [![Aqua QA][aqua-img]][aqua-url] [![Docs][docs-img]][docs-url]
 
-A Julia package to manipulate data weighted by their precision and compute likelihood functions.
+A Julia package for working with data weighted by precision. It provides containers that associate values with their precision (inverse variance), along with likelihood utilities for uncertainty-aware estimation and model fitting.
+
+It mainly provides two data structures:
+- `WeightedArray{T, N} <: AbstractArray`, which stores array-valued observations and per-entry precisions of type `T`.
+- `WeightedValue{T}`, the element type of `WeightedArray`, which stores a scalar observation and its precision of type `T`.
+
 
 ## Usage
 
-```julia
-using WeightedData
-using WeightedData: filterbaddata!
-import Statistics: mean, var, std
+```julia-repl
+julia> using WeightedData
 
-# Create weighted points
-x = WeightedValue(1.0, 0.5)  # value 1.0 with precision 0.5
-y = WeightedValue(2.0, 0.2)  # value 2.0 with precision 0.2
+julia> using WeightedData: filterbaddata!, get_value, get_precision
 
-# weighted mean points (weighted average)
-z = mean(x, y)
+# Define arrays of values and precisions
+julia> values = [ 	1.0 missing π
+                	0.1 10 		NaN]
+2×3 Matrix{Union{Missing, Float64}}:
+ 1.0    missing    3.14159
+ 0.1  10.0       NaN
 
-# build an array of weighted points
-data = WeightedArray([1.0, 1.0], [2.0, 0.5])
+julia> precision = [ 0 	missing 5
+                   	0.1 10 		3.]
+2×3 Matrix{Union{Missing, Float64}}:
+ 0.0    missing  5.0
+ 0.1  10.0       3.0
 
-# global weighted mean over an array of weighted values
-wa = WeightedArray([1.0, 2.0, 3.0], [1.0, 1.0, 0.5])
-mg = mean(wa)
+# Create a WeightedArray
+julia> data = WeightedArray(values, precision)
+2×3 WeightedArray{Float64, 2} (alias of ZippedArrays.ZippedMatrix{WeightedValue{Float64}, 2, true, Tuple{Matrix{Float64}, Matrix{Float64}}})::
+ 1.0 ± Inf    0.0 ± Inf  3.14159 ± 0.45
+ 0.1 ± 3.2  10.0 ± 0.32       0.0 ± Inf
 
-# Compute likelihood
-model = [1.0, 1.5]
-l = loglikelihood(data, model)  # Default Gaussian negative log-likelihood
+# Missing and non-numeric values are ignored by setting their precision to zero
+julia> get_precision(data)
+2×3 Matrix{Float64}:
+ 0.0   0.0  5.0
+ 0.1  10.0  0.0
 
-# Mask bad observations in-place (zero precision where mask is false)
-mask = [true, false]
-filterbaddata!(data, mask)
+# Elements are `WeightedValue`s, displayed with their standard deviation
+julia> data[2]
+WeightedValue{Float64}
+0.1 ± 3.2
 
-# Compute derivative with autodifferentiation
-f(x) = loglikelihood(data, x)
-using Zygote
-lkl, grad = Zygote.withgradient(f, model)
+# Weighted mean along a given dimension
+julia> mean(data, dims=1)
+1×3 WeightedArray{Float64, 2} (alias of ZippedArrays.ZippedMatrix{WeightedValue{Float64}, 2, true, Tuple{Matrix{Float64}, Matrix{Float64}}})::
+ 0.1 ± 3.2  10.0 ± 0.32  3.14159 ± 0.45
 
+julia> model = [1.0 2.0 3.
+               	3 	2. 	1. ]
+2×3 Matrix{Float64}:
+ 1.0  2.0  3.0
+ 3.0  2.0  1.0
 
-# Robust likelihood
-using RobustModels
-l_robust = loglikelihood(data, model, loss=HuberLoss())
+# Compute the negative log-likelihood for a given model
+julia> l = loglikelihood(data, model)  # Default Gaussian negative log-likelihood
+320.47062119887653
+
+# Compute the derivative with automatic differentiation
+julia> f(x) = loglikelihood(data, x)
+f (generic function with 1 method)
+
+julia> using Zygote
+
+julia> lkl, grad = Zygote.withgradient(f, model)
+(val = 320.47062119887653, grad = ([0.0 0.0 -0.7079632679489656; 0.29 -80.0 0.0],))
+
+# Use a robust loss from the RobustModels package
+julia> using RobustModels
+
+julia> l_robust = loglikelihood(data, model, loss=HuberLoss())
+18.56923830366538
+
+# Robust weights computed by the model (outlier weights are lower than weights of valid data points)
+julia> get_weights(data, model;loss=HuberLoss())
+2×3 Matrix{Float64}:
+ 1.0  1.0        1.0
+ 1.0  0.0531658  1.0
 ```
 
 ## GPU support

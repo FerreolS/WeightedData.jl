@@ -54,8 +54,16 @@ end
 
 function repl_to_code(block::AbstractString)
     code = IOBuffer()
+    in_command = false
     for line in split(block, '\n')
-        startswith(line, "julia> ") && println(code, line[8:end])
+        if startswith(line, "julia> ")
+            println(code, line[8:end])
+            in_command = true
+        elseif in_command && !isempty(line) && isspace(first(line))
+            println(code, line)
+        else
+            in_command = false
+        end
     end
     return String(take!(code))
 end
