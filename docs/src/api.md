@@ -32,8 +32,34 @@ ScaledL2Loss
 
 ## Extension Functions
 
+### Measurements
+
 ```@autodocs
-Modules = Main.DOC_EXTENSION_MODULES
+Modules = Main.DOC_EXT_MEASUREMENTS
 Order = [:function]
-Private = false
+Private = true
+```
+
+### OnlineSampleStatistics
+
+```@autodocs
+Modules = Main.DOC_EXT_ONLINESAMPLESTATISTICS
+Order = [:function]
+Private = true
+```
+
+### RobustModels
+
+```@autodocs
+Modules = Main.DOC_EXT_ROBUSTMODELS
+Order = [:function]
+Private = true
+```
+
+### Uncertain
+
+```@autodocs
+Modules = Main.DOC_EXT_UNCERTAIN
+Order = [:function]
+Private = true
 ```
