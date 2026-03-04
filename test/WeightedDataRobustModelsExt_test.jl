@@ -1,5 +1,5 @@
 using RobustModels
-import WeightedData: get_value, get_precision
+import WeightedData: get_value, get_precision, get_weights
 @testset "WeightedDataRobustModelsExt" begin
     # Test likelihood method
     @testset "loglikelihood" begin

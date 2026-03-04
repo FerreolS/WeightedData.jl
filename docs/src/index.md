@@ -32,7 +32,7 @@ Pkg.add("WeightedData")
 
 using WeightedData
 
-using WeightedData: filterbaddata!, get_value, get_precision
+using WeightedData: filterbaddata!, get_value, get_precision, get_weights
 
 # Define arrays of values and precisions
 values = [ 	1.0 missing π

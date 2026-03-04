@@ -26,13 +26,13 @@
 
     g(x) = loglikelihood(C, x, loss = ScaledL2Loss())
     @test Zygote.withgradient(g, D) == (val = 0.0, grad = ([0.0 0.0; 0.0 0.0],))
-    @test get_weights(C, D) == ones(2, 2)
+    @test WeightedData.get_weights(C, D) == ones(2, 2)
 
-    @test get_weights(A[1], B[1]) == get_precision(A[1])
+    @test WeightedData.get_weights(A[1], B[1]) == get_precision(A[1])
 
     bad_model = ones(3, 2)
     @test_throws ErrorException loglikelihood(C, bad_model)
-    @test_throws ErrorException get_weights(C, bad_model)
+    @test_throws ErrorException WeightedData.get_weights(C, bad_model)
 
 
     C = WeightedArray(1.0 .+ ones(2, 2), ones(2, 2))

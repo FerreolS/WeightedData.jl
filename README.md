@@ -14,7 +14,7 @@ It mainly provides two data structures:
 ```julia-repl
 julia> using WeightedData
 
-julia> using WeightedData: filterbaddata!, get_value, get_precision
+julia> using WeightedData: filterbaddata!, get_value, get_precision, get_weights
 
 # Define arrays of values and precisions
 julia> values = [ 	1.0 missing π

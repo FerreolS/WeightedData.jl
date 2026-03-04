@@ -9,7 +9,6 @@ import Statistics: mean, var, std
 export WeightedValue,
     WeightedArray,
     loglikelihood,
-    get_weights,
     mean, var, std
 
 if VERSION >= v"1.11"
@@ -19,7 +18,8 @@ if VERSION >= v"1.11"
             :ScaledL2Loss,
             :filterbaddata!,
             :get_value,
-            :get_precision
+            :get_precision,
+            :get_weights
         )
     )
 else
@@ -27,7 +27,8 @@ else
         export ScaledL2Loss,
             filterbaddata!,
             get_value,
-            get_precision
+            get_precision,
+            get_weights
     end
 end
 
