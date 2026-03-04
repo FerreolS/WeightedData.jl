@@ -8,6 +8,7 @@ A Julia package to manipulate data weighted by their precision and compute likel
 
 ```julia
 using WeightedData
+using WeightedData: filterbaddata!
 import Statistics: mean, var, std
 
 # Create weighted points
