@@ -130,6 +130,9 @@ function filterbaddata(
     T = promote_type(Tv, Tp)
     T <: Real || error("filterbaddata: value and precision arrays must have a real element type")
 
+    if length(val) == 0
+        return similar(val, T), similar(pre, T)
+    end
     bad(v, p) = ismissing(v) || ismissing(p)
     prec = map((v, p) -> bad(v, p) ? zero(T) : T(p), val, pre)
     vals = map((v, p) -> bad(v, p) ? zero(T) : T(v), val, pre)
@@ -156,6 +159,19 @@ function filterbaddata(
     T = promote_type(Tv, Tp)
     T <: Real || error("filterbaddata: value and precision arrays must have a real element type")
 
+    vals = T.(val)
+    prec = T.(pre)
+    return filterbaddata(vals, prec)
+end
+
+function filterbaddata(
+        val::AbstractArray{T, N},
+        pre::AbstractArray{T, N}
+    ) where {N, T <: Real}
+
+    if length(val) == 0
+        return val, pre
+    end
     #=   if VERSION < v"1.11"
         vals = T.(val)
         prec = T.(pre)
@@ -166,8 +182,8 @@ function filterbaddata(
         return vals, prec
     else =#
     bad(v, p) = !isfinite(v) || !isfinite(p)
-    pre = map!((v, p) -> bad(v, p) ? zero(T) : T(p), pre, val, pre)
-    val = map!((v, p) -> bad(v, p) ? zero(T) : T(v), val, val, pre)
+    pre = map!((v, p) -> bad(v, p) ? zero(T) : p, pre, val, pre)
+    val = map!((v, p) -> bad(v, p) ? zero(T) : v, val, val, pre)
     return val, pre
     #   end
 
