@@ -56,30 +56,33 @@ at optimum).
 - scalar objective value
 - pullback that propagates gradients to `model`
 """
-function ChainRulesCore.rrule(::typeof(loglikelihood), (; dims, nonnegative)::ScaledL2Loss, weighteddata::AbstractArray{WeightedValue{T1}, N}, model::AbstractArray{T2, N}) where {T1, T2, N}
+function ChainRulesCore.rrule(::typeof(loglikelihood), (; dims, nonnegative)::ScaledL2Loss, weighteddata::AbstractArray{WeightedValue{T}, N}, model::AbstractArray{T, N}) where {T, N}
     size(weighteddata) == size(model) || error("scaledlikelihood : size(A) != size(model)")
-    data = get_value(weighteddata)
+    d = get_value(weighteddata)
     p = get_precision(weighteddata)
 
 
-    a = similar(data)
-    b = similar(data)
-    @inbounds @simd for i in eachindex(data, model)
-        b[i] = model[i] .* p[i] .* data[i]
+    a = similar(d)
+    b = similar(d)
+
+    idx = oncpu(model) ?  eachindex(model) : adapt(parameterless(typeof(model)),collect(eachindex(model))) 
+    map(idx) do i
+        b[i] = model[i] .* p[i] .* d[i]
         a[i] = model[i] .* p[i] .* model[i]
     end
 
     α = sum(b, dims = dims) ./ sum(a, dims = dims)
 
-    @inbounds @simd for i in eachindex(α)
-        if (nonnegative && α[i] < 0) || !isfinite(α[i])
-            α[i] = T2(0)
-        end
-    end
-    r = (α .* model .- data)
-    rp = r .* p
-    loglikelihood_pullback(Δy) = (NoTangent(), NoTangent(), ZeroTangent(), α .* rp .* Δy)
-    return sum(r .* rp) / 2, loglikelihood_pullback
+    map!( αi -> (((nonnegative && αi < 0) || !isfinite(αi)) ? zero(T2) : αi) ,α, α)
+    am  = α .* model
+    l = mapreduce(+, idx; init = zero(T)) do i
+        r = am[i] - d[i]
+        a[i] = p[i] * r
+        return r .* a[i]
+    end 
+
+    loglikelihood_pullback(Δy) = (NoTangent(), NoTangent(), ZeroTangent(), α .* a .* Δy)
+    return l / 2, loglikelihood_pullback
 end
 
 end
