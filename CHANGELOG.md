@@ -4,6 +4,28 @@ All notable changes to this project are documented in this file.
 
 ## [Unreleased]
 
+## [0.3.2] - 2026-03-05
+
+### Added
+
+- Improved GPU support for `loglikelihood`, including using robust losses with  additional  tests.
+
+### Changed
+
+- GPU execution path refactored to use an `oncpu` dispatch strategy for the appropriate `mapreduce` behavior.
+- `Adapt` moved from weak dependency to regular dependency.
+- Dependency and extension wiring around GPU `loglikelihood`/rrule support was revised.
+- API documentation updated.
+
+### Fixed
+
+- Fixed `loglikelihood` rrule behavior for `ScaledL2Loss` on GPU.
+- Fixed type issues in GPU robust `loglikelihood` rrules and cleaned unused `ChainRulesCore` import usage.
+
+### Removed
+
+- Removed `WeightedDataAcceleratedKernelsChainRulesCoreExt` and its dedicated test file.
+
 ## [0.3.1] - 2026-03-04
 
 ### Added
