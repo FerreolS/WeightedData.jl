@@ -102,6 +102,7 @@ import WeightedData: ScaledL2Loss
     end
 
     include("WeightedArray_test.jl")
+    include("Adapt_test.jl")
     include("likelihood_test.jl")
     include("WeightedDataPlotsExt_test.jl")
     include("WeightedDataRobustModelsExt_test.jl")

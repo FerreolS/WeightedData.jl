@@ -53,6 +53,19 @@ adapt_structure(to, wd::WeightedArray) =
     _WeightedArray(adapt(to, get_value(wd)), adapt(to, get_precision(wd)))
 
     
+"""
+    oncpu(::AbstractArray) -> Bool
+
+Trait to determine whether an array is stored on the CPU.
+
+Returns `true` if the array is located on CPU memory, `false` otherwise.
+
+# Arguments
+- `::AbstractArray`: An abstract array to check.
+
+# Returns
+- `Bool`: `true` if the array is on CPU, `false` if on other devices (e.g., GPU).
+"""
 oncpu(::AbstractArray) = true
     
 end

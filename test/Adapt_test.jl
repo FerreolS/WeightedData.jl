@@ -2,7 +2,7 @@ using Adapt
 using JLArrays
 import WeightedData: get_value, get_precision
 
-@testset "WeightedDataAdaptExt" begin
+@testset "Adapt" begin
     data = WeightedArray(Float32[1.0, 2.0, 3.0], Float32[0.5, 0.2, 1.5])
 
     @test get_value(data) isa Vector{Float32}
