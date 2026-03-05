@@ -3,7 +3,9 @@ module WeightedDataChainRulesCoreExt
 import ChainRulesCore: NoTangent, ZeroTangent
 import ChainRulesCore
 import StatsAPI: loglikelihood
-import WeightedData: L2Loss, get_value, get_precision, WeightedValue, ScaledL2Loss
+import WeightedData: L2Loss, get_value, get_precision, WeightedValue, ScaledL2Loss, oncpu
+import Adapt: adapt
+import TypeUtils: parameterless
 """
     ChainRulesCore.rrule(::typeof(loglikelihood), ::L2Loss, data, model)
 
@@ -24,12 +26,14 @@ function ChainRulesCore.rrule(::typeof(loglikelihood), ::L2Loss, data::AbstractA
     d = get_value(data)
     p = get_precision(data)
     rp = similar(d)
-    l = T(0)
-    @inbounds @simd for i in eachindex(data, model)
+    
+    idx = oncpu(model) ?  eachindex(model) : adapt(parameterless(typeof(model)),collect(eachindex(model))) 
+    l = mapreduce(+, idx; init = zero(T)) do i
         r = model[i] - d[i]
         rp[i] = p[i] * r
-        l += r .* rp[i]
-    end
+        return r .* rp[i]
+    end 
+
     loglikelihood_pullback(Δy) = (NoTangent(), NoTangent(), NoTangent(), rp .* Δy)
     return 1 / 2 * l, loglikelihood_pullback
 end

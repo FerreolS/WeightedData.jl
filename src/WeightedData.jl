@@ -52,6 +52,7 @@ Both value and precision arrays are adapted consistently and wrapped back into
 adapt_structure(to, wd::WeightedArray) =
     _WeightedArray(adapt(to, get_value(wd)), adapt(to, get_precision(wd)))
 
-
+    
+oncpu(::AbstractArray) = true
     
 end

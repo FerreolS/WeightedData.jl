@@ -46,7 +46,10 @@ import WeightedData: get_value, get_precision
         using Zygote
         lkl, grad = Zygote.withgradient(model -> loglikelihood(loss, data, model), model)
 
-        # lkl_gpu, grad_gpu = Zygote.withgradient(model -> loglikelihood(loss, data_gpu, model), model_gpu)
+        lkl_gpu, grad_gpu = Zygote.withgradient(model -> loglikelihood(loss, data_gpu, model), model_gpu)
+
+        @test lkl_gpu ≈ lkl rtol = 1.0f-5 atol = 1.0f-6
+        @test grad_gpu[1] ≈ grad[1] rtol = 1.0f-5 atol = 1.0f-6
     end
 
     @testset "shape mismatch throws" begin

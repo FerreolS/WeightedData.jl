@@ -1,9 +1,12 @@
 module WeightedDataGPUArraysExt
 
-import WeightedData:WeightedArray, WeightedValue, loglikelihood
+import WeightedData:WeightedArray, WeightedValue, loglikelihood,WeightedData
 import GPUArrays: AnyGPUArray, @allowscalar
 import ZippedArrays: ZippedArray
 import Base: Base, show
+
+WeightedData.oncpu(::AnyGPUArray) = false
+
 """
     WeightedArrayGPU{T, N}
 
