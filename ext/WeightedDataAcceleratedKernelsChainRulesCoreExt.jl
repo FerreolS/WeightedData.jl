@@ -8,6 +8,16 @@ import AcceleratedKernels as AK
 import GPUArrays: AnyGPUArray
 import ZippedArrays: ZippedArray
 
+try
+    using AcceleratedKernels
+catch
+    @warn """Package AcceleratedKernels not found in current path.
+    - Run `import Pkg; Pkg.add(\"AcceleratedKernels\")` to install the AcceleratedKernels package, then restart julia.
+    - If AcceleratedKernels is not installed, some Automatic differentiation functionalities will not be available when running on the GPU.
+    """
+end
+
+
 WeightedArrayGPU{T, N}  = ZippedArray{WeightedValue{T},N,2,I,Tuple{A, A}} where {T,N,I,A <: AnyGPUArray{T,N}}
 
 """

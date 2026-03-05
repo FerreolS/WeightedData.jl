@@ -4,15 +4,6 @@ import WeightedData:WeightedArray, WeightedValue, loglikelihood
 import GPUArrays: AnyGPUArray, @allowscalar
 import ZippedArrays: ZippedArray
 import Base: Base, show
-try
-    using AcceleratedKernels
-catch
-    @warn """Package AcceleratedKernels not found in current path.
-    - Run `import Pkg; Pkg.add(\"AcceleratedKernels\")` to install the AcceleratedKernels package, then restart julia.
-    - If AcceleratedKernels is not installed, some Automatic differentiation functionalities will not be available when running on the GPU.
-    """
-end
-
 """
     WeightedArrayGPU{T, N}
 
