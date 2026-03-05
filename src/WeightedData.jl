@@ -40,4 +40,18 @@ include("likelihood.jl")
 @deprecate value(args...; kwargs...) get_value(args...; kwargs...)
 @deprecate precision(args...; kwargs...) get_precision(args...; kwargs...)
 
+import Adapt: adapt_structure, adapt
+"""
+    adapt_structure(to, wd::WeightedArray)
+
+Adapt a `WeightedArray` structure to a target backend using `Adapt.jl`.
+
+Both value and precision arrays are adapted consistently and wrapped back into
+`WeightedArray`.
+"""
+adapt_structure(to, wd::WeightedArray) =
+    _WeightedArray(adapt(to, get_value(wd)), adapt(to, get_precision(wd)))
+
+
+    
 end
