@@ -73,7 +73,7 @@ function ChainRulesCore.rrule(::typeof(loglikelihood), (; dims, nonnegative)::Sc
 
     α = sum(b, dims = dims) ./ sum(a, dims = dims)
 
-    map!( αi -> (((nonnegative && αi < 0) || !isfinite(αi)) ? zero(T2) : αi) ,α, α)
+    map!( αi -> (((nonnegative && αi < 0) || !isfinite(αi)) ? zero(T) : αi) ,α, α)
     am  = α .* model
     l = mapreduce(+, idx; init = zero(T)) do i
         r = am[i] - d[i]

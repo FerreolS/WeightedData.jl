@@ -1,7 +1,6 @@
 module WeightedDataRobustModelsExt
 
-import StatsAPI: loglikelihood
-import WeightedData: likelihood, WeightedValue, get_value, get_precision, get_weights
+import WeightedData:loglikelihood, likelihood, WeightedValue, get_value, get_precision, get_weights
 
 import RobustModels: LossFunction,
     BoundedLossFunction,
@@ -107,16 +106,3 @@ Array of working weights corresponding to the input data
 workingweights(loss::LossFunction, data::AbstractArray{<:WeightedValue}, model::AbstractArray) = get_weights(loss, data, model)
 
 end
-
-#= 
-
-function ChainRulesCore.rrule(::typeof(likelihood), (; s)::CauchyLoss, data::AbstractArray{WeightedValue{T},N}, model::AbstractArray{T2,N}) where {T,T2,N}
-    C = T(s / 2.385)^2
-    r = model .- get_value(data)
-    rp = get_precision(data) .* r
-
-    q = T(1) .+ C .* rp .* r
-
-    likelihood_pullback(Δy) = (NoTangent(), NoTangent(), NoTangent(), rp ./ q .* Δy)
-    return (1 / (2C)) .* sum(log, q), likelihood_pullback
-end =#
