@@ -36,7 +36,7 @@ jobs:
         with:
           version: ${{ matrix.version }}
           arch: ${{ matrix.arch }}
-      - uses: julia-actions/cache@v2
+      - uses: julia-actions/cache@v3
       - uses: julia-actions/julia-buildpkg@v1
       - uses: julia-actions/julia-runtest@v1
       - uses: julia-actions/julia-processcoverage@v1
@@ -55,7 +55,7 @@ jobs:
       - uses: julia-actions/setup-julia@v2
         with:
           version: "1"
-      - uses: julia-actions/cache@v2
+      - uses: julia-actions/cache@v3
       - run: julia --project=test --color=yes -e 'using Pkg; Pkg.add("Aqua")'
       - run: julia --project=test --color=yes -e 'using Aqua, WeightedData; Aqua.test_all(WeightedData)'
   ExplicitImports:
@@ -69,7 +69,7 @@ jobs:
       - uses: julia-actions/setup-julia@v2
         with:
           version: "1"
-      - uses: julia-actions/cache@v2
+      - uses: julia-actions/cache@v3
       - run: julia --project=test --color=yes -e 'using Pkg; Pkg.add("ExplicitImports")'
       - run: julia --project=test --color=yes -e 'using ExplicitImports, WeightedData; ExplicitImports.check_no_implicit_imports(WeightedData); ExplicitImports.check_no_stale_explicit_imports(WeightedData); extfiles = filter(f -> endswith(f, ".jl"), readdir("ext"; join = true)); for f in extfiles; ExplicitImports.check_no_implicit_imports(WeightedData, f); ExplicitImports.check_no_stale_explicit_imports(WeightedData, f); end'
   docs:
@@ -84,7 +84,7 @@ jobs:
       - uses: julia-actions/setup-julia@v2
         with:
           version: "1"
-      - uses: julia-actions/cache@v2
+      - uses: julia-actions/cache@v3
       - uses: julia-actions/julia-docdeploy@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -101,7 +101,7 @@ jobs:
       - uses: julia-actions/setup-julia@v2
         with:
           version: "1"
-      - uses: julia-actions/cache@v2
+      - uses: julia-actions/cache@v3
       - name: Configure test environment
         shell: julia --project=test --color=yes {0}
         run: |
@@ -121,7 +121,7 @@ jobs:
       - uses: julia-actions/setup-julia@v2
         with:
           version: "1"
-      - uses: julia-actions/cache@v2
+      - uses: julia-actions/cache@v3
       - name: Configure test environment
         shell: julia --project=test --color=yes {0}
         run: |
