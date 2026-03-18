@@ -61,6 +61,22 @@
 
 end
 
+@testset "WeightedArray constructor coverage" begin
+    @test WeightedArray([1.0, missing]) == WeightedArray([1.0, 0.0], [1.0, 0.0])
+
+    A = WeightedArray([1.0, missing], 2.0)
+    @test get_value(A) == [1.0, 0.0]
+    @test get_precision(A) == [2.0, 0.0]
+
+    B = WeightedArray([1.0, 2.0], 3.0)
+    @test get_value(B) == [1.0, 2.0]
+    @test get_precision(B) == [3.0, 3.0]
+
+    C = WeightedArray([1.0, Inf], 4.0)
+    @test get_value(C) == [1.0, 0.0]
+    @test get_precision(C) == [4.0, 0.0]
+end
+
 @testset "WeightedArray arithmetic operations" begin
     A = WeightedArray([1.0, 2.0], [0.5, 0.2])
     B = WeightedArray([3.0, 4.0], [0.5, 0.8])

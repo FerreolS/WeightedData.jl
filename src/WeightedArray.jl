@@ -118,6 +118,28 @@ WeightedArray(x::WeightedArray) = x
 
 WeightedArray(x::AbstractArray{Missing}) = _WeightedArray(zeros(size(x)), zeros(size(x)))
 
+function WeightedArray(x::AbstractArray{<:Union{Missing, T}, N}) where {N, T <: Real}
+    return WeightedArray(x, one(T))
+end
+
+function WeightedArray(x::AbstractArray{<:Union{Missing, T}, N}, w::Real) where {N, T <: Real}
+    return WeightedArray(x, T(w) * ones(T, size(x)))
+end
+
+WeightedArray(x::AbstractArray{T, N}, w::Real) where {N, T <: Real} = WeightedArray(x, MutableUniformArray(w, size(x)))
+
+function WeightedArray(x::AbstractArray{T, N}, w::MutableUniformArray) where {N, T <: Real}
+    ifnt = isfinite.(x)
+    if all(ifnt)
+        return _WeightedArray(x, w)
+    end
+
+    w0 = T(first(w))
+    prec = map(good -> good ? w0 : zero(T), ifnt)
+    vals = map((good, xi) -> good ? xi : zero(T), ifnt, x)
+
+    return _WeightedArray(vals, prec)
+end
 
 """
     filterbaddata(val, pre)

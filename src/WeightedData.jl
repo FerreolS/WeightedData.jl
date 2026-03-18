@@ -1,5 +1,6 @@
 module WeightedData
 import ZippedArrays: ZippedArray
+import StructuredArrays: MutableUniformArray
 
 import TypeUtils
 import Statistics: mean, std, var
