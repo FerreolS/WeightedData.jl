@@ -118,17 +118,19 @@ WeightedArray(x::WeightedArray) = x
 
 WeightedArray(x::AbstractArray{Missing}) = _WeightedArray(zeros(size(x)), zeros(size(x)))
 
-function WeightedArray(x::AbstractArray{<:Union{Missing, T}, N}) where {N, T <: Real}
+function WeightedArray(x::AbstractArray{U}) where {U <: Union{Missing, Real}}
+    T = Base.nonmissingtype(U)
     return WeightedArray(x, one(T))
 end
 
-function WeightedArray(x::AbstractArray{<:Union{Missing, T}, N}, w::Real) where {N, T <: Real}
+function WeightedArray(x::AbstractArray{U}, w::Real) where {U <: Union{Missing, Real}}
+    T = Base.nonmissingtype(U)
     return WeightedArray(x, T(w) * ones(T, size(x)))
 end
 
-WeightedArray(x::AbstractArray{T, N}, w::Real) where {N, T <: Real} = WeightedArray(x, MutableUniformArray(w, size(x)))
+WeightedArray(x::AbstractArray{<:Real}, w::Real) = WeightedArray(x, MutableUniformArray(w, size(x)))
 
-function WeightedArray(x::AbstractArray{T, N}, w::MutableUniformArray) where {N, T <: Real}
+function WeightedArray(x::AbstractArray{T}, w::MutableUniformArray) where {T <: Real}
     ifnt = isfinite.(x)
     if all(ifnt)
         return _WeightedArray(x, w)
