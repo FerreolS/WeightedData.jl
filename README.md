@@ -88,8 +88,6 @@ julia> get_weights(data, model;loss=HuberLoss())
 GPU support is provided through an automatic extension (`WeightedDataGPUArraysExt`) when
 `GPUArrays.jl` is loaded.
 
-
-
 [license-url]: ./LICENSE.md
 [license-img]: http://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat
 [github-ci-img]: https://github.com/FerreolS/WeightedData.jl/actions/workflows/CI.yml/badge.svg?branch=master

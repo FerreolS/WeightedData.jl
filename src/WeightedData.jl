@@ -2,14 +2,13 @@ module WeightedData
 import ZippedArrays: ZippedArray
 
 import TypeUtils
+import Statistics: mean, std, var
 import StatsAPI: loglikelihood
 
-import Statistics: mean, var, std
-
-export WeightedValue,
-    WeightedArray,
+export WeightedArray,
+    WeightedValue,
     loglikelihood,
-    mean, var, std
+    mean, std, var
 
 if VERSION >= v"1.11"
     Core.eval(
@@ -26,9 +25,9 @@ else
     @eval begin
         export ScaledL2Loss,
             filterbaddata!,
-            get_value,
-            get_precision,
-            get_weights
+                get_precision,
+                get_value,
+                get_weights
     end
 end
 
@@ -40,7 +39,7 @@ include("likelihood.jl")
 @deprecate value(args...; kwargs...) get_value(args...; kwargs...)
 @deprecate precision(args...; kwargs...) get_precision(args...; kwargs...)
 
-import Adapt: adapt_structure, adapt
+import Adapt: adapt, adapt_structure
 """
     adapt_structure(to, wd::WeightedArray)
 
