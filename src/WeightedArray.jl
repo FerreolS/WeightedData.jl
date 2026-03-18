@@ -142,9 +142,8 @@ function filterbaddata(
     if length(val) == 0
         return similar(val, T), similar(pre, T)
     end
-    bad(v, p) = ismissing(v) || ismissing(p)
-    prec = map((v, p) -> bad(v, p) ? zero(T) : T(p), val, pre)
-    vals = map((v, p) -> bad(v, p) ? zero(T) : T(v), val, pre)
+    prec = map((v, p) -> ismissing(v) || ismissing(p) ? zero(T) : T(p), val, pre)
+    vals = map((v, p) -> ismissing(v) || ismissing(p) ? zero(T) : T(v), val, pre)
     vals, prec = filterbaddata(vals, prec)
     return vals, prec
 end
@@ -190,9 +189,8 @@ function filterbaddata(
         prec = ifelse.(valid, prec, z)
         return vals, prec
     else =#
-    bad(v, p) = !isfinite(v) || !isfinite(p)
-    pre = map!((v, p) -> bad(v, p) ? zero(T) : p, pre, val, pre)
-    val = map!((v, p) -> bad(v, p) ? zero(T) : v, val, val, pre)
+    pre = map!((v, p) -> !isfinite(v) || !isfinite(p) ? zero(T) : p, pre, val, pre)
+    val = map!((v, p) -> !isfinite(v) || !isfinite(p) ? zero(T) : v, val, val, pre)
     return val, pre
     #   end
 
