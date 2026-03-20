@@ -4,6 +4,18 @@ All notable changes to this project are documented in this file.
 
 ## [Unreleased]
 
+## [0.3.3] - 2026-03-20
+
+### Added
+
+- Added constructor coverage tests for `WeightedArray` missing/scalar-weight paths.
+- Add `WeightedArray(x)` and `WeightedArray(x, w::MutableUniformArray)` for constant weights
+
+### Fixed
+
+- Fixed `WeightedArray` constructors handling `AbstractArray{<:Union{Missing,Real}}` and scalar weights.
+- Fixed Aqua unbound type-parameter diagnostics by binding constructor element type parameters explicitly.
+
 ## [0.3.2] - 2026-03-05
 
 ### Added
