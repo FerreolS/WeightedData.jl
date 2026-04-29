@@ -18,7 +18,7 @@ Element-wise precision-weighted mean of weighted arrays with matching shape.
 - `mean(A, B, ...; dims=:)` reduces along `dims` and across the array list.
 """
 function mean(A::AbstractArray{S1, N}, B::AbstractArray{S2, N}, C...; dims = :) where {S1 <: WeightedValue, S2 <: WeightedValue, N}
-    all(c -> c isa AbstractArray{<:WeightedValue, N}, C) || throw(ArgumentError("mean: all arrays must contain WeightedValue and have matching dimensionality"))
+    all(c -> isa(c, AbstractArray) && eltype(c) <: WeightedValue && ndims(c) == N, C) || throw(ArgumentError("mean: all arrays must contain WeightedValue and have matching dimensionality"))
     stacked = cat(A, B, C...; dims = N + 1)
 
     if dims isa Colon
