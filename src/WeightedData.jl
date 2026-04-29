@@ -17,6 +17,7 @@ if VERSION >= v"1.11"
             :public,
             :L2Loss,
             :ScaledL2Loss,
+            :filterbaddata,
             :filterbaddata!,
             :get_value,
             :get_precision,
@@ -26,6 +27,7 @@ if VERSION >= v"1.11"
 else
     @eval begin
         export ScaledL2Loss,
+            filterbaddata,
             filterbaddata!,
                 get_precision,
                 get_value,

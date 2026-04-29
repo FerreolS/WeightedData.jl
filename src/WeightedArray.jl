@@ -236,6 +236,18 @@ function filterbaddata!(data::WeightedArray{T}, goodmask::AbstractArray{Bool}) w
     return data
 end
 
+"""
+    filterbaddata(data::WeightedArray, goodmask::AbstractArray{Bool})
+
+Non-mutating counterpart of `filterbaddata!`.
+
+Returns a new `WeightedArray` where precision is set to zero at entries where
+`goodmask` is `false`, while leaving the input `data` unchanged.
+"""
+function filterbaddata(data::WeightedArray, goodmask::AbstractArray{Bool})
+    return filterbaddata!(WeightedArray(copy(get_value(data)), copy(get_precision(data))), goodmask)
+end
+
 
 TypeUtils.get_precision(::Type{<:WeightedArray{T}}) where {T} = T
 

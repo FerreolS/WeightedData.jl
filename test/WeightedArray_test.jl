@@ -223,6 +223,18 @@ end
     @test_throws DimensionMismatch WeightedData.filterbaddata!(data, Bool[true, false])
 end
 
+@testset "filterbaddata" begin
+    data = WeightedArray([1.0, 2.0, 3.0], [4.0, 5.0, 6.0])
+    out = WeightedData.filterbaddata(data, Bool[true, false, true])
+
+    @test out !== data
+    @test get_value(out) == [1.0, 2.0, 3.0]
+    @test get_precision(out) == [4.0, 0.0, 6.0]
+    @test get_precision(data) == [4.0, 5.0, 6.0]
+
+    @test_throws DimensionMismatch WeightedData.filterbaddata(data, Bool[true, false])
+end
+
 @testset "WeightedValue extra coverage" begin
     @test WeightedValue(missing, 1.0) == WeightedValue(0.0, 0.0)
     @test WeightedValue(missing) == WeightedValue(0, 0)
