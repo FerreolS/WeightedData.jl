@@ -53,7 +53,9 @@
     @test @inferred(std(C)) == [1.0, 1.0, sqrt(2.0)]
 
     D = WeightedArray(ones(Float32, 2, 2), ones(Float32, 2, 2))
+    E = WeightedArray(ones(Float32, 2, 2), ones(Float32, 2, 2))
     @test @inferred(mean(D; dims = 2)) == WeightedArray(ones(Float32, 2, 1), 2 * ones(2, 1))
+    @test @inferred(mean(D, E; dims = 2)) == WeightedArray(ones(Float32, 2), 4 * ones(Float32, 2))
     @test @inferred(var(D)) == ones(Float32, 2, 2)
     @test @inferred(std(D)) == ones(Float32, 2, 2)
     @test TypeUtils.get_precision(D) == Float32

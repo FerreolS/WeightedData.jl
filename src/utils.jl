@@ -10,15 +10,28 @@ mean(A::WeightedValue, B::Vararg{WeightedValue}) = mean(tuple(A, B...))
 mean(A::WeightedValue) = A
 
 """
-    mean(A::AbstractArray{<:WeightedValue, N}, B::AbstractArray{<:WeightedValue, N}, C...) where {N}
+    mean(A::AbstractArray{<:WeightedValue, N}, B::AbstractArray{<:WeightedValue, N}, C...; dims=:) where {N}
 
 Element-wise precision-weighted mean of weighted arrays with matching shape.
 
 - `mean(A, B, ...)` returns an element-wise weighted mean.
+- `mean(A, B, ...; dims=:)` reduces along `dims` and across the array list.
 """
-function mean(A::AbstractArray{S1, N}, B::AbstractArray{S2, N}, C...) where {S1 <: WeightedValue, S2 <: WeightedValue, N}
+function mean(A::AbstractArray{S1, N}, B::AbstractArray{S2, N}, C...; dims = :) where {S1 <: WeightedValue, S2 <: WeightedValue, N}
     all(c -> c isa AbstractArray{<:WeightedValue, N}, C) || throw(ArgumentError("mean: all arrays must contain WeightedValue and have matching dimensionality"))
-    return dropdims(mean(cat(A, B, C...; dims = N + 1); dims = N + 1), dims = N + 1)
+    stacked = cat(A, B, C...; dims = N + 1)
+
+    if dims isa Colon
+        return dropdims(mean(stacked; dims = N + 1), dims = N + 1)
+    elseif dims isa Int
+        redims = (dims, N + 1)
+    elseif dims isa Tuple{Vararg{Int}}
+        redims = Tuple(unique((dims..., N + 1)))
+    else
+        throw(ArgumentError("mean: dims must be :, an Int, or a tuple of Int"))
+    end
+
+    return dropdims(mean(stacked; dims = redims), dims = redims)
 end
 
 """
