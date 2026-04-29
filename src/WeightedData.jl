@@ -15,6 +15,7 @@ if VERSION >= v"1.11"
     Core.eval(
         @__MODULE__, Expr(
             :public,
+            :L2Loss,
             :ScaledL2Loss,
             :filterbaddata!,
             :get_value,

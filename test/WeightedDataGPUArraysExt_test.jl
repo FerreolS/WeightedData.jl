@@ -73,7 +73,7 @@ import RobustModels: HuberLoss
         data_gpu = WeightedArray(JLArray(values), JLArray(precisions))
         model_gpu_bad = JLArray(model_bad)
 
-        @test_throws ErrorException("loglikelihood : size(A) != size(model)") loglikelihood(WeightedData.L2Loss(), data_gpu, model_gpu_bad)
+        @test_throws DimensionMismatch loglikelihood(WeightedData.L2Loss(), data_gpu, model_gpu_bad)
     end
 
     @testset "show for GPU-backed weighted arrays" begin

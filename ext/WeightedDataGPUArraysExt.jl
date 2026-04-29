@@ -64,7 +64,7 @@ Compute `loglikelihood` for GPU-backed weighted arrays using the provided loss
 kernel and a reduction over `(value, precision, model)` tuples.
 """
 function loglikelihood(loss, data::WeightedArrayGPU{T1, N}, model::AbstractArray{T2, N}) where {T1, T2, N}
-        size(data) == size(model) || error("loglikelihood : size(A) != size(model)")
+    size(data) == size(model) || throw(DimensionMismatch("loglikelihood: size(data) != size(model)"))
         return mapreduce(loss, +, data.args..., model)
 end
 

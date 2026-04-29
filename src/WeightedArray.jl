@@ -108,7 +108,7 @@ function WeightedArray(
         A::AbstractArray{<:Union{Missing, Real}, N},
         B::AbstractArray{<:Union{Missing, Real}, N}
     ) where {N}
-    size(A) == size(B) || error("WeightedArray: value and precision arrays must have the same shape")
+    size(A) == size(B) || throw(DimensionMismatch("WeightedArray: value and precision arrays must have the same shape"))
     A, B = filterbaddata(A, B)
     return _WeightedArray(A, B)
 end
@@ -161,7 +161,7 @@ function filterbaddata(
     Tv = Base.nonmissingtype(eltype(val))
     Tp = Base.nonmissingtype(eltype(pre))
     T = promote_type(Tv, Tp)
-    T <: Real || error("filterbaddata: value and precision arrays must have a real element type")
+    T <: Real || throw(ArgumentError("filterbaddata: value and precision arrays must have a real element type"))
 
     if length(val) == 0
         return similar(val, T), similar(pre, T)
@@ -189,7 +189,7 @@ function filterbaddata(
         pre::AbstractArray{Tp, N}
     ) where {N, Tv <: Real, Tp <: Real}
     T = promote_type(Tv, Tp)
-    T <: Real || error("filterbaddata: value and precision arrays must have a real element type")
+    T <: Real || throw(ArgumentError("filterbaddata: value and precision arrays must have a real element type"))
 
     vals = T.(val)
     prec = T.(pre)
@@ -270,8 +270,8 @@ Base.:*(A::WeightedArray, B::Number) = B * A
 Broadcast.broadcasted(::typeof(*), A::WeightedArray, B::Number) = B * A
 Broadcast.broadcasted(::typeof(*), A::WeightedArray, B::AbstractArray{<:Real}) = B .* A
 
-Base.:*(::WeightedArray, ::WeightedArray) = error("Multiplication of WeightedArray objects is not supported")
-Base.:/(::WeightedArray, ::WeightedArray) = error("Division of WeightedArray objects is not supported")
+Base.:*(::WeightedArray, ::WeightedArray) = throw(ArgumentError("multiplication of WeightedArray objects is not supported"))
+Base.:/(::WeightedArray, ::WeightedArray) = throw(ArgumentError("division of WeightedArray objects is not supported"))
 
 Base.view(A::WeightedArray, I...) = WeightedArray(view(get_value(A), I...), view(get_precision(A), I...))
 

@@ -1,27 +1,27 @@
 module WeightedDataRobustModelsExt
 
-import WeightedData:loglikelihood, likelihood, WeightedValue, get_value, get_precision, get_weights
+import WeightedData: loglikelihood, likelihood, WeightedValue, get_value, get_precision, get_weights
 
 import RobustModels: LossFunction,
+    ArctanLoss,
     BoundedLossFunction,
-    ConvexLossFunction,
+    CatoniNarrowLoss,
+    CatoniWideLoss,
+    CauchyLoss,
     CompositeLossFunction,
-    L2Loss,
-    L1Loss,
+    ConvexLossFunction,
+    FairLoss,
+    GemanLoss,
+    HampelLoss,
+    HardThresholdLoss,
     HuberLoss,
     L1L2Loss,
-    FairLoss,
+    L1Loss,
+    L2Loss,
     LogcoshLoss,
-    ArctanLoss,
-    CatoniWideLoss,
-    CatoniNarrowLoss,
-    CauchyLoss,
-    GemanLoss,
+    LossFunction,
     WelschLoss,
-    TukeyLoss,
     YohaiZamarLoss,
-    HardThresholdLoss,
-    HampelLoss,
     loss,
     rho,
     weight,
@@ -51,7 +51,7 @@ Compute robust loss for arrays of weighted observations.
 `data` and `model` must have the same shape.
 """
 function loglikelihood(loss::LossFunction, data::AbstractArray{<:WeightedValue}, model::AbstractArray)
-    size(data) == size(model) || error("likelihood : size(A) != size(model)")
+    size(data) == size(model) || throw(DimensionMismatch("loglikelihood: size(data) != size(model)"))
     r = @. sqrt($get_precision(data)) * (model - $get_value(data))
     l = Base.Fix1(rho, loss)
     return mapreduce(l, +, r)
@@ -76,7 +76,7 @@ Compute IRLS weights element-wise for arrays of weighted observations.
 `data` and `model` must have the same shape.
 """
 function get_weights(loss::LossFunction, data::AbstractArray{<:WeightedValue}, model::AbstractArray)
-    size(data) == size(model) || error("likelihood : size(A) != size(model)")
+    size(data) == size(model) || throw(DimensionMismatch("get_weights: size(data) != size(model)"))
     r = @. sqrt($get_precision(data)) * (model - $get_value(data))
     w = Base.Fix1(weight, loss)
     return map(w, r)

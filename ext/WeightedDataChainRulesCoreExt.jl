@@ -21,7 +21,7 @@ Custom reverse-mode rule for
 - pullback that propagates gradients to `model`
 """
 function ChainRulesCore.rrule(::typeof(loglikelihood), ::L2Loss, data::AbstractArray{WeightedValue{T}, N}, model::AbstractArray{T, N}) where {T, N}
-    size(data) == size(model) || error("likelihood : size(A) != size(model)")
+    size(data) == size(model) || throw(DimensionMismatch("loglikelihood: size(data) != size(model)"))
 
     d = get_value(data)
     p = get_precision(data)
@@ -31,7 +31,7 @@ function ChainRulesCore.rrule(::typeof(loglikelihood), ::L2Loss, data::AbstractA
     l = mapreduce(+, idx; init = zero(T)) do i
         r = model[i] - d[i]
         rp[i] = p[i] * r
-        return r .* rp[i]
+        return r * rp[i]
     end 
 
     loglikelihood_pullback(Δy) = (NoTangent(), NoTangent(), NoTangent(), rp .* Δy)
@@ -57,7 +57,7 @@ at optimum).
 - pullback that propagates gradients to `model`
 """
 function ChainRulesCore.rrule(::typeof(loglikelihood), (; dims, nonnegative)::ScaledL2Loss, weighteddata::AbstractArray{WeightedValue{T}, N}, model::AbstractArray{T, N}) where {T, N}
-    size(weighteddata) == size(model) || error("scaledlikelihood : size(A) != size(model)")
+    size(weighteddata) == size(model) || throw(DimensionMismatch("scaledlikelihood: size(data) != size(model)"))
     d = get_value(weighteddata)
     p = get_precision(weighteddata)
 

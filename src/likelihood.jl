@@ -86,7 +86,7 @@ function loglikelihood(data::AbstractArray{<:WeightedValue}, model::AbstractArra
 end
 
 function loglikelihood(loss, data::AbstractArray{WeightedValue{T1}, N}, model::AbstractArray{T2, N}) where {T1, T2, N}
-    size(data) == size(model) || error("loglikelihood : size(A) != size(model)")
+    size(data) == size(model) || throw(DimensionMismatch("loglikelihood: size(data) != size(model)"))
     return mapreduce(loss, +, data, model)
 end
 
@@ -95,7 +95,7 @@ function get_weights(data::AbstractArray{<:WeightedValue}, model::AbstractArray;
 end
 
 function get_weights(_, data::AbstractArray{WeightedValue{T1}, N}, model::AbstractArray{T2, N}) where {T1, T2, N}
-    size(data) == size(model) || error("get_weights : size(A) != size(model)")
+    size(data) == size(model) || throw(DimensionMismatch("get_weights: size(data) != size(model)"))
     return get_precision(data)
 end
 
@@ -114,7 +114,7 @@ end
 ScaledL2Loss(; dims = 1, nonnegative = false) = ScaledL2Loss(dims, nonnegative)
 
 function loglikelihood((; dims, nonnegative)::ScaledL2Loss, weighteddata::AbstractArray{WeightedValue{T1}, N}, model::AbstractArray{T2, N}) where {T1, T2, N}
-    size(weighteddata) == size(model) || error("scaledL2loss : size(A) != size(model)")
+    size(weighteddata) == size(model) || throw(DimensionMismatch("scaledL2loss: size(data) != size(model)"))
     data = get_value(weighteddata)
     p = get_precision(weighteddata)
 

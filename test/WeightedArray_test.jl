@@ -152,10 +152,10 @@ end
     @test get_precision(L) ≈ [0.5 / 9.0, 0.2 / 9.0]
 
     # Test unsupported WeightedArray * WeightedArray
-    @test_throws ErrorException A * B
+    @test_throws ArgumentError A * B
 
     # Test unsupported WeightedArray / WeightedArray
-    @test_throws ErrorException A / B
+    @test_throws ArgumentError A / B
 end
 
 @testset "WeightedArray arithmetic with   arrays" begin

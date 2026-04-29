@@ -23,12 +23,12 @@ struct WeightedValue{T <: Real} <: Number
     value::T
     precision::T
     function WeightedValue(value::T, precision::T) where {T <: Real}
-        precision >= 0 || error("WeightedValue : precisionmust be positive")
+        precision >= 0 || throw(ArgumentError("WeightedValue: precision must be non-negative"))
         isfinite(value) || return new{T}(zero(T), zero(T))
         return new{T}(value, precision)
     end
     function WeightedValue{T}(value::T, precision::T) where {T <: Real}
-        precision >= 0 || error("WeightedValue : precisionmust be positive")
+        precision >= 0 || throw(ArgumentError("WeightedValue: precision must be non-negative"))
         isfinite(value) || return new{T}(zero(T), zero(T))
         return new{T}(value, precision)
     end
@@ -93,14 +93,16 @@ Base.:/((; value, precision)::WeightedValue, B::Number) = WeightedValue(value / 
 Base.:/(A::Number, (; value, precision)::WeightedValue) = WeightedValue(A / value, inv(precision) / A^2)
 Base.:*(B::Number, (; value, precision)::WeightedValue) = WeightedValue(value * B, precision / B^2)
 Base.:*(A::WeightedValue, B::Number) = B * A
-Base.:*(::WeightedValue, ::WeightedValue) = error("Multiplication of WeightedValue objects is not supported")
-Base.:/(::WeightedValue, ::WeightedValue) = error("Division of WeightedValue objects is not supported")
+Base.:*(::WeightedValue, ::WeightedValue) = throw(ArgumentError("multiplication of WeightedValue objects is not supported"))
+Base.:/(::WeightedValue, ::WeightedValue) = throw(ArgumentError("division of WeightedValue objects is not supported"))
 
 Base.one(::WeightedValue{T}) where {T} = one(T)
 Base.zero(::WeightedValue{T}) where {T} = zero(WeightedValue{T})
 Base.zero(::Type{WeightedValue{T}}) where {T} = WeightedValue(zero(T), T(+Inf))
 
 Base.:(==)(x::WeightedValue, y::WeightedValue) = x.value == y.value && x.precision == y.precision
+Base.isequal(x::WeightedValue, y::WeightedValue) = isequal(x.value, y.value) && isequal(x.precision, y.precision)
+Base.hash(x::WeightedValue, h::UInt) = hash((x.value, x.precision), h)
 
 TypeUtils.get_precision(::Type{<:WeightedValue{T}}) where {T} = T
 

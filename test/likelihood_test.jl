@@ -31,8 +31,8 @@
     @test WeightedData.get_weights(A[1], B[1]) == get_precision(A[1])
 
     bad_model = ones(3, 2)
-    @test_throws ErrorException loglikelihood(C, bad_model)
-    @test_throws ErrorException WeightedData.get_weights(C, bad_model)
+    @test_throws DimensionMismatch loglikelihood(C, bad_model)
+    @test_throws DimensionMismatch WeightedData.get_weights(C, bad_model)
 
 
     C = WeightedArray(1.0 .+ ones(2, 2), ones(2, 2))
@@ -70,7 +70,7 @@
     @test pb_rrule_negativealpha(1.0)[4] == [0.0, 0.0]
 
     bad_model_rrule = ones(3, 2)
-    @test_throws ErrorException ChainRulesCore.rrule(loglikelihood, WeightedData.L2Loss(), C, bad_model_rrule)
-    @test_throws ErrorException ChainRulesCore.rrule(loglikelihood, ScaledL2Loss(), C, bad_model_rrule)
+    @test_throws DimensionMismatch ChainRulesCore.rrule(loglikelihood, WeightedData.L2Loss(), C, bad_model_rrule)
+    @test_throws DimensionMismatch ChainRulesCore.rrule(loglikelihood, ScaledL2Loss(), C, bad_model_rrule)
 
 end

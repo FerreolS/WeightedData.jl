@@ -6,8 +6,10 @@ import WeightedData: get_value, get_precision
 
 if VERSION >= v"1.11"
     @test !isdefined(@__MODULE__, :ScaledL2Loss)
+    @test !isdefined(@__MODULE__, :L2Loss)
 end
 import WeightedData: ScaledL2Loss
+import WeightedData: L2Loss
 
 @testset "WeightedData.jl" begin
     @testset "WeightedValue" begin
@@ -34,16 +36,16 @@ import WeightedData: ScaledL2Loss
 
         @test A - B == WeightedValue(-1.0, 0.25)
         @test A - 1.0 == WeightedValue(0.0, 0.5)
-        @test_throws ErrorException WeightedValue{Float64}(1.0, -1.0)
+        @test_throws ArgumentError WeightedValue{Float64}(1.0, -1.0)
 
         @test 2.0 * A == WeightedValue(2.0, 0.125)
         @test A * 2.0 == WeightedValue(2.0, 0.125)
         # Test for multiplication error
-        @test_throws ErrorException WeightedValue(1.0, 0.5) * WeightedValue(2.0, 1.5)
+        @test_throws ArgumentError WeightedValue(1.0, 0.5) * WeightedValue(2.0, 1.5)
 
         @test A / 2.0 == WeightedValue(0.5, 2.0)
         @test 2.0 / A == B
-        @test_throws ErrorException WeightedValue(1.0, 0.5) / WeightedValue(2.0, 1.5)
+        @test_throws ArgumentError WeightedValue(1.0, 0.5) / WeightedValue(2.0, 1.5)
 
         # Test for Base.one
         @test one(A) * A == A
@@ -58,6 +60,15 @@ import WeightedData: ScaledL2Loss
         @test @inferred mean(A) == A
         @test @inferred mean((A, B, A, B)) == WeightedValue(1.5, 2.0)
         @test @inferred mean((A, B, A, B)...) == WeightedValue(1.5, 2.0)
+
+        # Dict/Set composability: ==/isequal/hash must be coherent.
+        x = WeightedValue(1.0, 2.0)
+        y = WeightedValue(1.0, 2.0)
+        @test x == y
+        @test isequal(x, y)
+        @test hash(x) == hash(y)
+        @test Dict(x => 1)[y] == 1
+        @test length(Set([x, y])) == 1
 
 
     end
