@@ -4,6 +4,20 @@ All notable changes to this project are documented in this file.
 
 ## [Unreleased]
 
+### Added
+
+- Added public non-mutating `filterbaddata(data::WeightedArray, goodmask)` as a counterpart to `filterbaddata!`.
+- Added `dims` keyword support to `mean(A, B, C...; dims=...)` for multi-array weighted means.
+
+### Changed
+
+- Dimension mismatch paths were normalized to explicit `throw(...)` error handling across core and extension likelihood/weighting code paths.
+
+### CI
+
+- Bumped `julia-actions/setup-julia` from `v2` to `v3`.
+- Bumped `codecov/codecov-action` from `v5` to `v6`.
+
 ## [0.3.3] - 2026-03-20
 
 ### Added
