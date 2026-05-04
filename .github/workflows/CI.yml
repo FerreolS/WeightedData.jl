@@ -3,7 +3,7 @@ on:
   push:
     branches:
       - master
-    tags: ["*"]
+    tags: [ "*" ]
   pull_request:
   workflow_dispatch:
 concurrency:
@@ -16,7 +16,8 @@ jobs:
     name: Julia ${{ matrix.version }} - ${{ matrix.os }} - ${{ matrix.arch }}
     runs-on: ${{ matrix.os }}
     timeout-minutes: 60
-    permissions: # needed to allow julia-actions/cache to proactively delete old caches that it has created
+    permissions:
+      # needed to allow julia-actions/cache to proactively delete old caches that it has created
       actions: write
       contents: read
     strategy:
@@ -47,7 +48,8 @@ jobs:
   Aqua:
     name: Aqua tests
     runs-on: ubuntu-latest
-    permissions: # needed to allow julia-actions/cache to proactively delete old caches that it has created
+    permissions:
+      # needed to allow julia-actions/cache to proactively delete old caches that it has created
       actions: write
       contents: read
     steps:
@@ -57,7 +59,8 @@ jobs:
           version: "1"
       - uses: julia-actions/cache@v3
       - run: julia --project=test --color=yes -e 'using Pkg; Pkg.add("Aqua")'
-      - run: julia --project=test --color=yes -e 'using Aqua, WeightedData; Aqua.test_all(WeightedData)'
+      - run: julia --project=test --color=yes -e 'using Aqua, WeightedData;
+          Aqua.test_all(WeightedData)'
   ExplicitImports:
     name: ExplicitImports checks
     runs-on: ubuntu-latest
@@ -71,7 +74,13 @@ jobs:
           version: "1"
       - uses: julia-actions/cache@v3
       - run: julia --project=test --color=yes -e 'using Pkg; Pkg.add("ExplicitImports")'
-      - run: julia --project=test --color=yes -e 'using ExplicitImports, WeightedData; ExplicitImports.check_no_implicit_imports(WeightedData); ExplicitImports.check_no_stale_explicit_imports(WeightedData); extfiles = filter(f -> endswith(f, ".jl"), readdir("ext"; join = true)); for f in extfiles; ExplicitImports.check_no_implicit_imports(WeightedData, f); ExplicitImports.check_no_stale_explicit_imports(WeightedData, f); end'
+      - run: julia --project=test --color=yes -e 'using ExplicitImports, WeightedData;
+          ExplicitImports.check_no_implicit_imports(WeightedData);
+          ExplicitImports.check_no_stale_explicit_imports(WeightedData);
+          extfiles = filter(f -> endswith(f, ".jl"), readdir("ext"; join =
+          true)); for f in extfiles;
+          ExplicitImports.check_no_implicit_imports(WeightedData, f);
+          ExplicitImports.check_no_stale_explicit_imports(WeightedData, f); end'
   docs:
     name: Documentation
     runs-on: ubuntu-latest
@@ -129,3 +138,22 @@ jobs:
           Pkg.develop(PackageSpec(path=pwd()))
           Pkg.instantiate()
       - run: julia --project=test --color=yes test/check_docs_examples.jl
+  dependabot:
+    needs: [ test, Aqua ]
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      contents: write
+    if: ${{ github.actor == 'dependabot[bot]' && github.event_name ==
+      'pull_request'}}
+    steps:
+      - id: metadata
+        uses: dependabot/fetch-metadata@v3
+        with:
+          github-token: "${{ secrets.GITHUB_TOKEN }}"
+      - run: |
+          gh pr review --approve "$PR_URL"
+          gh pr merge --squash --auto "$PR_URL"
+        env:
+          PR_URL: ${{github.event.pull_request.html_url}}
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
