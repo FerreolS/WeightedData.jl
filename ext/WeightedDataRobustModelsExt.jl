@@ -50,9 +50,9 @@ end
 Compute robust loss for arrays of weighted observations.
 `data` and `model` must have the same shape.
 """
-function loglikelihood(loss::LossFunction, data::AbstractArray{<:WeightedValue}, model::AbstractArray)
+function loglikelihood(loss::LossFunction, data::AbstractArray{<:WeightedValue}, model::AbstractArray{T}) where {T}
     size(data) == size(model) || throw(DimensionMismatch("loglikelihood: size(data) != size(model)"))
-    r = @. sqrt($get_precision(data)) * (model - $get_value(data))
+    r = @. T(sqrt($get_precision(data)) * (model - $get_value(data)))
     l = Base.Fix1(rho, loss)
     return mapreduce(l, +, r)
 end

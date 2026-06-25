@@ -26,7 +26,8 @@ function ChainRulesCore.rrule(::typeof(loglikelihood), ::L2Loss, data::AbstractA
     d = get_value(data)
     p = get_precision(data)
     rp = similar(d)
-    
+
+
     idx = oncpu(model) ?  eachindex(model) : adapt(parameterless(typeof(model)),collect(eachindex(model))) 
     l = mapreduce(+, idx; init = zero(T)) do i
         r = model[i] - d[i]
@@ -35,7 +36,7 @@ function ChainRulesCore.rrule(::typeof(loglikelihood), ::L2Loss, data::AbstractA
     end 
 
     loglikelihood_pullback(Δy) = (NoTangent(), NoTangent(), NoTangent(), rp .* Δy)
-    return 1 / 2 * l, loglikelihood_pullback
+    return T(1 / 2) * l, loglikelihood_pullback
 end
 
 """
