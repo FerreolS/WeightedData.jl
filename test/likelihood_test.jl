@@ -1,6 +1,8 @@
 @testset "likelihood.jl" begin
     using DifferentiationInterface, Zygote, ForwardDiff, ChainRulesCore
     import StatsAPI: loglikelihood
+    using Adapt
+
     A = [WeightedValue(1.0, 1.0), WeightedValue(2.0, 0.5)]
     B = [1.0, 1.0]
 
@@ -40,6 +42,8 @@
 
     @test @inferred(loglikelihood(C, D, loss = ScaledL2Loss())) == 0.0
     @test @inferred(loglikelihood(C, D)) == 2.0
+    @test @inferred(loglikelihood(adapt(Array{Float32}, C), adapt(Array{Float32}, D))) == 2.0f0
+
 
     f2(x) = loglikelihood(C, x)
     @test Zygote.withgradient(f2, D) == (val = 2.0, grad = ([-1.0 -1.0; -1.0 -1.0],))
