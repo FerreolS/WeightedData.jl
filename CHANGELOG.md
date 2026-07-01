@@ -4,6 +4,8 @@ All notable changes to this project are documented in this file.
 
 ## [Unreleased]
 
+## [0.3.4] - 2026-07-01
+
 ### Added
 
 - Added public non-mutating `filterbaddata(data::WeightedArray, goodmask)` as a counterpart to `filterbaddata!`.
@@ -12,11 +14,19 @@ All notable changes to this project are documented in this file.
 ### Changed
 
 - Dimension mismatch paths were normalized to explicit `throw(...)` error handling across core and extension likelihood/weighting code paths.
+- Enhanced type handling in `loglikelihood` functions for weighted data.
+- Relaxed `TypeUtils` compatibility from `1` to `1, 2.0`.
+
+### Fixed
+
+- Fixed type checks in `mean` to enforce correct dimensionality validation for weighted arrays.
 
 ### CI
 
 - Bumped `julia-actions/setup-julia` from `v2` to `v3`.
-- Bumped `codecov/codecov-action` from `v5` to `v6`.
+- Bumped `codecov/codecov-action` from `v5` to `v7`.
+- Bumped `actions/checkout` from `v6` to `v7`.
+- Added Dependabot automerge automation.
 
 ## [0.3.3] - 2026-03-20
 
