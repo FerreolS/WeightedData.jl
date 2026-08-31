@@ -22,7 +22,7 @@ import WeightedData: get_value, get_precision
             [2.0 1.0; 4.0 3.0],
             [3.0 0.0; 5.0 2.0]; dims = 3
         )
-        s = IndependentStatistic(x, 2; dims = 3)
+        s = IndependentStatistic(2, x; dims = 3)
         w = WeightedArray(s)
 
         @test get_value(w) ≈ mean(s)
@@ -31,7 +31,7 @@ import WeightedData: get_value, get_precision
 
     @testset "WeightedArray requires variance moment" begin
         x = cat([1.0 2.0], [2.0 1.0], [3.0 0.0]; dims = 2)
-        s = IndependentStatistic(x, 1; dims = 2)
+        s = IndependentStatistic(1, x; dims = 2)
         @test_throws ArgumentError WeightedArray(s)
     end
 end
