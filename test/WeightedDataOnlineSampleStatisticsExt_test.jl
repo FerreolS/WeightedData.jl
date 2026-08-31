@@ -4,7 +4,7 @@ import WeightedData: get_value, get_precision
 
 @testset "WeightedDataOnlineSampleStatisticsExt" begin
     @testset "WeightedValue from UnivariateStatistic" begin
-        s = UnivariateStatistic([1.0, 2.0, 3.0], 2)
+        s = UnivariateStatistic(2, [1.0, 2.0, 3.0])
         w = WeightedValue(s)
 
         @test get_value(w) ≈ mean(s)
@@ -12,7 +12,7 @@ import WeightedData: get_value, get_precision
     end
 
     @testset "WeightedValue requires variance moment" begin
-        s = UnivariateStatistic([1.0, 2.0, 3.0], 1)
+        s = UnivariateStatistic(1, [1.0, 2.0, 3.0])
         @test_throws ArgumentError WeightedValue(s)
     end
 
