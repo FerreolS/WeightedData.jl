@@ -1,6 +1,6 @@
 using WeightedData
 using Test
-import TypeUtils
+using TypeUtils
 import Statistics: mean, var, std
 import WeightedData: get_value, get_precision
 
