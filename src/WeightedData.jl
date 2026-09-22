@@ -7,6 +7,8 @@ import Statistics: mean, std, var
 import StatsAPI: loglikelihood
 
 export WeightedArray,
+    WeightedVector,
+    WeightedMatrix,
     WeightedValue,
     loglikelihood,
     mean, std, var

@@ -58,6 +58,26 @@ See the constructor docstring below for conversion and sanitization rules.
 """
 const WeightedArray{T, N} = ZippedArray{WeightedValue{T}, N, 2, I, Tuple{A, B}} where {A <: AbstractArray{T, N}, B <: AbstractArray{T, N}, I}
 
+"""
+    WeightedVector{T}
+
+One-dimensional `WeightedArray` with value and precision element type `T`.
+"""
+const WeightedVector{T} = WeightedArray{T, 1}
+
+"""
+    WeightedMatrix{T}
+
+Two-dimensional `WeightedArray` with value and precision element type `T`.
+"""
+const WeightedMatrix{T} = WeightedArray{T, 2}
+
+WeightedVector(A::AbstractVector, B) = WeightedArray(A, B)
+WeightedVector(A::AbstractVector) = WeightedArray(A)
+
+WeightedMatrix(A::AbstractMatrix, B) = WeightedArray(A, B)
+WeightedMatrix(A::AbstractMatrix) = WeightedArray(A)
+
 
 """
     _WeightedArray(A::AbstractArray{T, N}, B::AbstractArray{T, N}) where {T <: Real, N}
