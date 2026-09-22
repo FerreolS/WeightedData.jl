@@ -4,6 +4,17 @@ All notable changes to this project are documented in this file.
 
 ## [Unreleased]
 
+## [0.3.5] - 2026-09-22
+
+### Added
+
+- Added `WeightedVector{T}` and `WeightedMatrix{T}` aliases for one- and two-dimensional weighted arrays.
+- Added dimension-specific constructors for `WeightedVector` and `WeightedMatrix`.
+
+### Changed
+
+- Updated the `Statistics` compatibility bound to support the current release configuration.
+
 ## [0.3.4] - 2026-07-01
 
 ### Added
