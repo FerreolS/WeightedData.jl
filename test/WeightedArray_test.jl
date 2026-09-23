@@ -24,7 +24,7 @@
     @test WeightedArray([1.0, missing], ones(2)) == WeightedArray([WeightedValue(1.0, 1.0), WeightedValue(0.0, 0.0)])
     #@test WeightedArray(ones(2, 3)) == WeightedArray(ones(2, 3), ones(2, 3))
     @test WeightedArray([missing, 1.0], ones(2)) == WeightedArray([WeightedValue(0.0, 0.0), WeightedValue(1.0, 1.0)])
-
+    @test WeightedVector([missing, missing]) == zeros(WeightedValue{Float64}, 2)
 
     z = zeros(WeightedValue{Float64}, 2, 3)
     @test z isa WeightedArray
