@@ -10,6 +10,8 @@ CurrentModule = WeightedData
 WeightedValue
 WeightedArray
 WeightedArray(::AbstractArray{<:Union{Missing, Real}, N}, ::AbstractArray{<:Union{Missing, Real}, N}) where {N}
+WeightedVector
+WeightedMatrix
 ```
 
 ## Exported Functions
