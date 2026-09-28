@@ -4,6 +4,10 @@ All notable changes to this project are documented in this file.
 
 ## [Unreleased]
 
+### Added
+
+- Add `get_residual` to compute the residual for weighted observations.
+
 ## [0.3.5] - 2026-09-22
 
 ### Added

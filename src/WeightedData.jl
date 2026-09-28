@@ -23,7 +23,8 @@ if VERSION >= v"1.11"
             :filterbaddata!,
             :get_value,
             :get_precision,
-            :get_weights
+            :get_weights,
+            :residual
         )
     )
 else
@@ -31,9 +32,10 @@ else
         export ScaledL2Loss,
             filterbaddata,
             filterbaddata!,
-                get_precision,
-                get_value,
-                get_weights
+            get_precision,
+            get_value,
+            get_weights,
+            get_residual
     end
 end
 
@@ -57,7 +59,7 @@ Both value and precision arrays are adapted consistently and wrapped back into
 adapt_structure(to, wd::WeightedArray) =
     _WeightedArray(adapt(to, get_value(wd)), adapt(to, get_precision(wd)))
 
-    
+
 """
     oncpu(::AbstractArray) -> Bool
 
@@ -72,5 +74,5 @@ Returns `true` if the array is located on CPU memory, `false` otherwise.
 - `Bool`: `true` if the array is on CPU, `false` if on other devices (e.g., GPU).
 """
 oncpu(::AbstractArray) = true
-    
+
 end

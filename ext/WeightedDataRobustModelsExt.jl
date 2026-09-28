@@ -1,6 +1,12 @@
 module WeightedDataRobustModelsExt
 
-import WeightedData: loglikelihood, likelihood, WeightedValue, get_value, get_precision, get_weights
+import WeightedData: loglikelihood,
+    likelihood,
+    get_residual,
+    WeightedValue,
+    get_value,
+    get_precision,
+    get_weights
 
 import RobustModels: LossFunction,
     ArctanLoss,
@@ -38,7 +44,7 @@ Residual is defined as:
 and the returned value is `rho(loss, r)`.
 """
 function loglikelihood(loss::LossFunction, data::WeightedValue, model::Number)
-    r = sqrt(get_precision(data)) * (model - get_value(data))
+    r = get_residual(data, model)
     return rho(loss, r)
 end
 
@@ -51,8 +57,7 @@ Compute robust loss for arrays of weighted observations.
 `data` and `model` must have the same shape.
 """
 function loglikelihood(loss::LossFunction, data::AbstractArray{<:WeightedValue}, model::AbstractArray{T}) where {T}
-    size(data) == size(model) || throw(DimensionMismatch("loglikelihood: size(data) != size(model)"))
-    r = @. T(sqrt($get_precision(data)) * (model - $get_value(data)))
+    r = get_residual(data, model)
     l = Base.Fix1(rho, loss)
     return mapreduce(l, +, r)
 end
