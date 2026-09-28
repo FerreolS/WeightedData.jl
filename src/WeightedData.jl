@@ -24,7 +24,7 @@ if VERSION >= v"1.11"
             :get_value,
             :get_precision,
             :get_weights,
-            :get_residual
+            :weightedresidual
         )
     )
 else
@@ -35,7 +35,7 @@ else
             get_precision,
             get_value,
             get_weights,
-            get_residual
+            weightedresidual
     end
 end
 

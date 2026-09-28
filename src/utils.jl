@@ -72,17 +72,17 @@ end
 
 
 """
-    residual(data::WeightedValue, model::Number)
+    weightedresidual(data::WeightedValue, model::Number)
 
-Compute the residual for a single weighted observation.
+Compute the weighted residual for a single weighted observation.
 
 Residual is defined as:
 `r = sqrt(get_precision(data)) * (model - get_value(data))`
 """
-@inline function get_residual(data::WeightedValue, model::Number)
+@inline function weightedresidual(data::WeightedValue, model::Number)
     return sqrt(get_precision(data)) * (model - get_value(data))
 end
-@inline function get_residual(data::AbstractArray{<:WeightedValue}, model::AbstractArray{T}) where {T}
+@inline function weightedresidual(data::AbstractArray{<:WeightedValue}, model::AbstractArray{T}) where {T}
     size(data) == size(model) || throw(DimensionMismatch("residual: size(data) != size(model)"))
     return @. T(sqrt($get_precision(data)) * (model - $get_value(data)))
 end
