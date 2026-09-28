@@ -70,7 +70,7 @@ end
 Compute IRLS weight for a single weighted observation.
 """
 function get_weights(loss::LossFunction, data::WeightedValue, model::Number)
-    r = sqrt(get_precision(data)) * (model - get_value(data))
+    r = weightedresidual(data, model)
     return weight(loss, r)
 end
 
@@ -82,7 +82,7 @@ Compute IRLS weights element-wise for arrays of weighted observations.
 """
 function get_weights(loss::LossFunction, data::AbstractArray{<:WeightedValue}, model::AbstractArray)
     size(data) == size(model) || throw(DimensionMismatch("get_weights: size(data) != size(model)"))
-    r = @. sqrt($get_precision(data)) * (model - $get_value(data))
+    r = weightedresidual(data, model)
     w = Base.Fix1(weight, loss)
     return map(w, r)
 end

@@ -10,7 +10,7 @@ WeightedArrayGPU{T, N}  = ZippedArray{WeightedValue{T},N,2,I,Tuple{A, A}} where 
 function loglikelihood(loss::LossFunction, data::WeightedArrayGPU{T1, N}, model::AbstractArray{T2, N}) where {T1, T2, N}
     size(data) == size(model) || throw(DimensionMismatch("loglikelihood: size(data) != size(model)"))
     g = Base.Fix1(rho,loss)
-    r = sqrt.(get_precision(data)) .* (model .- get_value(data))
+    r = weightedresidual(data, model)
     return sum(g.(r))
 end
 
