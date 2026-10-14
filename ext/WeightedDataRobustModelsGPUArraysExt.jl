@@ -1,15 +1,15 @@
 module WeightedDataRobustModelsGPUArraysExt
 
-import WeightedData: loglikelihood, WeightedValue, get_value, get_precision
+import WeightedData: loglikelihood, WeightedValue, get_value, get_precision, weightedresidual
 import RobustModels: LossFunction, rho
 import ZippedArrays: ZippedArray
 import GPUArrays: AnyGPUArray
 
-WeightedArrayGPU{T, N}  = ZippedArray{WeightedValue{T},N,2,I,Tuple{A, A}} where {T,N,I,A <: AnyGPUArray{T,N}}
+WeightedArrayGPU{T, N} = ZippedArray{WeightedValue{T}, N, 2, I, Tuple{A, A}} where {T, N, I, A <: AnyGPUArray{T, N}}
 
 function loglikelihood(loss::LossFunction, data::WeightedArrayGPU{T1, N}, model::AbstractArray{T2, N}) where {T1, T2, N}
     size(data) == size(model) || throw(DimensionMismatch("loglikelihood: size(data) != size(model)"))
-    g = Base.Fix1(rho,loss)
+    g = Base.Fix1(rho, loss)
     r = weightedresidual(data, model)
     return sum(g.(r))
 end
