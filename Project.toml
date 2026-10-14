@@ -38,7 +38,7 @@ WeightedDataUncertainExt = ["Uncertain"]
 [compat]
 Adapt = "4"
 ChainRulesCore = "1"
-GPUArrays = "11, 12.1"
+GPUArrays = "11, 12"
 Measurements = "2"
 OnlineSampleStatistics = "0.1, 0.3"
 Plots = "1"
