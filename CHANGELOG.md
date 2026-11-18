@@ -4,6 +4,10 @@ All notable changes to this project are documented in this file.
 
 ## [Unreleased]
 
+### Added
+
+- Added conversions between arrays of `Measurements.Measurement` and `WeightedArray`.
+
 ## [0.3.6] - 2026-10-14
 
 ### Added

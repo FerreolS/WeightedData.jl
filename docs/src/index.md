@@ -84,7 +84,7 @@ when the corresponding package is loaded:
 - `RobustModels` → robust `loglikelihood` taking any Losses defined in `RobustModels`
 - `OnlineSampleStatistics` → extract sample mean and sample variance of a series of observation to build a WeightedData (`WeightedValue` or `WeightedArray`)
 - `ChainRulesCore` → custom `rrule` methods for `loglikelihood`
-- `Measurements` → conversion between `Measurement` and `WeightedValue`
+- `Measurements` → conversion between `Measurement` / `WeightedValue` and their array forms
 - `Uncertain` → conversion between `Uncertain.Value` and `WeightedValue`
 
 See [API Reference](api.md) for full method docstrings, including extension methods.

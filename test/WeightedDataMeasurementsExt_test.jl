@@ -44,6 +44,23 @@ import WeightedData: value, precision
         @test get_precision(w_array[3]) ≈ 100 / 9
     end
 
+    @testset "WeightedArray conversions" begin
+        m_array = [1.0 ± 0.1 2.0 ± 0.2; 3.0 ± 0.3 4.0 ± 0.4]
+        weighted = WeightedArray(m_array)
+
+        @test weighted isa WeightedArray
+        @test size(weighted) == size(m_array)
+        @test get_value(weighted) == [1.0 2.0; 3.0 4.0]
+        @test get_precision(weighted) ≈ [100.0 25.0; 100 / 9 6.25]
+
+        converted = Measurements.measurement(weighted)
+        @test converted isa AbstractArray
+        @test all(x -> x isa Measurements.Measurement, converted)
+        @test size(converted) == size(m_array)
+        @test Measurements.value.(converted) == Measurements.value.(m_array)
+        @test Measurements.uncertainty.(converted) ≈ Measurements.uncertainty.(m_array)
+    end
+
     @testset "High and low precision values" begin
         # Test with very small uncertainties (high precision)
         m_precise = 1.0 ± 1.0e-10

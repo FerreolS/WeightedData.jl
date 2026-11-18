@@ -1,6 +1,6 @@
 module WeightedDataMeasurementsExt
 import Measurements
-import WeightedData: WeightedValue, get_value, get_precision
+import WeightedData: WeightedArray, WeightedValue, get_value, get_precision
 
 """
     WeightedValue(x::Measurements.Measurement)
@@ -28,6 +28,13 @@ w = WeightedValue(m)  # WeightedValue(1.0, 100.0)
 WeightedValue(x::Measurements.Measurement) = WeightedValue(Measurements.value(x), Measurements.uncertainty(x)^(-2))
 
 """
+    WeightedArray(x::AbstractArray{<:Measurements.Measurement})
+
+Convert an array of `Measurements.Measurement` values to a `WeightedArray`.
+"""
+WeightedArray(x::AbstractArray{<:Measurements.Measurement}) = WeightedArray(map(WeightedValue, x))
+
+"""
     Measurement(x::WeightedValue)
 
 Convert `WeightedValue` to `Measurements.Measurement`.
@@ -51,5 +58,12 @@ m = Measurement(w)  # 1.0 ± 0.1
 ```
 """
 Measurements.measurement(x::WeightedValue) = Measurements.measurement(get_value(x), 1 / sqrt(get_precision(x)))
+
+"""
+    Measurements.measurement(x::WeightedArray)
+
+Convert a `WeightedArray` to an array of `Measurements.Measurement` values.
+"""
+Measurements.measurement(x::WeightedArray) = map(Measurements.measurement, x)
 
 end
