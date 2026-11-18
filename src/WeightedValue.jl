@@ -87,6 +87,12 @@ using standard independent-error propagation:
 Base.:+(A::WeightedValue, B::WeightedValue) = WeightedValue(A.value + B.value, inv(inv(A.precision) + inv(B.precision)))
 Base.:+((; value, precision)::WeightedValue, B::Number) = WeightedValue(value + B, precision)
 Base.:+(A::Number, B::WeightedValue) = B + A
+"""
+    -(x::WeightedValue)
+
+Negate the value of `x`, preserving its precision.
+"""
+Base.:-((; value, precision)::WeightedValue) = WeightedValue(-value, precision)
 Base.:-(A::WeightedValue, B::WeightedValue) = WeightedValue(A.value - B.value, inv(inv(A.precision) + inv(B.precision)))
 Base.:-((; value, precision)::WeightedValue, B::Number) = WeightedValue(value - B, precision)
 Base.:/((; value, precision)::WeightedValue, B::Number) = WeightedValue(value / B, B^2 * precision)

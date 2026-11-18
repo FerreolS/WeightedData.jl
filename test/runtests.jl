@@ -34,6 +34,10 @@ import WeightedData: L2Loss
         @test A + 1.0 == WeightedValue(2.0, 0.5)
         @test 1.0 + A == WeightedValue(2.0, 0.5)
 
+        @test -A == WeightedValue(-1.0, 0.5)
+        @test -(-A) == A
+        @test @inferred(-WeightedValue(2.0f0, 0.0f0)) === WeightedValue(-2.0f0, 0.0f0)
+        @test -WeightedValue(-3.0, Inf) == WeightedValue(3.0, Inf)
         @test A - B == WeightedValue(-1.0, 0.25)
         @test A - 1.0 == WeightedValue(0.0, 0.5)
         @test_throws ArgumentError WeightedValue{Float64}(1.0, -1.0)

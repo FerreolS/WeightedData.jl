@@ -7,6 +7,7 @@ All notable changes to this project are documented in this file.
 ### Added
 
 - Added conversions between arrays of `Measurements.Measurement` and `WeightedArray`.
+- Added unary negation for `WeightedValue`, preserving its precision.
 
 ## [0.3.6] - 2026-10-14
 
